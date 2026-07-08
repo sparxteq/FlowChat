@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    //"moduleResolution": "node",
+    "strict": true,
+    "isolatedModules": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "noEmit": true,
+
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/server"],
+  
+  "exclude": [
+    "src/__test__/**/*.ts",
+    "src/client/**/*.ts",
+    "node_modules",
+    "coverage",                 // ✅ exclude generated coverage output
+    "dist"
+  ]
+}

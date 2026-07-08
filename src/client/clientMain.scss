@@ -1,0 +1,114 @@
+
+@use "sass:color";
+@use "parameters.scss" as *;
+@use "../../../Zing3/zui/zuiMain.scss" as *;
+@use "../../../Zing3/zui/zuiStyling.scss" as *;
+@use "views/package.scss" as *;
+
+
+$grid-gutter-width: 3%;
+//@import "pages/package.scss";
+
+.help {
+    color: white;
+}
+
+//@import "views/package.scss";
+
+//@import "../workbook/package.scss";
+
+body{
+    background-color: $color-secondary;
+}
+.KDBCStyle {
+    height:110;
+}
+.LogBox {
+    @include layout(8);
+    height: 30px;
+    overflow:auto;
+    resize:vertical;
+    background-color: white;
+}
+.LogSection {
+    @include layout(12);
+    background-color: white;
+    border-left: 1px solid rgb(210, 209, 209);
+}
+.LogSectionEnd {
+    @include layout(12,none);
+    background-color: white;
+}
+.LogMessage {
+    @include layout(12);
+    background-color: white;
+}
+.RangeRibbonH {
+    @include layout(6);
+    height:10px;
+}
+.Chart2Half {
+    @include layout(5.5);
+    height:200px;
+}
+.RangeRibbonV {
+    @include layout(0.5);
+    width:10px;
+    height:200px;
+}
+.StepButtonNext{
+    border: solid 5px black;
+}
+.StepButtonRunning{
+    background-color: lightblue;
+}
+.WorkbookStepView{
+    background-color: color.adjust($color-secondary,$lightness:5%);
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    border: solid 1px color.adjust($color-secondary,$lightness:-40%);
+    box-shadow: 5px 5px 5px rgb(172, 137, 92);
+}
+.label {
+    font-size: $font-size-normal;
+    font-weight:bold;
+    text-align:right;
+}
+.StepButton{
+    @include layout(4);
+    font-size: $font-size-normal;
+    box-shadow: 2px 2px 2px rgb(172, 137, 92);
+}
+.ProcessWaiting{
+    @include layout(1)
+}
+.ProcessWaiting-hidden{
+    @include layout(1);
+    visibility:hidden;
+}
+
+.Step-title{
+    @include layout(6);
+    font-size: $font-size-l2;
+    color: lightgray;
+}
+.Step-next{
+    border: solid 2px black;
+    padding-left:3px;
+    color: black;
+}
+.Step-ready{
+    color:black;
+}
+.Step-running{
+    background-color: lightblue;
+    color: black;
+}
+.Step-optional {
+    @include layout(6,none,1);
+    font-size: $font-size-normal;
+}
+.StepLogView{
+    @include layout(6,both,1)
+}
