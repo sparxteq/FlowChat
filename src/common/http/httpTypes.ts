@@ -16,7 +16,57 @@ export type HTTPResult = {
     msg?:string,
     data?:any
 }
-
+export type HTTPActList = HTTPResult & {
+    data:{
+        email:string,
+        actList:string[]
+    }
+}
+export type HTTPActResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string
+    }
+}
+export type HTTPProjList = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projList:string[]
+    }
+}
+export type HTTPProjResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string
+    }
+}
+export type HTTPWbList = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string,
+        wbList:string[]
+    }
+}
+export type HTTPWbResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string,
+        wbName:string
+    }
+}
+export type HTTPWbGetResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string,
+        wbName:string,
+        wbJSON:any
+    }
+}
 /*export type ZWorkbookJSON = {
     activityPath:string,
     projectId:string,

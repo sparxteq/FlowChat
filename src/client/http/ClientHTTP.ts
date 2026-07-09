@@ -1,9 +1,21 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPResult, UserInfo } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
 
 
 export class ClientHTTP{
     curUser?:UserInfo;
+    async activityList(email:string):Promise<HTTPActList>{
+        let rslt = <HTTPActList>await this.do("activityList",{email:email})
+        return rslt;
+    }
+    async activityAdd(email:string,actName:string,actFolderName:string):Promise<HTTPActResult>{
+        let rslt = <HTTPActResult>await this.do("activityAdd",{email:email,actName,actFolderName})
+        return rslt;
+    }
+    async activityRem(email:string,actName:string):Promise<HTTPActResult>{
+        let rslt = <HTTPActResult>await this.do("activityRem",{email:email,actName:actName})
+        return rslt;
+    }
     async login(email:string):Promise<boolean>{
         let rslt = await this.do("login",{email:email})
         if (rslt.success){
@@ -26,6 +38,43 @@ export class ClientHTTP{
         })
         return rslt;
     }
+    async projectList(email:string,actName:string):Promise<HTTPProjList>{
+        let rslt = <HTTPProjList>await this.do("projectList",{email:email,actName:actName})
+        return rslt;
+    }
+    async projectAdd(email:string,actName:string,projName:string):Promise<HTTPProjResult>{
+        let rslt = <HTTPProjResult>await this.do("projectAdd"
+            ,{email:email,actName:actName,projName:projName})
+        return rslt;
+    }
+    async projectRem(email:string,actName:string,projName:string):Promise<HTTPProjResult>{
+        let rslt = <HTTPProjResult>await this.do("projectRem"
+            ,{email:email,actName:actName,projName:projName})
+        return rslt;
+    }
+
+    async workbookList(email:string,actName:string,projName:string):Promise<HTTPWbList>{
+        let rslt = <HTTPWbList>await this.do("workbookList"
+            ,{email:email,actName:actName,projName:projName})
+        return rslt;
+    }
+    async workbookAdd(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbResult>{
+        let rslt = <HTTPWbResult>await this.do("workbookAdd"
+            ,{email:email,actName:actName,projName:projName,wbName:workbookName})
+        return rslt;
+    }
+    async workbookRem(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbResult>{
+        let rslt = <HTTPWbResult>await this.do("workbookRem"
+            ,{email:email,actName:actName,projName:projName,wbName:workbookName})
+        return rslt;
+    }
+    async workbookGet(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbGetResult>{
+        let rslt = <HTTPWbGetResult>await this.do("workbookGet"
+            ,{email:email,actName:actName,projName:projName,wbName:workbookName})
+        return rslt;
+    }
+
+
     private async do(cmd:string,data:{[name:string]:any}):Promise<HTTPResult>{
         let url = `${this.urlRoot()}do?cmd=${cmd}`;  
 

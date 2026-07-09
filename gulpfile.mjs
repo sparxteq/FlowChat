@@ -107,4 +107,4 @@ gulp.task('styles',  async function() {
 });
 gulp.task("client",gulp.series("styles",typecheckClient,client));
 
-export const build = gulp.series("server","client","worker");
+export const build = gulp.series("server","client"/*,"worker"*/);

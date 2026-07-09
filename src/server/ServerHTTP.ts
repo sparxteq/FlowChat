@@ -1,6 +1,7 @@
 import { DB } from "../../../Zing3/share/DB";
 import { FlowChatContext } from "../common/FlowChatContext";
 import { HTTPResult } from "../common/http/httpTypes";
+import { WorkServer } from "./WorkServer";
 
 
 export class ServerHTTP{
@@ -9,11 +10,41 @@ export class ServerHTTP{
     async do(cmd:string,data:{[field:string]:any},req:any,res:any):Promise<HTTPResult>{
         let rslt:HTTPResult={success:false}
         switch(cmd){
+            case "activityAdd":
+                rslt = await WorkServer.activityAdd(data.email,data.actName,data.actFolderName)
+                break;
+            case "activityList":
+                rslt = await WorkServer.activityList(data.email)
+                break;
+            case "activityRem":
+                rslt = await WorkServer.activityRem(data.email,data.actName)
+                break;
             case "login":
                 rslt = await this.login(data.email)
                 break;
             case "newUser":
                 rslt = await this.newUser(data.email,data.firstName,data.lastName)
+                break;
+            case "projectList":
+                rslt = await WorkServer.projectList(data.email,data.actName)
+                break;
+            case "projectAdd":
+                rslt = await WorkServer.projectAdd(data.email,data.actName,data.projName)
+                break;
+            case "projectRem":
+                rslt = await WorkServer.projectRem(data.email,data.actName,data.projName)
+                break;
+            case "workbookAdd":
+                rslt = await WorkServer.workbookAdd(data.email,data.actName,data.projName,data.wbName)
+                break;
+            case "workbookList":
+                rslt = await WorkServer.workbookList(data.email,data.actName,data.projName)
+                break;
+            case "workbookRem":
+                rslt = await WorkServer.workbookRem(data.email,data.actName,data.projName,data.wbName)
+                break;
+            case "workbookGet":
+                rslt = await WorkServer.workbookGet(data.email,data.actName,data.projName,data.wbName)
                 break;
         }
         return rslt;
