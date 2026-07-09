@@ -9,6 +9,7 @@ import { PageManager } from "../../../../Zing3/zui/PageManager";
 //import { ClientHTTP, http } from "../http/ClientHTTP";
 //import { LoginView } from "../views/LoginView";
 import { ImpPageManager } from "../../../../Zing3/zui/ImpPageManager";
+import { LoginView } from "../views/LoginView";
 
 
 export class HomePage extends Page{
@@ -18,9 +19,21 @@ export class HomePage extends Page{
     constructor(pageState:PageState){
         super(pageState);
         this.content = new TextUI("Home page")
-        /*this.setup().then(()=>{
+        this.setup().then(()=>{
             ZUI.notify();
-        })*/
+        })
+    }
+    private async setup():Promise<void>{
+        let homeHeaderZuis: ZUI[]=[
+                new ImageUI("/icons/Magellan.png").css("width:50px;height:50px").style("col-2"),
+                new TextUI("Magellan-Compass").style("HomeHeaderText"),
+                new TextUI(`v. ${versionName}`).style("HomeHeaderVersion"),
+        ]
+        let header = new DivUI(homeHeaderZuis).style("HomeHeader");
+        this.content=new DivUI([
+            header,
+            new LoginView()
+        ]);
     }
     /*private async setup():Promise<void>{
         let search = window.location.search;
