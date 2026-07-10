@@ -6,7 +6,7 @@
  * side that directly operates on the file system. There is also a subclass that
  * works completely in memory for testing purposes.
  */
-export abstract class ZFiles {
+export abstract class Files {
         /**
          * If this is on the server side, this is the root folder
          * for the file system. On this client side it simply
@@ -42,16 +42,16 @@ export abstract class ZFiles {
     static setRootPath(rootPath:string){
         let nRootPath = this.normalizePath(rootPath);
         if (nRootPath.endsWith("/"))
-            ZFiles.rootPath=nRootPath
+            Files.rootPath=nRootPath
         else 
-            ZFiles.rootPath=nRootPath+"/"
+            Files.rootPath=nRootPath+"/"
     }
         /**
          * 
          * @returns the root path
          */
     static getRootPath():string{
-        return ZFiles.rootPath;
+        return Files.rootPath;
     }
         /**
          * @returns the full path including the root. This
@@ -60,10 +60,10 @@ export abstract class ZFiles {
     fullPath():string{
         let path=this.path
         if (path.indexOf("/")==0){
-            if (ZFiles.rootPath.lastIndexOf("/")==ZFiles.rootPath.length-1)
+            if (Files.rootPath.lastIndexOf("/")==Files.rootPath.length-1)
                 path=path.substring(1);
         }
-        return ZFiles.rootPath+path;
+        return Files.rootPath+path;
     }
         /**
          * 
@@ -296,7 +296,7 @@ export abstract class ZFiles {
     }
 }
 
-export abstract class ZFilesSource{
-    abstract getFile(fileName:string,makePath:boolean):Promise<ZFiles>;
-    abstract getFolder(folderName:string,makePath:boolean):Promise<ZFiles>;
+export abstract class FilesSource{
+    abstract getFile(fileName:string,makePath:boolean):Promise<Files>;
+    abstract getFolder(folderName:string,makePath:boolean):Promise<Files>;
 }

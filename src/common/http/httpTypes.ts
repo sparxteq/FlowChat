@@ -16,7 +16,7 @@ export type HTTPResult = {
     msg?:string,
     data?:any
 }
-export type HTTPActList = HTTPResult & {
+export type HTTPActList = HTTPResult &{
     data:{
         email:string,
         actList:string[]
