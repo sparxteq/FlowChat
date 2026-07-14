@@ -1,5 +1,5 @@
 
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
 import { http } from "./http/ClientHTTP";
 
 
@@ -27,6 +27,10 @@ export class WorkClient {
         this.curEmail = email
         this.curAct = actName;
         let rslt=await http.activityRem(email,actName)
+        return rslt;
+    }
+    async steps():Promise<HTTPSteps>{
+        let rslt=(await http.steps())
         return rslt;
     }
     async projectList(actName:string,email?:string):Promise<HTTPProjList>{

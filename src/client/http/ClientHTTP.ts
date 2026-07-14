@@ -1,5 +1,5 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
 
 
 export class ClientHTTP{
@@ -53,6 +53,10 @@ export class ClientHTTP{
         return rslt;
     }
 
+    async steps():Promise<HTTPSteps>{
+        let rslt = <HTTPSteps> await this.do("steps",{})
+        return rslt;
+    }
     async workbookList(email:string,actName:string,projName:string):Promise<HTTPWbList>{
         let rslt = <HTTPWbList>await this.do("workbookList"
             ,{email:email,actName:actName,projName:projName})

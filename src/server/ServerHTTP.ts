@@ -34,6 +34,9 @@ export class ServerHTTP{
             case "projectRem":
                 rslt = await WorkServer.projectRem(data.email,data.actName,data.projName)
                 break;
+            case "steps":
+                rslt = { success:true, msg:"",data:await WorkServer.steps()}
+                break;
             case "workbookAdd":
                 rslt = await WorkServer.workbookAdd(data.email,data.actName,data.projName,data.wbName)
                 break;

@@ -1,6 +1,8 @@
 
 import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { StepJSON } from "../common/workbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
+import { Step } from "./steps/Step";
 
 
 export class WorkServer {
@@ -172,6 +174,10 @@ export class WorkServer {
             rslt.msg=`no such folder ${projFolderN}`
         }
         return rslt;
+    }
+    static steps():{[stepId:string]:StepJSON}{
+        let up = Step.uploadJSON();
+        return up;
     }
     private static wbFolderName(email:string,actName:string,projName:string,wbName:string):string{
         let pF = this.projFolderName(email,actName,projName);
