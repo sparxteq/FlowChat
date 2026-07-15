@@ -38,14 +38,13 @@ export type StepJSON = {
     stepId:StepId,
     description:string,
     paramZod:ZODType,
-    inputTypes:{[inputId:string]:{
-        type:TypeName,
-        description:string
-    }},
-    outputTypes:{[outputId:string]:{
-        type:TypeName,
-        description:string
-    }}
+    inputTypes:{[inputId:string]:TypeName},
+    outputTypes:{[outputId:string]:TypeName}
+}
+export type TypeJSON = {
+    typeName:string,
+    superTypes:string[],
+    description:string
 }
 export type TypeName=string;
 export type ZODType=any;

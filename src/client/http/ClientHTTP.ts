@@ -1,5 +1,6 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPTypes, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
+import { WorkbookJSON } from "../../common/workbookJSON";
 
 
 export class ClientHTTP{
@@ -57,6 +58,10 @@ export class ClientHTTP{
         let rslt = <HTTPSteps> await this.do("steps",{})
         return rslt;
     }
+    async types():Promise<HTTPTypes>{
+        let rslt = <HTTPTypes> await this.do("types",{})
+        return rslt;
+    }
     async workbookList(email:string,actName:string,projName:string):Promise<HTTPWbList>{
         let rslt = <HTTPWbList>await this.do("workbookList"
             ,{email:email,actName:actName,projName:projName})
@@ -75,6 +80,12 @@ export class ClientHTTP{
     async workbookGet(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbGetResult>{
         let rslt = <HTTPWbGetResult>await this.do("workbookGet"
             ,{email:email,actName:actName,projName:projName,wbName:workbookName})
+        return rslt;
+    }
+    async workbookSave(json:WorkbookJSON,wbName:string,projId:string,actName:string,email:string):Promise<HTTPResult>{
+        let rslt = <HTTPResult> await this.do("workbookSave",
+            {email:email,actName:actName,projName:projId,wbName:wbName,json:json}
+        )
         return rslt;
     }
 

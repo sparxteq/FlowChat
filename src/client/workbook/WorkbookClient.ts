@@ -61,7 +61,12 @@ export class WorkbookClient {
         
     }
     async save():Promise<HTTPResult>{
-        
+        let json = this.toJSON();
+        let wc = new WorkClient();
+        let rslt = await wc.workbookSave(json,this.workbook
+            ,this.project,this.activity,this.userEmail
+        );
+        return rslt;
     }
     toJSON():WorkbookJSON{
         let json:WorkbookJSON={

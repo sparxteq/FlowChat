@@ -1,5 +1,6 @@
 
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPTypes, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { WorkbookJSON } from "../common/workbookJSON";
 import { http } from "./http/ClientHTTP";
 
 
@@ -29,10 +30,6 @@ export class WorkClient {
         let rslt=await http.activityRem(email,actName)
         return rslt;
     }
-    async steps():Promise<HTTPSteps>{
-        let rslt=(await http.steps())
-        return rslt;
-    }
     async projectList(actName:string,email?:string):Promise<HTTPProjList>{
         if (!email) email = this.curEmail;
         this.curEmail = email
@@ -56,6 +53,14 @@ export class WorkClient {
         this.curAct = actName;
         this.curProj = projName;
         let rslt=await http.projectRem(email!,actName!,projName)
+        return rslt;
+    }
+    async steps():Promise<HTTPSteps>{
+        let rslt=(await http.steps())
+        return rslt;
+    }
+    async types():Promise<HTTPTypes>{
+        let rslt=(await http.types())
         return rslt;
     }
     async workbookList(projName:string,actName?:string,email?:string):Promise<HTTPWbList>{
@@ -98,6 +103,20 @@ export class WorkClient {
         this.curProj = projName;
         this.curWb = workbookName;
         let rslt = await http.workbookGet(email!,actName!,projName!,workbookName)
+        return rslt;
+    }
+    async workbookSave(json:WorkbookJSON,workbookName?:string,projName?:string,actName?:string,email?:string):Promise<HTTPResult>{
+        if (!email) email = this.curEmail;
+        this.curEmail = email
+        if (!actName) actName=this.curAct;
+        this.curAct = actName;
+        if (!projName) projName=this.curProj;
+        this.curProj = projName;
+        if (!workbookName) workbookName=this.curWb;
+        this.curWb = workbookName;
+        let rslt = await http.workbookSave(json,this.curWb!,this.curProj!
+            ,this.curAct!,this.curEmail!
+        )
         return rslt;
     }
 }

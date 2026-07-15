@@ -1,8 +1,9 @@
 
 import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
-import { StepJSON } from "../common/workbookJSON";
+import { StepJSON, TypeJSON, WorkbookJSON } from "../common/workbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
 import { Step } from "./steps/Step";
+import { TypeS } from "./steps/TypeS";
 
 
 export class WorkServer {
@@ -179,6 +180,10 @@ export class WorkServer {
         let up = Step.uploadJSON();
         return up;
     }
+    static types():TypeJSON[]{
+        let up = TypeS.uploadJSON();
+        return up
+    }
     private static wbFolderName(email:string,actName:string,projName:string,wbName:string):string{
         let pF = this.projFolderName(email,actName,projName);
         return pF+"/"+wbName;
@@ -298,5 +303,27 @@ export class WorkServer {
             }
         }
         return rslt;
+    }
+    static async workbookSave(email:string,actName:string,projName:string
+        ,wbName:string,json:WorkbookJSON):Promise<HTTPResult>{
+
+        let rslt:HTTPResult = {
+            success:true,
+            msg:""
+        }
+        let wbFileN = this.workbookDataFile(email,actName,projName,wbName);
+        let fs = new FilesFSSource();
+        let wbF = await fs.getFile(wbFileN,true);
+        if (wbF && await wbF.isFile()){
+            await wbF.openW(true);
+            let jsonStr = JSON.stringify(json);
+            await wbF.write(jsonStr);
+            await wbF.close();
+            return rslt;
+        } else {
+            rslt.success=false;
+            rslt.msg=`failed to create ${wbFileN}`
+            return rslt;
+        }
     }
 }

@@ -37,6 +37,9 @@ export class ServerHTTP{
             case "steps":
                 rslt = { success:true, msg:"",data:await WorkServer.steps()}
                 break;
+            case "types":
+                rslt = { success:true,msg:"",data:await WorkServer.types()}
+                break;
             case "workbookAdd":
                 rslt = await WorkServer.workbookAdd(data.email,data.actName,data.projName,data.wbName)
                 break;
@@ -49,6 +52,10 @@ export class ServerHTTP{
             case "workbookGet":
                 rslt = await WorkServer.workbookGet(data.email,data.actName,data.projName,data.wbName)
                 break;
+            case "workbookSave":
+                rslt = await WorkServer.workbookSave(data.email,data.actName
+                    ,data.projName,data.wbName,data.json
+                )
         }
         return rslt;
     }

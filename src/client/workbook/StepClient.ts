@@ -2,6 +2,7 @@ import { z } from "zod";
 import { StepJSON, TypeName } from "../../common/workbookJSON";
 import { ClientHTTP } from "../http/ClientHTTP";
 import { WorkClient } from "../WorkClient";
+import { TypeClient } from "./TypeClient";
 
 
 
@@ -9,14 +10,8 @@ export class StepClient{
     stepId:string="";
     description:string="";
     paramZod:any
-    inputTypes:{[inputId:string]:{
-        type:TypeName,
-        description:string
-    }}={}
-    outputTypes:{[outputId:string]:{
-        type:TypeName,
-        description:string
-    }}={}
+    inputTypes:{[inputId:string]:TypeClient}={}
+    outputTypes:{[outputId:string]:TypeClient}={}
     static async loadSteps():Promise<void>{
         let wc = new WorkClient();
         let steps = (await wc.steps()).data;
@@ -33,8 +28,18 @@ export class StepClient{
         this.description=json.description;
         let zd = z.fromJSONSchema(json.paramZod);
         this.paramZod=zd;
-        this.inputTypes=json.inputTypes;
-        this.outputTypes=json.outputTypes;
+        this.inputTypes={}
+        for (let id in json.inputTypes){
+            let typeName = json.inputTypes[id];
+            let typeC = TypeClient.getType(typeName)
+            this.inputTypes[id]=typeC;
+        }
+        this.outputTypes={}
+        for (let id in json.outputTypes){
+            let typeName = json.outputTypes[id];
+            let typeC = TypeClient.getType(typeName);
+            this.outputTypes[id]=typeC;
+        }
     }
     private static registry:{[step:string]:StepClient}={}
     private static register(step:StepClient){
