@@ -11,7 +11,7 @@ export class WorkServer {
         return "";
     }
     private static userFolder(email:string):string{
-        return this.usersFolder+"/"+email;
+        return this.usersFolder()+"/"+email;
     }
     static async addUser(userEmail: string, firstName: string, lastName: string): Promise<{ success: boolean; }> {
         throw new Error("Method not implemented.");

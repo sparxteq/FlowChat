@@ -12,7 +12,7 @@ import { http } from "../http/ClientHTTP";
 
 
 export class LoginView extends ZUI{
-    private email:string="";
+    static email:string="";
     private confirmEmail:string="";
     private firstName:string="";
     private lastName:string="";
@@ -22,20 +22,20 @@ export class LoginView extends ZUI{
             new TextUI("Login").style("Login-title"),
             new TextUI("email").style("col-6"),
             new TextFieldUI("email")
-                .getF(()=>{ return this.email})
-                .setF((userId:string)=>{this.email=userId})
+                .getF(()=>{ return LoginView.email})
+                .setF((userId:string)=>{LoginView.email=userId})
                 .placeHolder("email")
                 .style("col-6"),
             new ButtonUI("Login").click(()=>{
-                if (!this.email || this.email==""){
+                if (!LoginView.email || LoginView.email==""){
                     Modal.alert("missing email")
                     return;
                 }
-                http.login(this.email).then((rslt:boolean)=>{
+                http.login(LoginView.email).then((rslt:boolean)=>{
                     if (rslt){
                         ImpPageManager.PUSHTO("work",{})
                     } else {
-                        Modal.alert(`login "${this.email}" failed`)
+                        Modal.alert(`login "${LoginView.email}" failed`)
                     }
                 })
             }).style("col-12")
@@ -44,8 +44,8 @@ export class LoginView extends ZUI{
             new TextUI("New User").style("Login-title"),
             new TextUI("email").style("col-6"),
             new TextFieldUI("email")
-                .getF(()=>{ return this.email})
-                .setF((email:string)=>{this.email=email})
+                .getF(()=>{ return LoginView.email})
+                .setF((email:string)=>{LoginView.email=email})
                 .placeHolder("email")
                 .style("col-6"),
             new TextUI("confirm email").style("col-6"),
@@ -68,11 +68,11 @@ export class LoginView extends ZUI{
                 .placeHolder("last name")
                 .style("col-6"),
             new ButtonUI("New User").click(()=>{
-                if (!this.email || this.email==""){
+                if (!LoginView.email || LoginView.email==""){
                     Modal.alert("missing email")
                     return;
                 }
-                if (this.email != this.confirmEmail){
+                if (LoginView.email != this.confirmEmail){
                     Modal.alert("email addresses do not match")
                     return
                 }
@@ -85,7 +85,7 @@ export class LoginView extends ZUI{
                     Modal.alert("missing last name")
                     return;
                 }
-                http.newUser(this.email,this.firstName,this.lastName).then((rslt:HTTPResult)=>{
+                http.newUser(LoginView.email,this.firstName,this.lastName).then((rslt:HTTPResult)=>{
                     if (rslt.success){
                         Modal.alert(`created user ${rslt.data.email}`)
                     } else {

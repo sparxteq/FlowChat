@@ -7,7 +7,17 @@ export class ClientHTTP{
     curUser?:UserInfo;
     async activityList(email:string):Promise<HTTPActList>{
         let rslt = <HTTPActList>await this.do("activityList",{email:email})
-        return rslt;
+        let ret:HTTPActList={
+            success:rslt.success,
+            msg:rslt.msg,
+            data:{email:email,actList:[]}
+        }
+        for (let act of rslt.data.actList){
+            if (act.indexOf("_")!=0){
+                ret.data.actList.push(act);
+            }
+        }
+        return ret;
     }
     async activityAdd(email:string,actName:string,actFolderName:string):Promise<HTTPActResult>{
         let rslt = <HTTPActResult>await this.do("activityAdd",{email:email,actName,actFolderName})

@@ -5,6 +5,8 @@ import https from "https";
 import fs from "fs";
 import { DB } from "../../../Zing3/share/DB";
 import { ServerHTTP } from "./ServerHTTP";
+import { FlowChatContext } from "../common/FlowChatContext";
+import { FilesFS } from "./files/FilesFS";
 
 
 export class FlowChatExpress{
@@ -12,6 +14,7 @@ export class FlowChatExpress{
     env:FlowChatEnv;
     constructor(env:FlowChatEnv){
         this.env=env;
+        FilesFS.setRootPath(<string>process.env.FILE_SYS_STORAGE)
         this.setupServer()
     }
     private noCache(req:Request,res:Response,next:NextFunction){

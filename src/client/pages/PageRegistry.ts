@@ -2,6 +2,7 @@ import { Page, PageState } from "../../../../Zing3/zui/Page";
 import { PageManager } from "../../../../Zing3/zui/PageManager";
 //import { ActivityPage } from "./ActivityPage";
 import { HomePage } from "./HomePage";
+import { WorkPage } from "./WorkPage";
 
 
 export class PageRegistry {
@@ -12,6 +13,7 @@ export class PageRegistry {
     }
     static init(){
         this.register("home",HomePage);
+        this.register("work",WorkPage)
         //this.register("activity",ActivityPage)
     }
 }
