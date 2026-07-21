@@ -37,6 +37,7 @@ export class ProjectView extends ZUI{
             for (let ch of list){
                 choice.choice(ch,ch)
             }
+            choice.style("col-3")
             let newProject=""
             let proj = new DivUI([
                 new TextUI("<b>Project</b>").style("col-1"),
@@ -80,7 +81,7 @@ export class ProjectView extends ZUI{
                         }
                     })
                 })
-            ]).style("col-12")
+            ]).style("ManagementLine")
             this.content=proj;
             ZUI.notify();
         })

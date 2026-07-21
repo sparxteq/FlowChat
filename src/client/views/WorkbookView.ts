@@ -40,6 +40,7 @@ export class WorkbookView extends ZUI{
             for (let ch of list){
                 choice.choice(ch,ch)
             }
+            choice.style("col-3")
             let newWorkbook=""
             let proj = new DivUI([
                 new TextUI("<b>Workbook</b>").style("col-1"),
@@ -84,7 +85,7 @@ export class WorkbookView extends ZUI{
                         }
                     })
                 })
-            ]).style("col-12")
+            ]).style("ManagementLine")
             this.content=proj;
             ZUI.notify();
         })

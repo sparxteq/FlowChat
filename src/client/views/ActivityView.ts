@@ -33,6 +33,7 @@ export class ActivityView extends ZUI{
             for (let ch of list){
                 choice.choice(ch,ch)
             }
+            choice.style("col-3")
             let newActivity=""
             let newActFolder="";
             let act = new DivUI([
@@ -68,7 +69,7 @@ export class ActivityView extends ZUI{
                                 .getF(()=>{ return newActFolder})
                                 .setF((act:string)=>{newActFolder=act})
                                 .placeHolder("activity data folder")
-                                .style("col-4"),
+                                .style("col-3"),
                 new ButtonUI("Del").click(()=>{
                     if (ActivityView.curActivity=="-"){
                         Modal.alert("no currently selected activity to delete")
@@ -86,7 +87,7 @@ export class ActivityView extends ZUI{
                         }
                     })
                 })
-            ]).style("col-12")
+            ]).style("ManagementLine")
             this.content=act;
             ZUI.notify();
         })

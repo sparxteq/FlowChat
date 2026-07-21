@@ -151,7 +151,11 @@ $font-size-l2: 32px;
     text-align: center;
     font-size: $font-size-l2;
 }
-
+.ManagementLine {
+    @include layout(12,none);
+    border-bottom: solid 1px $color-primary;
+    margin-top: 3px;
+}
 .StepOutputs {
     @include layout(12)
 }
