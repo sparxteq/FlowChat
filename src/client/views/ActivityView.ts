@@ -8,23 +8,26 @@ import { TextFieldUI } from "../../../../Zing3/zui/TextFieldUI";
 import { ButtonUI } from "../../../../Zing3/zui/ButtonUI";
 import { LoginView } from "./LoginView";
 import { Modal } from "../../../../Zing3/zui/Modal";
+import { LoadContext } from "./LoadContext";
 
 
 export class ActivityView extends ZUI{
-    curActivity="-";
-    constructor(){
+    static curActivity="-";
+    private context:LoadContext;
+    constructor(context:LoadContext){
         super();
+        this.context=context;
         this.content=new TextUI("activity")
         this.load();
     }
-    private load(){
+    load(){
         http.activityList(http.curUser!.email).then((rslt:HTTPActList)=>{
             let list = <string[]>rslt.data.actList;
             let choice = new DropDownChoiceUI()
-                .getF(()=>{ return this.curActivity})
+                .getF(()=>{ return ActivityView.curActivity})
                 .setF((select:string)=>{
-                    this.curActivity = select;
-                    ZUI.notify();
+                    ActivityView.curActivity = select;
+                    this.context.reloadViews();
                 })
                 .choice("-","select an activity")
             for (let ch of list){
@@ -47,8 +50,8 @@ export class ActivityView extends ZUI{
 
                     http.activityAdd(LoginView.email,newActivity,newActFolder).then((rslt:HTTPActResult)=>{
                         if (rslt.success){
-                            this.curActivity=rslt.data;
-                            this.load();
+                            ActivityView.curActivity=rslt.data;
+                            this.context.reloadViews();
                         } else {
                             Modal.alert(`could not create activity ${newActivity} at folder ${newActFolder}`)
                         }
@@ -67,18 +70,18 @@ export class ActivityView extends ZUI{
                                 .placeHolder("activity data folder")
                                 .style("col-4"),
                 new ButtonUI("Del").click(()=>{
-                    if (this.curActivity=="-"){
+                    if (ActivityView.curActivity=="-"){
                         Modal.alert("no currently selected activity to delete")
                         return;
                     }
-                    Modal.confirm(`Are you sure you want to delete activity ${this.curActivity}`,(yes:boolean):void=>{
+                    Modal.confirm(`Are you sure you want to delete activity ${ActivityView.curActivity}`,(yes:boolean):void=>{
                         if (yes){
-                            http.activityRem(LoginView.email,this.curActivity).then((rslt:HTTPActResult)=>{
+                            http.activityRem(LoginView.email,ActivityView.curActivity).then((rslt:HTTPActResult)=>{
                                 if (!rslt.success){
                                     Modal.alert(rslt.msg!)
                                     return
                                 }
-                                this.load();
+                                this.context.reloadViews();
                             })
                         }
                     })

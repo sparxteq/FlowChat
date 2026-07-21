@@ -6,11 +6,12 @@ import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { versionName } from "../../version";
 import { ActivityView } from "../views/ActivityView";
 import { InstanceView } from "../views/InstanceView";
+import { LoadContext } from "../views/LoadContext";
 import { ProjectView } from "../views/ProjectView";
 import { WorkbookView } from "../views/WorkbookView";
 
 
-export class WorkPage extends Page{
+export class WorkPage extends Page implements LoadContext{
     pageName(): string {
         return "work";
     }
@@ -23,6 +24,16 @@ export class WorkPage extends Page{
             ZUI.notify();
         })
     }
+    private activityView = new ActivityView(this)
+    private projectView = new ProjectView(this)
+    private workbookView = new WorkbookView(this)
+    private instanceView = new InstanceView(this);
+    reloadViews(): void {
+        this.activityView.load();
+        this.projectView.load();
+        this.workbookView.load();
+        this.instanceView.load();
+    }
     private async setup():Promise<void>{
         let homeHeaderZuis: ZUI[]=[
                 new ImageUI("/icons/Magellan.png").css("width:50px;height:50px").style("col-2"),
@@ -32,10 +43,10 @@ export class WorkPage extends Page{
         let header = new DivUI(homeHeaderZuis).style("HomeHeader");
         this.content = new DivUI([
             header,
-            new ActivityView(),
-            new ProjectView(),
-            new WorkbookView(),
-            new InstanceView()
+            this.activityView,
+            this.projectView,
+            this.workbookView,
+            this.instanceView 
         ])
     }
 }
