@@ -8,19 +8,26 @@ export class StepInstanceClient {
     stepId:StepId='';
     private step:StepClient|undefined
     instanceId:string='';
-    parentInstanceIds:StepInstanceId[]=[]
-    childInstanceIds:StepInstanceId[]=[]
+    
     paramValue:ParamValueJSON={}
     inputDataInstanceIds:{[inputId:string]:DataInstanceId}={}
     outputDataInstanceIds:{[outputId:string]:DataInstanceId}={}
     outputViewInstanceIds:{[outputId:string]:ViewInstanceId[]}={}
     note=""
-
+    private row=-1;
+    private col=-1;
+    getCell():{row:number,col:number} {
+        return {row:this.row,col:this.col};
+    }
+    setCell(row:number,col:number){
+        this.row=row;
+        this.col=col;
+    }
     fromJSON(json:StepInstanceJSON){
         this.stepId=json.stepId;
         this.instanceId=json.instanceId;
-        this.parentInstanceIds=json.parentInstanceIds;
-        this.childInstanceIds=json.childInstanceIds;
+        this.row = json.row;
+        this.col = json.col;
         this.paramValue=json.paramValue;
         this.inputDataInstanceIds=json.inputDataInstanceIds;
         this.outputDataInstanceIds=json.outputDataInstanceIds;
@@ -40,9 +47,9 @@ export class StepInstanceClient {
         let rslt:StepInstanceJSON = {
             stepId:this.stepId,
             instanceId:this.instanceId,
-            parentInstanceIds:this.parentInstanceIds,
-            childInstanceIds:this.childInstanceIds,
             paramValue:this.paramValue,
+            row:this.row,
+            col:this.col,
             inputDataInstanceIds:this.inputDataInstanceIds,
             outputDataInstanceIds:this.outputDataInstanceIds,
             outputViewInstanceIds:this.outputViewInstanceIds,

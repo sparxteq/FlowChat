@@ -5,7 +5,7 @@ import { TextUI } from "../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { versionName } from "../../version";
 import { ActivityView } from "../views/ActivityView";
-import { InstanceView } from "../views/InstanceView";
+import { InstanceView } from "../views/workbook/InstanceView";
 import { LoadContext } from "../views/LoadContext";
 import { ProjectView } from "../views/ProjectView";
 import { WorkbookView } from "../views/WorkbookView";

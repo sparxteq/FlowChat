@@ -3,8 +3,11 @@
 export type WorkbookJSON = {
     rootStepId:string;
     stepInstances:{[stepInstanceId:string]:StepInstanceJSON}
+    stepInstanceCount:number;
     dataInstances:{[dataInstanceId:string]:DataInstanceJSON}
+    dataInstanceCount:number
     viewInstances:{[viewInstanceId:string]:ViewInstanceJSON}
+    viewInstanceCount:number
 }
 export type StepId= string // id for a Step from the StepRegistry
 export type StepInstanceId = string;    // id for a stepinstance from the workbook's stepInstances
@@ -14,8 +17,8 @@ export type ViewInstanceId = string;    // id for a view instance from the workb
 export type StepInstanceJSON = {
     stepId:StepId,
     instanceId:string,
-    parentInstanceIds:StepInstanceId[],
-    childInstanceIds:StepInstanceId[],
+    row:number,
+    col:number,
     paramValue:ParamValueJSON,
     inputDataInstanceIds:{[inputId:string]:DataInstanceId},
     outputDataInstanceIds:{[outputId:string]:DataInstanceId},

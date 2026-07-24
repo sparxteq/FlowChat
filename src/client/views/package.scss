@@ -153,7 +153,7 @@ $font-size-l2: 32px;
 }
 .ManagementLine {
     @include layout(12,none);
-    border-bottom: solid 1px $color-primary;
+    border-bottom: solid 1px white;
     margin-top: 3px;
 }
 .StepOutputs {
