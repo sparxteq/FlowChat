@@ -1,17 +1,18 @@
+import { DataInstanceId, ViewInstanceId } from "../../common/workbookJSON";
 
 
 
-export class ViewClient{
-    id:string=""
+export abstract class ViewClient{
+    abstract viewTypeId():string
     static async loadViews():Promise<void>{
         throw "not done"
     }
-    private static registry:{[viewId:string]:ViewClient}={}
-    private static register(view:ViewClient){
-        let id = view.id;
+    private static registry:{[viewTypeId:string]:ViewClient}={}
+    protected static register(view:ViewClient){
+        let id = view.viewTypeId();
         this.registry[id]=view;
     }
-    static getView(viewId:string):ViewClient{
-        return this.registry[viewId]
+    static getView(viewTypeId:string):ViewClient{
+        return this.registry[viewTypeId]
     }
 }

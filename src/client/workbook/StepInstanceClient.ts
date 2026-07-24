@@ -23,8 +23,20 @@ export class StepInstanceClient {
         this.row=row;
         this.col=col;
     }
+    addView(outputId:string,viewInstanceId:ViewInstanceId){
+        let instanceIds = this.outputViewInstanceIds[outputId];
+        if (!instanceIds){
+            instanceIds = []
+            this.outputViewInstanceIds[outputId]=instanceIds
+        }
+        instanceIds.push(viewInstanceId)
+    }
+    delView(outputId:string,viewInstanceId:ViewInstanceId){
+
+    }
     fromJSON(json:StepInstanceJSON){
         this.stepId=json.stepId;
+        this.resolveStep();
         this.instanceId=json.instanceId;
         this.row = json.row;
         this.col = json.col;
@@ -35,7 +47,7 @@ export class StepInstanceClient {
         this.note = json.note;
         this.resolveStep()
     }
-    private resolveStep(){
+    resolveStep(){
         let step = StepClient.getStep(this.stepId);
         if (!step){
             DB.msg(`stepId ${this.stepId} does not exist`)

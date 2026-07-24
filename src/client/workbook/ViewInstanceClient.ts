@@ -6,22 +6,25 @@ import { ViewClient } from "./ViewClient"
 
 export class ViewInstanceClient{
     dataInstanceId:string=""
-    viewId:string=""
+    viewType:string=""
     private view:ViewClient|undefined;
+    instanceId:string="";
     viewParams:ParamValueJSON={}
     note:string=""
-
+    
     fromJSON(json:ViewInstanceJSON){
         this.dataInstanceId=json.dataInstanceId;
-        this.viewId=json.viewId;
+        this.viewType=json.viewType;
+        this.resolveView();
+        this.instanceId=json.instanceId;
         this.viewParams=json.viewParams
         this.note=json.note;
         this.resolveView()
     }
-    private resolveView(){
-        let view = ViewClient.getView(this.viewId)
+    resolveView(){
+        let view = ViewClient.getView(this.viewType)
         if (!view){
-            DB.msg(`viewId ${this.viewId} does not exist`)
+            DB.msg(`viewType ${this.viewType} does not exist`)
             return
         }
         this.view=view;
@@ -29,7 +32,8 @@ export class ViewInstanceClient{
     toJSON():ViewInstanceJSON{
         let rslt:ViewInstanceJSON={
             dataInstanceId:this.dataInstanceId,
-            viewId:this.viewId,
+            instanceId:this.instanceId,
+            viewType:this.viewType,
             viewParams:this.viewParams,
             note:this.note
         }

@@ -6,7 +6,6 @@ export type WorkbookJSON = {
     stepInstanceCount:number;
     dataInstances:{[dataInstanceId:string]:DataInstanceJSON}
     dataInstanceCount:number
-    viewInstances:{[viewInstanceId:string]:ViewInstanceJSON}
     viewInstanceCount:number
 }
 export type StepId= string // id for a Step from the StepRegistry
@@ -59,13 +58,15 @@ export type ParamTypeJSON = number | string | boolean | ParamTypeJSON[] | ParamV
 export type DataInstanceJSON = {
     sourceStepInstanceId:string,
     outputId:string,
+    viewInstances:ViewInstanceJSON[],
     timeGenerated:number,
     note:string
 }
 
 export type ViewInstanceJSON = {
     dataInstanceId:string,
-    viewId:string,
+    viewType:string,
+    instanceId:string,
     viewParams:ParamValueJSON,
     note:string
 }
