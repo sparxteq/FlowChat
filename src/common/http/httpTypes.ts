@@ -1,4 +1,4 @@
-import { StepJSON, TypeJSON } from "../workbookJSON";
+import { TypeJSON, UnitJSON } from "../WorkbookJSON";
 
 
 export type UserInfo = {
@@ -43,8 +43,8 @@ export type HTTPProjResult = HTTPResult & {
         projName:string
     }
 }
-export type HTTPSteps = HTTPResult & {
-    data:{[stepId:string]:StepJSON}
+export type HTTPUnits = HTTPResult & {
+    data:{[UnitId:string]:UnitJSON}
 }
 export type HTTPTypes = HTTPResult & {
     data:TypeJSON[]

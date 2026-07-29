@@ -1,72 +1,20 @@
-import { DB } from "../../../../Zing3/share/DB";
-import { StepId, StepInstanceId, ParamValueJSON, DataInstanceId, ViewInstanceId, StepInstanceJSON } from "../../common/workbookJSON";
-import { StepClient } from "./StepClient";
+import { StepInstanceJSON } from "../../common/WorkbookJSON";
+import { FlowTableClient } from "./FlowTableClient";
+import { UnitInstanceClient } from "./UnitInstanceClient";
+import { WorkbookClient } from "./WorkbookClient";
 
 
 
-export class StepInstanceClient {
-    stepId:StepId='';
-    private step:StepClient|undefined
-    instanceId:string='';
-    
-    paramValue:ParamValueJSON={}
-    inputDataInstanceIds:{[inputId:string]:DataInstanceId}={}
-    outputDataInstanceIds:{[outputId:string]:DataInstanceId}={}
-    outputViewInstanceIds:{[outputId:string]:ViewInstanceId[]}={}
-    note=""
-    private row=-1;
-    private col=-1;
-    getCell():{row:number,col:number} {
-        return {row:this.row,col:this.col};
-    }
-    setCell(row:number,col:number){
-        this.row=row;
-        this.col=col;
-    }
-    addView(outputId:string,viewInstanceId:ViewInstanceId){
-        let instanceIds = this.outputViewInstanceIds[outputId];
-        if (!instanceIds){
-            instanceIds = []
-            this.outputViewInstanceIds[outputId]=instanceIds
-        }
-        instanceIds.push(viewInstanceId)
-    }
-    delView(outputId:string,viewInstanceId:ViewInstanceId){
-
-    }
+export class StepInstanceClient extends UnitInstanceClient {
+    flowTable:FlowTableClient=<any>undefined;
     fromJSON(json:StepInstanceJSON){
-        this.stepId=json.stepId;
-        this.resolveStep();
-        this.instanceId=json.instanceId;
-        this.row = json.row;
-        this.col = json.col;
-        this.paramValue=json.paramValue;
-        this.inputDataInstanceIds=json.inputDataInstanceIds;
-        this.outputDataInstanceIds=json.outputDataInstanceIds;
-        this.outputViewInstanceIds=json.outputViewInstanceIds;
-        this.note = json.note;
-        this.resolveStep()
-    }
-    resolveStep(){
-        let step = StepClient.getStep(this.stepId);
-        if (!step){
-            DB.msg(`stepId ${this.stepId} does not exist`)
-            return;
-        }
-        this.step=step;
+        super.fromJSON(json);
+        if (json.flowTable)
+            this.flowTable=FlowTableClient.fromJSON(json.flowTable,this.workbook)
     }
     toJSON():StepInstanceJSON{
-        let rslt:StepInstanceJSON = {
-            stepId:this.stepId,
-            instanceId:this.instanceId,
-            paramValue:this.paramValue,
-            row:this.row,
-            col:this.col,
-            inputDataInstanceIds:this.inputDataInstanceIds,
-            outputDataInstanceIds:this.outputDataInstanceIds,
-            outputViewInstanceIds:this.outputViewInstanceIds,
-            note:this.note
-        }
+        let rslt = <StepInstanceJSON>super.toJSON()
+        rslt.flowTable = this.flowTable.toJSON();
         return rslt;
     }
 }

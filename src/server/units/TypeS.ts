@@ -1,5 +1,5 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { TypeJSON } from "../../common/workbookJSON";
+import { TypeJSON } from "../../common/WorkbookJSON";
 
 
 

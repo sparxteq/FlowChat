@@ -2,50 +2,56 @@
 
 export type WorkbookJSON = {
     rootStepId:string;
-    stepInstances:{[stepInstanceId:string]:StepInstanceJSON}
-    stepInstanceCount:number;
-    dataInstances:{[dataInstanceId:string]:DataInstanceJSON}
+    unitInstances:{[unitInstanceId:string]:UnitInstanceJSON};
+    unitInstanceCount:number;
+    dataInstances:{[dataInstanceId:string]:DataInstanceJSON};
+    flowTable?:FlowTableJSON;
     dataInstanceCount:number
-    viewInstanceCount:number
 }
-export type StepId= string // id for a Step from the StepRegistry
-export type StepInstanceId = string;    // id for a stepinstance from the workbook's stepInstances
+export type FlowTableJSON = {
+    unitInstances:UnitInstanceId[]
+}
+export type UnitId= string // id for a Unit from the UnitRegistry
+export type UnitInstanceId = string;    // id for a stepinstance from the workbook's stepInstances
 export type DataInstanceId = string;    // id for a data instance from the workbook's dataInstances
-export type ViewInstanceId = string;    // id for a view instance from the workbook's viewInstances
 
-export type StepInstanceJSON = {
-    stepId:StepId,
+export type UnitInstanceJSON = {
+    unitTypeId:UnitTypeId,
     instanceId:string,
     row:number,
     col:number,
     paramValue:ParamValueJSON,
-    inputDataInstanceIds:{[inputId:string]:DataInstanceId},
-    outputDataInstanceIds:{[outputId:string]:DataInstanceId},
-    outputViewInstanceIds:{[outputId:string]:ViewInstanceId[]},
-    note:string
+    inputs:{id:string,dataId?:DataInstanceId}[],
+    outputs:{id:string,dataId?:DataInstanceId}[]
+    note:string,
+}
+export type UnitTypeId=string;
+export type StepInstanceJSON = UnitInstanceJSON & {
+    outputs:{id:string,dataId?:DataInstanceId}[],
+    flowTable?:FlowTableJSON,
 }
 export type StepRunJSON = {
-    stepId:StepId,
+    unitId:UnitId,
     userEmail:string,
     actId:string,
     projId:string,
     wbId:string,
     instanceId:string,
     paramValue:ParamValueJSON
-    inputInstanceIds:{[inputId:string]:DataInstanceJSON},
-    outputInstanceIds:{[outputId:string]:DataInstanceJSON}
+    inputs:{id:string,dataId?:DataInstanceId}[],
+    outputs:{id:string,dataId?:DataInstanceId}[]
 }
 
-export type StepJSON = {
-    stepId:StepId,
+export type UnitJSON = {
+    unitTypeId:UnitTypeId,
     description:string,
     paramZod:ZODType,
-    inputTypes:{[inputId:string]:TypeName},
-    outputTypes:{[outputId:string]:TypeName}
+    inputTypes:{inputId:string,typeName:TypeName}[],
+    outputTypes:{outputId:string,typeName:TypeName}[]
 }
 export type TypeJSON = {
-    typeName:string,
-    superTypes:string[],
+    typeName:TypeName,
+    superTypes:TypeName[],
     description:string
 }
 export type TypeName=string;
@@ -58,15 +64,6 @@ export type ParamTypeJSON = number | string | boolean | ParamTypeJSON[] | ParamV
 export type DataInstanceJSON = {
     sourceStepInstanceId:string,
     outputId:string,
-    viewInstances:ViewInstanceJSON[],
     timeGenerated:number,
-    note:string
-}
-
-export type ViewInstanceJSON = {
-    dataInstanceId:string,
-    viewType:string,
-    instanceId:string,
-    viewParams:ParamValueJSON,
     note:string
 }

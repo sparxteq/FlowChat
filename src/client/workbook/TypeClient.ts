@@ -1,4 +1,4 @@
-import { TypeJSON } from "../../common/workbookJSON";
+import { TypeJSON } from "../../common/WorkbookJSON";
 import { WorkClient } from "../WorkClient";
 
 

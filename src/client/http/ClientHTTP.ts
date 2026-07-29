@@ -1,6 +1,6 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPTypes, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
-import { WorkbookJSON } from "../../common/workbookJSON";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
+import { WorkbookJSON } from "../../common/WorkbookJSON";
 
 
 export class ClientHTTP{
@@ -64,8 +64,8 @@ export class ClientHTTP{
         return rslt;
     }
 
-    async steps():Promise<HTTPSteps>{
-        let rslt = <HTTPSteps> await this.do("steps",{})
+    async units():Promise<HTTPUnits>{
+        let rslt = <HTTPUnits> await this.do("units",{})
         return rslt;
     }
     async types():Promise<HTTPTypes>{

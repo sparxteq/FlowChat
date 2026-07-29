@@ -1,9 +1,9 @@
 
 import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
-import { StepJSON, TypeJSON, WorkbookJSON } from "../common/workbookJSON";
+import { UnitJSON, TypeJSON, WorkbookJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
-import { Step } from "./steps/Step";
-import { TypeS } from "./steps/TypeS";
+import { TypeS } from "./units/TypeS";
+import { Unit } from "./units/Unit";
 
 
 export class WorkServer {
@@ -176,8 +176,8 @@ export class WorkServer {
         }
         return rslt;
     }
-    static steps():{[stepId:string]:StepJSON}{
-        let up = Step.uploadJSON();
+    static units():{[unitId:string]:UnitJSON}{
+        let up = Unit.uploadJSON();
         return up;
     }
     static types():TypeJSON[]{

@@ -1,6 +1,6 @@
 
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPSteps, HTTPTypes, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
-import { WorkbookJSON } from "../common/workbookJSON";
+import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { WorkbookJSON } from "../common/WorkbookJSON";
 import { http } from "./http/ClientHTTP";
 
 
@@ -55,8 +55,8 @@ export class WorkClient {
         let rslt=await http.projectRem(email!,actName!,projName)
         return rslt;
     }
-    async steps():Promise<HTTPSteps>{
-        let rslt=(await http.steps())
+    async units():Promise<HTTPUnits>{
+        let rslt=(await http.units())
         return rslt;
     }
     async types():Promise<HTTPTypes>{
