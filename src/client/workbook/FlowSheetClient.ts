@@ -1,10 +1,10 @@
-import { FlowTableJSON, UnitInstanceId, UnitTypeId } from "../../common/WorkbookJSON";
+import { FlowSheetJSON, UnitInstanceId, UnitTypeId } from "../../common/WorkbookJSON";
 import { UnitInstanceClient } from "./UnitInstanceClient";
 import { WorkbookClient } from "./WorkbookClient";
 
 
 
-export class FlowTableClient {
+export class FlowSheetClient {
     workbook:WorkbookClient;
     constructor(workbook:WorkbookClient){
         this.workbook=workbook;
@@ -115,16 +115,16 @@ export class FlowTableClient {
     private dirty(){
         this.workbook.dirty();
     }
-    static fromJSON(json:FlowTableJSON,workbook:WorkbookClient):FlowTableClient{
-        let ft = new FlowTableClient(workbook);
+    static fromJSON(json:FlowSheetJSON,workbook:WorkbookClient):FlowSheetClient{
+        let ft = new FlowSheetClient(workbook);
         ft.unitInstances={};
         for (let ui of json.unitInstances){
             ft.unitInstances[ui]=true;
         }
         return ft;
     }
-    toJSON():FlowTableJSON{
-        let rslt:FlowTableJSON = {
+    toJSON():FlowSheetJSON{
+        let rslt:FlowSheetJSON = {
             unitInstances:Object.keys(this.unitInstances)
         }
         return rslt;

@@ -2,7 +2,7 @@
 import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
 import { UnitJSON, TypeJSON, WorkbookJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
-import { TypeS } from "./units/TypeS";
+import { TypeS } from "./units/types/TypeS";
 import { Unit } from "./units/Unit";
 
 
@@ -262,7 +262,7 @@ export class WorkServer {
     }
     private static workbookDataFile(email:string,actName:string,projName:string,workbookName:string):string{
         let wbF = this.wbFolderName(email,actName,projName,workbookName)
-        return wbF+"/.wbData"
+        return wbF+"/.wbData.json"
     }
     static async workbookGet(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbGetResult>{
         let rslt:HTTPWbGetResult={

@@ -3,7 +3,7 @@ import { HTTPResult } from "../../common/http/httpTypes";
 import { DataInstanceId, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
-import { FlowTableClient } from "./FlowTableClient";
+import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitClient } from "./UnitClient";
 import { UnitInstanceClient } from "./UnitInstanceClient";
 
@@ -20,7 +20,7 @@ export class WorkbookClient {
     private unitInstanceCount=0;
     private dataInstances:{[intanceId:string]:DataInstanceClient}={}
     private dataInstanceCount=0;
-    private flowTable?:FlowTableClient
+    private flowSheet?:FlowSheetClient
 
     constructor(userEmail:string, activity:string, project:string,workbook:string){
         this.userEmail=userEmail;
@@ -111,8 +111,8 @@ export class WorkbookClient {
             this.dataInstances[id]=di;
         }
         this.dataInstanceCount=json.dataInstanceCount;
-        if (json.flowTable){
-            this.flowTable = FlowTableClient.fromJSON(json.flowTable,this)
+        if (json.flowSheet){
+            this.flowSheet = FlowSheetClient.fromJSON(json.flowSheet,this)
         }
     }
     dirty(){
@@ -134,8 +134,8 @@ export class WorkbookClient {
             dataInstances:this.dataToJSON(),
             dataInstanceCount:this.dataInstanceCount,
         }
-        if (this.flowTable){
-            json.flowTable = this.flowTable.toJSON();
+        if (this.flowSheet){
+            json.flowSheet = this.flowSheet.toJSON();
         }
         return json;
     }

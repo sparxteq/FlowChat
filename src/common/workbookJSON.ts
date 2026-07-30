@@ -1,3 +1,4 @@
+import { ZT, ZTJSON } from "./ZT";
 
 
 export type WorkbookJSON = {
@@ -5,10 +6,10 @@ export type WorkbookJSON = {
     unitInstances:{[unitInstanceId:string]:UnitInstanceJSON};
     unitInstanceCount:number;
     dataInstances:{[dataInstanceId:string]:DataInstanceJSON};
-    flowTable?:FlowTableJSON;
+    flowSheet?:FlowSheetJSON;
     dataInstanceCount:number
 }
-export type FlowTableJSON = {
+export type FlowSheetJSON = {
     unitInstances:UnitInstanceId[]
 }
 export type UnitId= string // id for a Unit from the UnitRegistry
@@ -28,7 +29,7 @@ export type UnitInstanceJSON = {
 export type UnitTypeId=string;
 export type StepInstanceJSON = UnitInstanceJSON & {
     outputs:{id:string,dataId?:DataInstanceId}[],
-    flowTable?:FlowTableJSON,
+    flowSheet?:FlowSheetJSON,
 }
 export type StepRunJSON = {
     unitId:UnitId,
@@ -45,7 +46,7 @@ export type StepRunJSON = {
 export type UnitJSON = {
     unitTypeId:UnitTypeId,
     description:string,
-    paramZod:ZODType,
+    paramType:ZTJSON,
     inputTypes:{inputId:string,typeName:TypeName}[],
     outputTypes:{outputId:string,typeName:TypeName}[]
 }
@@ -55,7 +56,6 @@ export type TypeJSON = {
     description:string
 }
 export type TypeName=string;
-export type ZODType=any;
 
 export type ParamValueJSON = {[paramId:string]:ParamTypeJSON}
 

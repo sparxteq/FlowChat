@@ -1,20 +1,20 @@
 import { StepInstanceJSON } from "../../common/WorkbookJSON";
-import { FlowTableClient } from "./FlowTableClient";
+import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitInstanceClient } from "./UnitInstanceClient";
 import { WorkbookClient } from "./WorkbookClient";
 
 
 
 export class StepInstanceClient extends UnitInstanceClient {
-    flowTable:FlowTableClient=<any>undefined;
+    flowSheet:FlowSheetClient=<any>undefined;
     fromJSON(json:StepInstanceJSON){
         super.fromJSON(json);
-        if (json.flowTable)
-            this.flowTable=FlowTableClient.fromJSON(json.flowTable,this.workbook)
+        if (json.flowSheet)
+            this.flowSheet=FlowSheetClient.fromJSON(json.flowSheet,this.workbook)
     }
     toJSON():StepInstanceJSON{
         let rslt = <StepInstanceJSON>super.toJSON()
-        rslt.flowTable = this.flowTable.toJSON();
+        rslt.flowSheet = this.flowSheet.toJSON();
         return rslt;
     }
 }
