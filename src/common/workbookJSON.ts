@@ -5,30 +5,34 @@ export type WorkbookJSON = {
     rootStepId:string;
     unitInstances:{[unitInstanceId:string]:UnitInstanceJSON};
     unitInstanceCount:number;
-    dataInstances:{[dataInstanceId:string]:DataInstanceJSON};
     flowSheet?:FlowSheetJSON;
-    dataInstanceCount:number
 }
 export type FlowSheetJSON = {
     unitInstances:UnitInstanceId[]
 }
 export type UnitId= string // id for a Unit from the UnitRegistry
 export type UnitInstanceId = string;    // id for a stepinstance from the workbook's stepInstances
-export type DataInstanceId = string;    // id for a data instance from the workbook's dataInstances
+export type DataInstanceId = string;
+export type DataSourceRef = {
+    outputId:DataInstanceId
+    rowAbsolute:boolean,
+    row:number,
+    colAbsolute:boolean,
+    col:number
+}    
 
 export type UnitInstanceJSON = {
+    displayOpen:boolean,
     unitTypeId:UnitTypeId,
     instanceId:string,
     row:number,
     col:number,
     paramValue:ParamValueJSON,
-    inputs:{id:string,dataId?:DataInstanceId}[],
-    outputs:{id:string,dataId?:DataInstanceId}[]
+    inputSources:{id:string,dataRef?:DataSourceRef}[],
     note:string,
 }
 export type UnitTypeId=string;
 export type StepInstanceJSON = UnitInstanceJSON & {
-    outputs:{id:string,dataId?:DataInstanceId}[],
     flowSheet?:FlowSheetJSON,
 }
 export type StepRunJSON = {
@@ -39,8 +43,7 @@ export type StepRunJSON = {
     wbId:string,
     instanceId:string,
     paramValue:ParamValueJSON
-    inputs:{id:string,dataId?:DataInstanceId}[],
-    outputs:{id:string,dataId?:DataInstanceId}[]
+    inputSources:{id:string,dataRef?:DataSourceRef}[],
 }
 
 export type UnitJSON = {

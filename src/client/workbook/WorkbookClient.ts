@@ -1,6 +1,6 @@
 import { DB } from "../../../../Zing3/share/DB";
 import { HTTPResult } from "../../common/http/httpTypes";
-import { DataInstanceId, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
+import { DataSourceRef, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
 import { FlowSheetClient } from "./FlowSheetClient";
@@ -18,9 +18,7 @@ export class WorkbookClient {
     private rootStepId="";
     private unitInstances:{[instanceId:string]:UnitInstanceClient}={}
     private unitInstanceCount=0;
-    private dataInstances:{[intanceId:string]:DataInstanceClient}={}
-    private dataInstanceCount=0;
-    private flowSheet?:FlowSheetClient
+    flowSheet?:FlowSheetClient
 
     constructor(userEmail:string, activity:string, project:string,workbook:string){
         this.userEmail=userEmail;
@@ -32,12 +30,13 @@ export class WorkbookClient {
     newUnitInstanceId(unitTypeId:UnitTypeId):string{
         this.unitInstanceCount++;
         let id = "UI-"+this.unitInstanceCount;
-        let inst = new UnitInstanceClient(this);
-        inst.unitTypeId=unitTypeId;
-        inst.instanceId=id;
-        this.unitInstances[id]=inst;
-        inst.resolveUnit();
-        return id;
+        let inst = UnitInstanceClient.getInstance(unitTypeId,this.flowSheet!);
+        if (inst){
+            inst.instanceId=id;
+            this.unitInstances[id]=inst;
+            return id;
+        }
+        return "";
     }
     /*unitInstanceIds():string[]{
         return Object.keys(this.unitInstances)
@@ -45,42 +44,14 @@ export class WorkbookClient {
     getUnitInstance(id:string):UnitInstanceClient{
         return this.unitInstances[id];
     }
-    newDataInstanceId():string{
-        this.dataInstanceCount++;
-        return "DI-"+this.dataInstanceCount;
-    }
-    dataInstanceIds():string[]{
-        return Object.keys(this.dataInstances)
-    }
-    getDataInstance(id:string):DataInstanceClient{
-        return this.dataInstances[id];
-    }
     delUnitInstance(instanceId:string){
         let inst = this.unitInstances[instanceId];
         if (inst){
             delete this.unitInstances[instanceId]
-            this.deleteOutDataInstances(inst);
             this.dirty();
         }
     }
-        private deleteOutDataInstances(inst:UnitInstanceClient){
-            for (let outputInst of inst.outputs){
-                this.deleteDataInstance(outputInst.id);
-            }
-            inst.outputs=[];
-        }
-        private deleteDataInstance(dataId:DataInstanceId){
-            for (let unitId in this.dataInstances){
-                let inUnitInst = this.unitInstances[unitId];
-                for (let inDat of inUnitInst.inputs){
-                    if (inDat.dataId && inDat.dataId == dataId){
-                        inDat.dataId=undefined;
-                    }
-                }
-            }
-            delete this.dataInstances[dataId]
-            this.dirty();
-        }
+        
     
     async load():Promise<boolean>{
         let workbookRslt = await this.workClient.workbookGet(this.workbook
@@ -92,25 +63,21 @@ export class WorkbookClient {
             DB.msg(`workbookGet`,workbookRslt.msg)
             return false;
         }
-        this.fromJSON(workbookRslt.data)
+        this.fromJSON(workbookRslt.data.wbJSON)
         return true;
     }
     private fromJSON(json:WorkbookJSON){
         this.rootStepId=json.rootStepId;
         this.unitInstances = {};
         for (let id in json.unitInstances){
-            let ui = new UnitInstanceClient(this);
-            ui.fromJSON(json.unitInstances[id])
-            this.unitInstances[id]=ui;
+            let typeId = json.unitInstances[id].unitTypeId;
+            let ui = UnitInstanceClient.getInstance(typeId,this.flowSheet!);
+            if (ui){
+                ui.fromJSON(json.unitInstances[id])
+                this.unitInstances[id]=ui;
+            }
         }
         this.unitInstanceCount=json.unitInstanceCount;
-        this.dataInstances = {};
-        for (let id in json.dataInstances){
-            let di = new DataInstanceClient();
-            di.fromJSON(json.dataInstances[id])
-            this.dataInstances[id]=di;
-        }
-        this.dataInstanceCount=json.dataInstanceCount;
         if (json.flowSheet){
             this.flowSheet = FlowSheetClient.fromJSON(json.flowSheet,this)
         }
@@ -131,8 +98,6 @@ export class WorkbookClient {
             rootStepId:this.rootStepId,
             unitInstances:this.unitsToJSON(),
             unitInstanceCount:this.unitInstanceCount,
-            dataInstances:this.dataToJSON(),
-            dataInstanceCount:this.dataInstanceCount,
         }
         if (this.flowSheet){
             json.flowSheet = this.flowSheet.toJSON();
@@ -144,15 +109,6 @@ export class WorkbookClient {
         for (let id in this.unitInstances){
             let unitInstance = this.unitInstances[id];
             let json = unitInstance.toJSON();
-            rslt[id]=json;
-        }
-        return rslt;
-    }
-    private dataToJSON():{[id:string]:DataInstanceJSON}{
-        let rslt:{[id:string]:DataInstanceJSON}={}
-        for (let id in this.dataInstances){
-            let dataInstance = this.dataInstances[id];
-            let json = dataInstance.toJSON();
             rslt[id]=json;
         }
         return rslt;

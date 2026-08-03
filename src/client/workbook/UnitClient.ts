@@ -1,9 +1,8 @@
-import { z } from "zod";
-import { UnitInstanceJSON, TypeName, UnitJSON } from "../../common/WorkbookJSON";
-import { ClientHTTP } from "../http/ClientHTTP";
+
+
 import { WorkClient } from "../WorkClient";
-import { TypeClient } from "./TypeClient";
 import { ZT } from "../../common/ZT";
+import { TypeName, UnitJSON } from "../../common/WorkbookJSON";
 
 
 
@@ -13,7 +12,7 @@ export class UnitClient{
     paramType:ZT=<any>undefined;
     inputTypes:{inputId:string,typeName:TypeName}[]=[]
     outputTypes:{outputId:string,typeName:TypeName}[]=[]
-    static async loadSteps():Promise<void>{
+    static async loadUnits():Promise<void>{
         let wc = new WorkClient();
         let units = (await wc.units()).data;
         this.registry={};
@@ -37,6 +36,9 @@ export class UnitClient{
     private static register(unit:UnitClient){
         let id = unit.unitTypeId;
         this.registry[id]=unit;
+    }
+    static unitIds():string[]{
+        return Object.keys(this.registry)
     }
     static getUnit(unitId:string):UnitClient{
         return this.registry[unitId]

@@ -4,7 +4,7 @@ import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { BreakUI } from "../../../../Zing3/zui/BreakUI";
 import { DropDownChoiceUI } from "../../../../Zing3/zui/DropDownChoiceUI";
 import { http } from "../http/ClientHTTP";
-import { HTTPActResult, HTTPProjList, HTTPProjResult, HTTPWbList } from "../../common/http/httpTypes";
+import { HTTPActResult, HTTPProjResult, HTTPWbList } from "../../common/http/httpTypes";
 import { TextFieldUI } from "../../../../Zing3/zui/TextFieldUI";
 import { ButtonUI } from "../../../../Zing3/zui/ButtonUI";
 import { LoginView } from "./LoginView";

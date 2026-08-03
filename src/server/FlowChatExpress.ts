@@ -46,10 +46,9 @@ export class FlowChatExpress{
             res.send(this.env.indexHTML(req.query))
         })
         this.app.put('/do',async(req:Request,res:Response)=>{
-            DB.msg("/do called")
             let query=req.query;
             let cmd = query.cmd;
-            DB.msg("    query",query)
+            DB.msg("/do called    query",query)
             if (!cmd){
                 res.send({success:false,msg:"no valid cmd in the query"})
             }

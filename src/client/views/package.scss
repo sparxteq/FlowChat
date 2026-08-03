@@ -1,6 +1,7 @@
 @use "sass:color";
 @use "../../../../Zing3/zui/zuiStyling.scss" as *;
 @use "../../../../Zing3/zui/zuiParameters.scss" as *;
+@use "workbook/workbook.scss" as *;
 $font-size-l2: 32px;
 
 .ActivityEdit {

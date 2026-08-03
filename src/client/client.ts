@@ -3,10 +3,11 @@ import { ImpPageManager } from "../../../Zing3/zui/ImpPageManager"
 import { ZUI } from "../../../Zing3/zui/ZUI"
 import { HomePage } from "./pages/HomePage"
 import { PageRegistry } from "./pages/PageRegistry"
-import { registerViews } from "./views/varViews/RegisterViews"
+import { registerStepsAndDisplays } from "./RegisterStepsAndDisplays"
 
+
+registerStepsAndDisplays()
 let homePageState:PageState = {}
 PageRegistry.init();
-registerViews()
 let homePage = new HomePage(homePageState);
 ZUI.pageManager = new ImpPageManager(homePage,"#content")

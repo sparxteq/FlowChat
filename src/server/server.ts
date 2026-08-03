@@ -2,12 +2,12 @@ import {DB} from "../../../Zing3/share/DB"
 import dotenv from "dotenv"
 import { FlowChatEnv } from "./FlowChatEnv";
 import { FlowChatExpress } from "./FlowChatExpress";
-import { registerUnitsAndTypes } from "./units/RegisterUnitsAndTypes";
+import { registerStepsAndTypes } from "./units/RegisterStepsAndTypes";
 
 DB.msg("server launch started")
 dotenv.config();
 
-registerUnitsAndTypes()
+registerStepsAndTypes()
 
 let env = new FlowChatEnv()
 

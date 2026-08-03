@@ -5,9 +5,9 @@ import { TextUI } from "../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { versionName } from "../../version";
 import { ActivityView } from "../views/ActivityView";
-import { InstanceView } from "../views/workbook/InstanceView";
 import { LoadContext } from "../views/LoadContext";
 import { ProjectView } from "../views/ProjectView";
+import { SheetView } from "../views/workbook/SheetView";
 import { WorkbookView } from "../views/WorkbookView";
 
 
@@ -27,12 +27,12 @@ export class WorkPage extends Page implements LoadContext{
     private activityView = new ActivityView(this)
     private projectView = new ProjectView(this)
     private workbookView = new WorkbookView(this)
-    private instanceView = new InstanceView(this);
+    private sheetView = new SheetView(this);
     reloadViews(): void {
         this.activityView.load();
         this.projectView.load();
         this.workbookView.load();
-        this.instanceView.load();
+        this.sheetView.load();
     }
     private async setup():Promise<void>{
         let homeHeaderZuis: ZUI[]=[
@@ -46,7 +46,7 @@ export class WorkPage extends Page implements LoadContext{
             this.activityView,
             this.projectView,
             this.workbookView,
-            this.instanceView 
+            this.sheetView 
         ])
     }
 }

@@ -80,7 +80,7 @@ async function worker(){
         .pipe(gulp.dest(paths.outdir))
 }
 gulp.task("worker",gulp.series(typecheckWorker,worker))
-async function client(){
+async function clientF(){
     setVersion();
     return await gulp
         .src('src/client/client.ts')
@@ -105,6 +105,6 @@ gulp.task('styles',  async function() {
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('./war'));
 });
-gulp.task("client",gulp.series("styles",typecheckClient,client));
+gulp.task("client",gulp.series("styles",typecheckClient,clientF));
 
 export const build = gulp.series("server","client"/*,"worker"*/);

@@ -1,11 +1,10 @@
 import { MergeRows } from "./MergeRows";
 import { RandomTable } from "./RandomTable";
+import { TableView } from "./views/TableView"
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
 
-
-
-export function registerUnitsAndTypes(){
+export function registerStepsAndTypes(){
     
     let tableType = new TypeS("table",[],"A row/column table of data")
     

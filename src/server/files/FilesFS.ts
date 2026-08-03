@@ -450,12 +450,14 @@ export class FilesFS extends Files {
 export class FilesFSSource extends FilesSource{
     async getFile(fileName: string, makePath=false): Promise<Files> {
         let rslt =  new FilesFS(fileName);
-        rslt.makeFile(makePath);
+        if (makePath)
+            rslt.makeFile(makePath);
         return rslt;
     }
     async getFolder(folderName: string, makePath=false): Promise<Files> {
         let rslt =  new FilesFS(folderName);
-        rslt.makeFolder(makePath);
+        if (makePath)
+            rslt.makeFolder(makePath);
         return rslt;
     }
 

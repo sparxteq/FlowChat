@@ -6,14 +6,22 @@ import { WorkbookClient } from "./WorkbookClient";
 
 export class FlowSheetClient {
     workbook:WorkbookClient;
-    constructor(workbook:WorkbookClient){
+    instanceId?:UnitInstanceId;
+    constructor(workbook:WorkbookClient,instanceId?:UnitInstanceId){
         this.workbook=workbook;
+        this.instanceId=instanceId;
+    }
+    varFilePath():string{
+        if (this.instanceId){
+            return `/${this.instanceId}.sheet`
+        } else {
+            return "/";
+        }
     }
     unitInstances:{[instanceId:UnitInstanceId]:boolean}={}
     addUnitInstance(row:number,col:number,unitTypeId:UnitTypeId):UnitInstanceId{
         let newId = this.workbook.newUnitInstanceId(unitTypeId);
         let inst=this.workbook.getUnitInstance(newId);
-        inst.resolveUnit()
         let oldInst = this.rcInstance(row,col)
         if (oldInst){
             this.delUnitInstance(oldInst.instanceId)
@@ -49,7 +57,7 @@ export class FlowSheetClient {
             if (row>nr)
                 nr=row;
         }
-        return nr+1;
+        return nr+2;
     }
     nCols():number{
         let nc=0;
@@ -59,7 +67,7 @@ export class FlowSheetClient {
             if (col>nc)
                 nc=col;
         }
-        return nc+1;
+        return nc+2;
     }
     addRow(rowAdd:number,nRowsToAdd=1){
         for (let unitInstId in this.unitInstances){
@@ -68,6 +76,7 @@ export class FlowSheetClient {
             if (row>=rowAdd){
                 unitInst.setCell(row+nRowsToAdd,col)
             }
+            unitInst.moveInputRows(rowAdd,nRowsToAdd)
         }
         this.dirty();
     }
@@ -83,6 +92,7 @@ export class FlowSheetClient {
                     unitInst.setCell(row-nRowsToDel,col)
                 }
             }
+            unitInst.moveInputRows(rowDel,-nRowsToDel)
         }
         this.dirty()
     }
@@ -94,6 +104,7 @@ export class FlowSheetClient {
             if (col>=colAdd){
                 unitInst.setCell(row,col+nColsToAdd)
             }
+            unitInst.moveInputCols(colAdd,nColsToAdd)
         }
         this.dirty();
     }
@@ -109,6 +120,7 @@ export class FlowSheetClient {
                     unitInst.setCell(row,col-nColsToDel)
                 }
             }
+            unitInst.moveInputCols(colDel,-nColsToDel)
         }
         this.dirty()
     }

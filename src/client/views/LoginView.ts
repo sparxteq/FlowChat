@@ -18,6 +18,7 @@ export class LoginView extends ZUI{
     private lastName:string="";
     constructor(){
         super();
+        LoginView.email = "olsen@sparxteq.com"
         let login = new DivUI([
             new TextUI("Login").style("Login-title"),
             new TextUI("email").style("col-6"),

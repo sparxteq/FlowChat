@@ -1,0 +1,28 @@
+@use "sass:color";
+@use "../../../../../Zing3/zui/zuiStyling.scss" as *;
+@use "../../../../../Zing3/zui/zuiParameters.scss" as *;
+
+.EmptyCellText {
+    @include layout(12);
+    text-align:center;
+
+    color:$color-secondary;
+}
+.EmptyCellView {
+    min-width: 80px;
+    min-height: 20px;
+    background-color: white;
+    border: solid 1px color.scale($color-secondary,$lightness: 10%);
+}
+
+.SheetView {
+    @include layout(12,none);
+    background-color: white;
+    border-radius: 3px;
+    border: solid 1px black;
+    margin-top:10px;
+    border-spacing: 4px;
+}
+.SheetViewTable {
+
+}

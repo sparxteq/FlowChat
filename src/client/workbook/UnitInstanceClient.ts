@@ -1,25 +1,51 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { DataInstanceId, ParamValueJSON, StepInstanceJSON, UnitInstanceJSON, UnitTypeId } from "../../common/WorkbookJSON";
+import { DataSourceRef, ParamValueJSON, StepInstanceJSON, UnitInstanceJSON, UnitTypeId } from "../../common/WorkbookJSON";
+import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitClient } from "./UnitClient";
 import { WorkbookClient } from "./WorkbookClient";
+import { DisplayInstanceClient } from "./DisplayInstanceClient";
+import { StepInstanceClient } from "./StepInstanceClient";
+import { UnitCellView } from "../views/workbook/UnitCellView";
+import { TypeS } from "../../server/units/types/TypeS";
 
 
 
-export class UnitInstanceClient {
+export abstract class UnitInstanceClient {
+    typeId():string{
+        let tid = this.constructor.name
+        if (tid.startsWith("_"))
+            tid=tid.slice(1)
+        return tid;
+    };
     workbook:WorkbookClient;
-    constructor(workbook:WorkbookClient){
-        this.workbook=workbook;
+    flowSheet:FlowSheetClient;
+    constructor(flowSheet?:FlowSheetClient){
+        if (flowSheet){
+            this.flowSheet=<FlowSheetClient>flowSheet;
+            this.workbook=(<FlowSheetClient>flowSheet).workbook;
+        } else {
+            this.flowSheet = <any>undefined;
+            this.workbook = <any>undefined;
+        }
     }
-    unitTypeId:UnitTypeId=";"
-    protected unit?:UnitClient;
+    checkType(nameToCheck:string):string{
+        let t = TypeS.getType(nameToCheck);
+        if (!t){
+            DB.msg(`type ${nameToCheck} does not exist`)
+        }
+        return nameToCheck
+    }
+    displayOpen=false;
+
     instanceId="";
     paramValue:ParamValueJSON={}
     protected row=-1;
     protected col=-1;
     note="";
-    inputs:{id:string,dataId?:DataInstanceId}[]=[]
-    outputs:{id:string,dataId?:DataInstanceId}[]=[]
-    
+    inputSources:{id:string,dataRef?:DataSourceRef}[]=[]
+    outputs:string[]=[];
+
+    abstract cellView():UnitCellView;
     getCell():{row:number,col:number} {
         return {row:this.row,col:this.col};
     }
@@ -27,39 +53,121 @@ export class UnitInstanceClient {
         this.row=row;
         this.col=col;
     }
+    moveInputRows(rowBase:number,rowInc:number){
+        for (let inRef of this.inputSources){
+            let dataRef = inRef.dataRef;
+            if (dataRef){
+                let {row,col}=this.getCell();
+                let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
+                if (dataRef.rowAbsolute){
+                    if (sourceRow>=rowBase)
+                        dataRef.row+=rowInc
+                } else {
+                    if (row<rowBase && sourceRow>=rowBase)
+                        dataRef.row+=rowInc
+                    else if (row>=rowBase && sourceRow<rowBase)
+                        dataRef.row-=rowInc;
+                }
+            }
+        }
+    }
+    moveInputCols(colBase:number,colInc:number){
+        for (let inRef of this.inputSources){
+            let dataRef = inRef.dataRef;
+            if (dataRef){
+                let {row,col}=this.getCell();
+                let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
+                if (dataRef.colAbsolute){
+                    if (sourceCol>=colBase)
+                        dataRef.col+=colInc
+                } else {
+                    if (col<colBase && sourceCol>=colBase)
+                        dataRef.col+=colInc
+                    else if (col>=colBase && sourceCol<colBase)
+                        dataRef.col-=colInc;
+                }
+            }
+        }
+    }
+    inputSource(sheet:FlowSheetClient,inputId:string):{instance:UnitInstanceClient,outputId:string}{
+        for (let inRef of this.inputSources){
+            if (inRef.id==inputId){
+                let dataRef = inRef.dataRef;
+                if (dataRef){
+                    let {row,col} = this.resolveRefRC(dataRef);
+                    let inst = sheet.rcInstance(row,col)
+                    if (inst){
+                        return {
+                            instance:inst,
+                            outputId:dataRef.outputId
+                        }
+                    }
+                }
+            }
+        }
+        return {
+            instance:<any>undefined,
+            outputId:""
+        }
+    }
+    private resolveRefRC(dataRef:DataSourceRef):{row:number,col:number}{
+        let row=dataRef.row;
+        let col=dataRef.col;
+        if (!dataRef.rowAbsolute){
+            row = this.row+row;
+        }
+        if (!dataRef.colAbsolute){
+            col = this.col+col
+        }
+        return {row,col}
+    }
+    getDisplayOpen():boolean{
+        return this.displayOpen;
+    }
+    setDisplayState(displayOpen:boolean){
+        this.displayOpen = displayOpen;
+        this.workbook.dirty();
+    }
     fromJSON(json:UnitInstanceJSON){
-        this.unitTypeId=json.unitTypeId;
-        this.resolveUnit();
+        this.displayOpen=json.displayOpen;
+        this.resolveType();
         this.instanceId=json.instanceId;
         this.row = json.row;
         this.col = json.col;
         this.paramValue=json.paramValue;
-        this.inputs=json.inputs;
-        this.outputs=json.outputs;
+        this.inputSources=json.inputSources;
         this.note = json.note;
     }
 
-    
-    resolveUnit(){
-        let unit = UnitClient.getUnit(this.unitTypeId);
-        if (!unit){
-            DB.msg(`stepId ${this.unitTypeId} does not exist`)
-            return;
-        }
-        this.unit=unit;
-    }
+    protected abstract resolveType():void;
+
     toJSON():UnitInstanceJSON{
         let rslt:UnitInstanceJSON = {
-            unitTypeId:this.unitTypeId,
+            displayOpen:this.displayOpen,
             instanceId:this.instanceId,
+            unitTypeId:this.typeId(),
             paramValue:this.paramValue,
             row:this.row,
             col:this.col,
-            inputs:this.inputs,
-            outputs:this.outputs,
+            inputSources:this.inputSources,
             note:this.note
         }
         return rslt;
     }
+    abstract make(flowSheet:FlowSheetClient):UnitInstanceClient;
+    private static registry:{[typeId:string]:UnitInstanceClient}={}
+    static register(proto:UnitInstanceClient){
+        let typeId = proto.typeId();
+        this.registry[typeId]=proto;
+    }
+    static getInstance(typeId:string,flowSheet:FlowSheetClient):UnitInstanceClient|undefined{
+        let proto = this.registry[typeId]
+        if (proto){
+            let newInst = proto.make(flowSheet);
+            return newInst;
+        }
+    }
+}
+export function registerUnits(){
 
 }

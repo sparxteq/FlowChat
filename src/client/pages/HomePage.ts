@@ -6,9 +6,6 @@ import { DivUI} from "../../../../Zing3/zui/DivUI"
 import { ZUI } from "../../../../Zing3/zui/ZUI";
 import {versionName} from "../../version"
 import { PageManager } from "../../../../Zing3/zui/PageManager";
-//import { ClientHTTP, http } from "../http/ClientHTTP";
-//import { LoginView } from "../views/LoginView";
-import { ImpPageManager } from "../../../../Zing3/zui/ImpPageManager";
 import { LoginView } from "../views/LoginView";
 
 
@@ -18,9 +15,11 @@ export class HomePage extends Page{
     }
     constructor(pageState:PageState){
         super(pageState);
+        DB.start("HomePage")
         this.content = new TextUI("Home page")
         this.setup().then(()=>{
             ZUI.notify();
+            DB.end()
         })
     }
     private async setup():Promise<void>{
