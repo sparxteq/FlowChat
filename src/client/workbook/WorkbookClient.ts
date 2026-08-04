@@ -105,7 +105,7 @@ export class WorkbookClient {
         return json;
     }
     private unitsToJSON():{[id:string]:UnitInstanceJSON}{
-        let rslt:{[id:string]:StepInstanceJSON}={}
+        let rslt:{[id:string]:UnitInstanceJSON}={}
         for (let id in this.unitInstances){
             let unitInstance = this.unitInstances[id];
             let json = unitInstance.toJSON();

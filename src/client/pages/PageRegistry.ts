@@ -13,10 +13,9 @@ export class PageRegistry {
         })
     }
     static init(){
-        DB.start("PageRegistry.init")
         this.register("home",HomePage);
         this.register("work",WorkPage)
         //this.register("activity",ActivityPage)
-        DB.end()
+
     }
 }

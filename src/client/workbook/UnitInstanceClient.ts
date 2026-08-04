@@ -124,7 +124,7 @@ export abstract class UnitInstanceClient {
     getDisplayOpen():boolean{
         return this.displayOpen;
     }
-    setDisplayState(displayOpen:boolean){
+    setDisplayOpen(displayOpen:boolean){
         this.displayOpen = displayOpen;
         this.workbook.dirty();
     }

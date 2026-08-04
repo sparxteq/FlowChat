@@ -15,11 +15,9 @@ export class HomePage extends Page{
     }
     constructor(pageState:PageState){
         super(pageState);
-        DB.start("HomePage")
         this.content = new TextUI("Home page")
         this.setup().then(()=>{
             ZUI.notify();
-            DB.end()
         })
     }
     private async setup():Promise<void>{

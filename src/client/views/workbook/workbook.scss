@@ -2,6 +2,58 @@
 @use "../../../../../Zing3/zui/zuiStyling.scss" as *;
 @use "../../../../../Zing3/zui/zuiParameters.scss" as *;
 
+.DisplayCellActionBar {
+    @include layout(12,none);
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.DisplayCellClosed {
+    @include layout(12);
+    border: solid 2px black;
+    padding: 3px;
+    border-radius: 3px;
+    background-color: $color-secondary;
+}
+.DisplayCellOpen {
+    @include layout(12,none);
+    border: solid 2px black;
+    padding: 3px;
+    padding-top:5px;
+    border-radius: 3px;
+    background-color: $color-secondary;
+    margin-top:8px;
+}
+.DisplayCellParam {
+    @include layout(11,both,1);
+    border: solid 2px color.scale($color-secondary,$lightness:-10%);
+    padding: 3px;
+    border-radius:3px;
+    margin-bottom: 3px;
+    resize:vertical;
+    overflow-y:auto;
+}
+.DisplayDisplay {
+    @include layout(12);
+    border: solid 2px lightgray;
+    padding: 3px;
+    border-radius:3px;
+    min-height: 50px;
+    min-width:300px;
+    resize:both;
+    overflow-y:auto;
+}
+.DisplayInputBar{
+    width:100%;
+    position:absolute;
+    top:0;
+    margin-bottom:-10px;
+    margin-left:20px;
+    margin-right:40px;
+    z-index: 10;
+}
+.DisplayOpenContainer{
+    @include layout(12)
+}
 .EmptyCellText {
     @include layout(12);
     text-align:center;
@@ -14,7 +66,52 @@
     background-color: white;
     border: solid 1px color.scale($color-secondary,$lightness: 10%);
 }
-
+.InputBlock{
+    @include layout(0);
+    background-color: gray;
+    color:white;
+    border:solid 2px black;
+    &:hover{
+        border:solid 2px $color-primary;
+    }
+}
+.InputBlockText {
+    color:white;
+    padding-left: 10px;
+    padding-right:10px;
+}
+.MenuButton {
+    @include layoutRight(0);
+    width:15px;
+    height:15px;
+    margin-left: 5px;
+}
+.NoteButton {
+    @include layoutRight(0);
+    width:15px;
+    height:15px;
+    margin-left: 5px;
+}
+.OpenCloseButton{
+    @include layout(0);
+    width:10px;
+    height:10px;
+    margin-right: 5px;
+}
+.OutputBlock{
+    @include layout(0);
+    background-color: gray;
+    color:white;
+    border:solid 2px black;
+    &:hover{
+        border:solid 2px $color-primary;
+    }
+}
+.OutputBlockText {
+    color:white;
+    padding-left: 10px;
+    padding-right:10px;
+}
 .SheetView {
     @include layout(12,none);
     background-color: white;
@@ -25,4 +122,70 @@
 }
 .SheetViewTable {
 
+}
+.StepCellActionBar {
+    @include layout(12,none);
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.StepCellClosed {
+    @include layout(12);
+    border: solid 2px black;
+    padding: 3px;
+    border-radius: 3px;
+    background-color: $color-secondary;
+    min-width: 300px;
+}
+.StepCellOpen {
+    @include layout(12,none);
+    border: solid 2px black;
+    padding: 3px;
+    padding-top: 5px;
+    padding-bottom: 11px;
+    border-radius: 3px;
+    background-color: $color-secondary;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+.StepCellParam {
+    @include layout(11,both,1);
+    border: solid 2px color.scale($color-secondary,$lightness:-10%);
+    padding: 3px;
+    border-radius:3px;
+    margin-bottom: 3px;
+    resize:vertical;
+    overflow-y:auto;
+}
+.StepDo{
+    @include layout(6)
+}
+.StepInputBar{
+    width:100%;
+    position:absolute;
+    top:0;
+    margin-bottom:-10px;
+    margin-left:20px;
+    margin-right:40px;
+    z-index: 10;
+}
+.StepOutputBar{
+    width:100%;
+    position:absolute;
+    bottom:0;
+    margin-top:-10px;
+    margin-left:20px;
+    margin-right:40px;
+    z-index: 10;
+}
+.StepLog{
+    @include layout(11,both,1);
+    background-color: white;
+    padding: 3px;
+    border-radius:3px;
+    margin-bottom: 3px;
+    resize:vertical;
+    overflow-y:auto;
+}
+.StepOpenContainer{
+    @include layout(12)
 }
