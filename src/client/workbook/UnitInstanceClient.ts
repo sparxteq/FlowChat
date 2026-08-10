@@ -1,12 +1,11 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { DataSourceRef, ParamValueJSON, StepInstanceJSON, UnitInstanceJSON, UnitTypeId } from "../../common/WorkbookJSON";
+import { DataSourceRef, ParamValueJSON, UnitInstanceJSON } from "../../common/WorkbookJSON";
 import { FlowSheetClient } from "./FlowSheetClient";
-import { UnitClient } from "./UnitClient";
 import { WorkbookClient } from "./WorkbookClient";
-import { DisplayInstanceClient } from "./DisplayInstanceClient";
 import { StepInstanceClient } from "./StepInstanceClient";
 import { UnitCellView } from "../views/workbook/UnitCellView";
 import { TypeS } from "../../server/units/types/TypeS";
+import { ZT } from "../../common/ZT";
 
 
 
@@ -28,12 +27,37 @@ export abstract class UnitInstanceClient {
             this.workbook = <any>undefined;
         }
     }
+    abstract paramType():ZT;
     checkType(nameToCheck:string):string{
         let t = TypeS.getType(nameToCheck);
         if (!t){
             DB.msg(`type ${nameToCheck} does not exist`)
         }
         return nameToCheck
+    }
+
+    findInputDataRef(inputId:string):DataSourceRef|undefined{
+        let inputs = this.inputSources;
+        for (let input of inputs){
+            if (input.id==inputId){
+                return input.dataRef;
+            }
+        }
+    }
+    abstract inputTypes():{[inputId:string]:string}
+    inputTypeCheck(inputId:string,sourceInst:StepInstanceClient):boolean{
+        let dataRef = this.findInputDataRef(inputId);
+        if (dataRef){
+            let outputId = dataRef.outputId;
+            let outputType = sourceInst.outputType(outputId)
+            if (outputType){
+                let inputType = this.inputTypes()[inputId];
+                return TypeS.typeMatch(inputType,outputType)
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
     displayOpen=false;
 
@@ -43,7 +67,6 @@ export abstract class UnitInstanceClient {
     protected col=-1;
     note="";
     inputSources:{id:string,dataRef?:DataSourceRef}[]=[]
-    outputs:string[]=[];
 
     abstract cellView():UnitCellView;
     getCell():{row:number,col:number} {

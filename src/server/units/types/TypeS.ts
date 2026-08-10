@@ -41,6 +41,16 @@ export class TypeS{
         }
         return rslt;
     }
+    static typeMatch(inputType:string,outputType:string):boolean{
+        let outType = this.getType(outputType);
+        if (inputType==outputType)
+            return true;
+        for (let st of outType.superTypes){
+            if (st.typeName==inputType)
+                return true;
+        }
+        return false;
+    }
     static registry:{[typeName:string]:TypeS}={};
     static typeList:TypeS[]=[];
     protected static register(typeS:TypeS){

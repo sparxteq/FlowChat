@@ -20,6 +20,9 @@ export abstract class ZT {
         let col = Math.floor(len/8)+1;
         return col;
     }
+    empty():boolean{
+        return false;
+    }
     protected abstract subToJSON(json:any):any;
     protected abstract subFromJSON(json:any):void;
     static fromJSON(json:any):ZT{
@@ -46,6 +49,9 @@ export class ZDict extends ZT{
             rslt[fn]=def;
         }
         return rslt;
+    }
+    empty():boolean{
+        return this.fields.length==0;
     }
     str(fieldName:string,info:ZJSONInfo={}):ZDict{
         let field = new ZField(fieldName,new ZString(),info)

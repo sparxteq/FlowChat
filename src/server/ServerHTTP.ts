@@ -34,6 +34,9 @@ export class ServerHTTP{
             case "projectRem":
                 rslt = await WorkServer.projectRem(data.email,data.actName,data.projName)
                 break;
+            case "projectSourcesTree":
+                rslt = await WorkServer.projectSourcesTree(data.email,data.actPath,data.projId)
+                break;
             case "units":
                 rslt = { success:true, msg:"",data:await WorkServer.units()}
                 break;

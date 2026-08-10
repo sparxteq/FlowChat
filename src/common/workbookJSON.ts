@@ -33,7 +33,6 @@ export type UnitInstanceJSON = {
 }
 export type UnitTypeId=string;
 export type StepInstanceJSON = UnitInstanceJSON & {
-    outputs:string[],
     flowSheet?:FlowSheetJSON,
 }
 export type StepRunJSON = {

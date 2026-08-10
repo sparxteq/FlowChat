@@ -16,7 +16,7 @@ export class RandomTable extends Unit{
     paramType(): ZT {
         return new ZDict()
             .num("seed")
-            .array("columNames",new ZString())
+            .array("columnNames",new ZString())
             .num("nRows")
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {

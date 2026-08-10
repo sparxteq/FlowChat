@@ -1,6 +1,5 @@
 import { MergeRows } from "./MergeRows";
 import { RandomTable } from "./RandomTable";
-import { TableView } from "./views/TableView"
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
 

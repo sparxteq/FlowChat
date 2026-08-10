@@ -1,5 +1,6 @@
 
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult } from "../common/http/httpTypes";
+import { Files } from "../common/files/Files";
+import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
 import { UnitJSON, TypeJSON, WorkbookJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
 import { TypeS } from "./units/types/TypeS";
@@ -176,6 +177,58 @@ export class WorkServer {
         }
         return rslt;
     }
+    static projSourcesFolderName(email:string,actName:string,projName:string):string{
+        let fn = this.projFolderName(email,actName,projName)
+        return fn+"/_sources"
+    }
+    static async projectSourcesTree(email:string,actName:string,projName:string):Promise<HTTPDirResult>{
+        let rslt:HTTPDirResult={
+            success:false,
+            msg:"",
+            data:{
+                name:"?", isFolder:false,folderContents:[]
+            }
+        }
+        let projSourcesFolderN = this.projSourcesFolderName(email,actName,projName);
+        let fs = new FilesFSSource();
+        let projSF = await fs.getFolder(projSourcesFolderN,false);
+        if (projSF && await projSF.isFolder()){
+            let tree = await this.filesTree(projSF)
+            rslt.success=true;
+            rslt.data = tree;
+        }
+        return rslt;
+    }
+    
+        private static async filesTree(f:Files):Promise<ZFilesDirectoryItem>{
+            let fileName = this.fileName(f.fullPath())
+            let tree:ZFilesDirectoryItem = {name:fileName,isFolder:false,folderContents:[]};
+            if (await f.isFolder()){
+                let files = await f.fileNames();
+                let folders = await f.folderNames();
+                let contents:ZFilesDirectoryItem[]=[];
+                for (let fn of files){
+                    contents.push({name:fn,isFolder:false,folderContents:[]})
+                }
+                
+                for (let fn of folders){
+                    let folder = new FilesFS(f.relativePath()+"/"+fn);
+                    let fnTree = await this.filesTree(folder);
+                    let folderRec = {name:fn,isFolder:true,folderContents:fnTree.folderContents}
+                    contents.push(folderRec);
+                }
+                tree.folderContents=contents;
+                tree.isFolder=true;
+            } 
+            return tree;
+        }
+        private static fileName(path:string):string{
+            let i = path.lastIndexOf("/");
+            if (i<0)
+                return path;
+            else
+                return path.substring(i+1)
+        }
     static units():{[unitId:string]:UnitJSON}{
         let up = Unit.uploadJSON();
         return up;

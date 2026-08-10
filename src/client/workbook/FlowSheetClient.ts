@@ -1,4 +1,5 @@
-import { FlowSheetJSON, UnitInstanceId, UnitTypeId } from "../../common/WorkbookJSON";
+import { DataSourceRef, FlowSheetJSON, UnitInstanceId, UnitTypeId } from "../../common/WorkbookJSON";
+import { StepInstanceClient } from "./StepInstanceClient";
 import { UnitInstanceClient } from "./UnitInstanceClient";
 import { WorkbookClient } from "./WorkbookClient";
 
@@ -17,6 +18,60 @@ export class FlowSheetClient {
         } else {
             return "/";
         }
+    }
+    selectedCell?:{row:number,col:number};
+    selectedInput?:string;
+    selectedOutput?:string;
+    inputConnection(unitInst:UnitInstanceClient,inputId:string):"none" | "good" | "bad"{
+        let sources = unitInst.inputSources
+        for (let source of sources){
+            if (source.id==inputId){
+                if (source.dataRef){
+                    let {refRow,refCol}=this.resolveRef(source.dataRef,unitInst)
+                    let sourceInst = this.rcInstance(refRow,refCol);
+                    if (sourceInst){
+                        if (unitInst.inputTypeCheck(inputId,<StepInstanceClient>sourceInst))
+                            return "good"
+                        else
+                            return "bad"
+                    } else {
+                        return "bad"
+                    }
+                } else {
+                    return "none"
+                }
+            }
+        }
+        return "bad"
+    }
+    outputConnection(unitInst:StepInstanceClient,outputId:string):"none" | "good" | "bad"{
+        let {row,col} = unitInst.getCell();
+        let workbook = this.workbook;
+        for (let inputUnitId in this.unitInstances){
+            if (inputUnitId !=unitInst.instanceId){
+                let inputInst = workbook.getUnitInstance(inputUnitId)
+                for (let inputSource of inputInst.inputSources){
+                    let dataRef = inputSource.dataRef;
+                    if (dataRef){
+                        let {refRow,refCol} = this.resolveRef(dataRef,inputInst)
+                        if (row==refRow && col==refCol){
+                            return "good"
+                        }
+                    }
+                }
+            }
+        }
+        return "bad"
+    }
+    private resolveRef(dataRef:DataSourceRef,unitInst:UnitInstanceClient):{refRow:number,refCol:number}{
+        let {row,col}=unitInst.getCell();
+        let refRow = dataRef.row;
+        if (!dataRef.rowAbsolute)
+            refRow+=row
+        let refCol = dataRef.col;
+        if (!dataRef.colAbsolute)
+            refCol+=col;
+        return {refRow,refCol}
     }
     unitInstances:{[instanceId:UnitInstanceId]:boolean}={}
     addUnitInstance(row:number,col:number,unitTypeId:UnitTypeId):UnitInstanceId{

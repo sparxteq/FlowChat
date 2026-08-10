@@ -1,4 +1,5 @@
 import { DivUI } from "../../../../../Zing3/zui/DivUI";
+import { TextAreaUI } from "../../../../../Zing3/zui/TextAreaUI";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../../Zing3/zui/ZUI";
 import { ImageButtonUI } from "../../../../../Zing3/zui/ImageButtonUI"
@@ -9,6 +10,9 @@ import { FlowSheetClient } from "../../workbook/FlowSheetClient";
 import { DB } from "../../../../../Zing3/share/DB";
 import { ButtonUI } from "../../../../../Zing3/zui/ButtonUI";
 import { DataSourceRef } from "../../../common/WorkbookJSON";
+import { ZT } from "../../../common/ZT";
+import { ZTValueEdit } from "../ZTValueEdit";
+import { showPopup } from "../../popupZUI";
 
 
 
@@ -29,6 +33,24 @@ export abstract class UnitCellView extends SheetCellView{
     }
     abstract buildView():ZUI
     
+    protected inputConnection(inputId:string):"none" | "good" | "bad"{
+        let connection = this.unitInst.flowSheet.inputConnection(this.unitInst,inputId)
+        return connection;
+    }
+    protected inputSelected(inputId:string):boolean{
+        let flow = this.unitInst.flowSheet;
+        let {row,col}= this.unitInst.getCell();
+        if (flow.selectedCell && flow.selectedCell.row==row && flow.selectedCell.col==col){
+            if (flow.selectedInput){
+                if (flow.selectedInput==inputId)
+                    return true;
+                else
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
     protected stepInstanceName():string{
         return NameString.toCapSpaced(this.unitInst.typeId())
     }
@@ -62,11 +84,54 @@ export abstract class UnitCellView extends SheetCellView{
                 imageSource:"/icons/EditNote.png"
             }],"add")
             .click(()=>{
-                DB.msg("menu clicked "+nb.state)
+                DB.msg("note clicked "+this.unitInst.instanceId)
+                DB.msg("   note ",this.unitInst.note)
+                let jq = nb.jq
+                this.editNote(nb.jq[0].id,()=>{
+                    let note = this.unitInst.note;
+                    if (note.length==0)
+                        nb.state="add"
+                    else
+                        nb.state="edit"
+                    DB.msg("check icon")
+                })
             })
+        let note = this.unitInst.note;
+        if (note.length==0)
+            nb.state="add"
+        else
+            nb.state="edit"
         nb.style("NoteButton")
         return nb;
     }
+        protected editNote(id:string,checkIcon:()=>void){
+            DB.msg("edit note for "+id) 
+           /*let $floatZUI = $("#floatZUI")
+            $floatZUI.removeClass("hidden")
+            $floatZUI.empty();*/
+            let inst = this.unitInst;
+            let saveNote = inst.note;
+            let noteEdit = new TextAreaUI()
+                .getF(()=>{
+                    return inst.note;
+                })
+                .setF((str:string)=>{
+                    inst.note=str;
+                })
+                .placeHolder("enter a note here")
+                .style("NoteEdit")
+            /*$floatZUI.append(content.renderJQ())*/
+            let content = new DivUI([noteEdit]).style("NoteEditContainer")
+            showPopup(content,id,()=>{
+                DB.msg("saveNote",saveNote)
+                inst.note = noteEdit.val();
+                DB.msg("inst.note",inst.note)
+                if (saveNote!=inst.note){
+                    checkIcon();
+                    inst.workbook.dirty();
+                }
+            })
+        }
     protected inputBar():ZUI{
         let inst = this.unitInst;
         let inputs = inst.inputSources;
@@ -78,9 +143,25 @@ export abstract class UnitCellView extends SheetCellView{
         return new DivUI(inputList);
     }
     protected inputBlock(input:{id: string,dataRef?: DataSourceRef}):ZUI{
+        if (!this.unitInst.displayOpen)
+            return new DivUI([]).style("InputBlockClosed")
         let div = new DivUI([
             new TextUI(NameString.toCapSpaced(input.id)).style("InputBlockText")
-        ]).style("InputBlock")
+        ])
+        let style = ""
+        switch (this.inputConnection(input.id)){
+            case "none":
+                style+="InputBlockNone"
+                break;
+            case "good":
+                style+="InputBlockGood"
+                break;
+            case "bad":
+                style+="InputBlockBad"
+        }
+        if (this.inputSelected(input.id))
+            style+=" InputBlockSelected"
+        div.style(style)
         return div;
     }
     
@@ -105,11 +186,20 @@ export abstract class UnitCellView extends SheetCellView{
         }
         return new DivUI(list);
     }
-    protected paramEdit():ZUI{
-        return new DivUI([
-            this.openCloseButton(),
-            new TextUI("parameter edit")
-        ])
+    protected paramEdit():ZUI|undefined{
+        let pType:ZT = this.unitInst.paramType();
+        if (pType.empty())
+            return undefined;
+        let pValue = this.unitInst.paramValue
+        let wb = this.unitInst.workbook;
+        let projectId = wb.project;
+        let activityId = wb.activity;
+        let email = wb.userEmail;
+        return new ZTValueEdit(pType,pValue,(pData:any)=>{
+                this.unitInst.paramValue = pData;
+                wb.dirty();
+            },projectId,activityId,email)
+        
     }
     protected openCloseButton():ZUI{
         let state = "closed";

@@ -1,5 +1,5 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
 import { WorkbookJSON } from "../../common/WorkbookJSON";
 
 
@@ -62,6 +62,10 @@ export class ClientHTTP{
         let rslt = <HTTPProjResult>await this.do("projectRem"
             ,{email:email,actName:actName,projName:projName})
         return rslt;
+    }
+    async projectSourcesTree(email:string,actPath:string,projId:string):Promise<ZFilesDirectoryItem >{
+        let json = <HTTPDirResult>await this.do("projectSourcesTree",{email:email,actPath:actPath,projId:projId})
+        return json.data;
     }
 
     async units():Promise<HTTPUnits>{

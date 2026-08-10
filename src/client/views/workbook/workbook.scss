@@ -2,6 +2,12 @@
 @use "../../../../../Zing3/zui/zuiStyling.scss" as *;
 @use "../../../../../Zing3/zui/zuiParameters.scss" as *;
 
+$ioBackground: color.scale($color-secondary,$lightness:40%);
+$ioBorder: color.scale($color-secondary,$lightness:-30%);
+$ioBorderHover: color.scale($color-secondary,$lightness:-60%);
+$cellBorder:color.scale($color-secondary,$lightness:-20%);
+$paramBorder: color.scale($color-secondary,$lightness:-10%);
+
 .DisplayCellActionBar {
     @include layout(12,none);
     margin-top: 5px;
@@ -9,14 +15,14 @@
 }
 .DisplayCellClosed {
     @include layout(12);
-    border: solid 2px black;
+    border: solid 2px $cellBorder;
     padding: 3px;
     border-radius: 3px;
     background-color: $color-secondary;
 }
 .DisplayCellOpen {
     @include layout(12,none);
-    border: solid 2px black;
+    border: solid 2px $cellBorder;
     padding: 3px;
     padding-top:5px;
     border-radius: 3px;
@@ -25,7 +31,7 @@
 }
 .DisplayCellParam {
     @include layout(11,both,1);
-    border: solid 2px color.scale($color-secondary,$lightness:-10%);
+    border: solid 2px $paramBorder;
     padding: 3px;
     border-radius:3px;
     margin-bottom: 3px;
@@ -39,7 +45,7 @@
     border-radius:3px;
     min-height: 50px;
     min-width:300px;
-    resize:both;
+    resize:vertical;
     overflow-y:auto;
 }
 .DisplayInputBar{
@@ -47,7 +53,7 @@
     position:absolute;
     top:0;
     margin-bottom:-10px;
-    margin-left:20px;
+    margin-left:24px;
     margin-right:40px;
     z-index: 10;
 }
@@ -66,19 +72,65 @@
     background-color: white;
     border: solid 1px color.scale($color-secondary,$lightness: 10%);
 }
-.InputBlock{
+
+.InputBlockBad{
     @include layout(0);
-    background-color: gray;
+    background-color: $ioBackground;
     color:white;
-    border:solid 2px black;
+    border:solid 2px $ioBorder;
+    border-left-width: 5px;
+    border-right-width: 5px;
+    padding:1px;
     &:hover{
-        border:solid 2px $color-primary;
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
     }
 }
-.InputBlockText {
+.InputBlockClosed{
+    @include layout(0);
+    width: 3em;
+    height: 1px;
+    background-color: $ioBackground;
     color:white;
+    border:solid 2px $ioBorder;
+    padding-top:1px;
+    &:hover{
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
+    }
+
+}
+.InputBlockGood{
+    @include layout(0);
+    background-color: $ioBackground;
+    color:white;
+    border:solid 2px $ioBorder;
+    padding:1px;
+    &:hover{
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
+    }
+}
+.InputBlockNone{
+    @include layout(0);
+    background-color: white;
+    color:white;
+    border:solid 1px $ioBorder;
+    padding:2px;
+    &:hover{
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
+    }
+}
+.InputBlockSelected {
+    border-color: black;
+}
+.InputBlockText {
+    color:black;
     padding-left: 10px;
     padding-right:10px;
+    font-size: 9px;
+    letter-spacing:1.5px;
 }
 .MenuButton {
     @include layoutRight(0);
@@ -92,6 +144,18 @@
     height:15px;
     margin-left: 5px;
 }
+.NoteEdit {
+    @include layout(12);
+    background-color: white;
+    height:40px;
+    padding:5px;
+    overflow-y:auto;
+    overflow-x:auto;
+    resize:both;
+}
+.NoteEditContainer{
+    background-color: white;
+}
 .OpenCloseButton{
     @include layout(0);
     width:10px;
@@ -100,17 +164,35 @@
 }
 .OutputBlock{
     @include layout(0);
-    background-color: gray;
+    background-color: $ioBackground;
     color:white;
-    border:solid 2px black;
+    border:solid 2px $ioBorder;
+    padding:1px;
     &:hover{
-        border:solid 2px $color-primary;
+        border-bottom:solid 3px $ioBorderHover;
+        padding-bottom:0px
     }
 }
-.OutputBlockText {
+.OutputBlockClosed{
+    @include layout(0);
+    width: 3em;
+    height: 1px;
+    background-color: $ioBackground;
     color:white;
+    border:solid 2px $ioBorder;
+    padding-top:1px;
+    &:hover{
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
+    }
+
+}
+.OutputBlockText {
+    color: black;
     padding-left: 10px;
     padding-right:10px;
+    font-size: 9px;
+    letter-spacing:1.5px;
 }
 .SheetView {
     @include layout(12,none);
@@ -119,6 +201,9 @@
     border: solid 1px black;
     margin-top:10px;
     border-spacing: 4px;
+    resize: vertical;
+    overflow-x: auto;
+    overflow-y:auto;
 }
 .SheetViewTable {
 
@@ -130,7 +215,7 @@
 }
 .StepCellClosed {
     @include layout(12);
-    border: solid 2px black;
+    border: solid 2px $cellBorder;
     padding: 3px;
     border-radius: 3px;
     background-color: $color-secondary;
@@ -138,7 +223,7 @@
 }
 .StepCellOpen {
     @include layout(12,none);
-    border: solid 2px black;
+    border: solid 2px $cellBorder;
     padding: 3px;
     padding-top: 5px;
     padding-bottom: 11px;
@@ -149,7 +234,7 @@
 }
 .StepCellParam {
     @include layout(11,both,1);
-    border: solid 2px color.scale($color-secondary,$lightness:-10%);
+    border: solid 2px $paramBorder;
     padding: 3px;
     border-radius:3px;
     margin-bottom: 3px;
@@ -164,7 +249,7 @@
     position:absolute;
     top:0;
     margin-bottom:-10px;
-    margin-left:20px;
+    margin-left:24px;
     margin-right:40px;
     z-index: 10;
 }
@@ -173,7 +258,7 @@
     position:absolute;
     bottom:0;
     margin-top:-10px;
-    margin-left:20px;
+    margin-left:24px;
     margin-right:40px;
     z-index: 10;
 }

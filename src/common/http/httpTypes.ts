@@ -43,6 +43,9 @@ export type HTTPProjResult = HTTPResult & {
         projName:string
     }
 }
+export type HTTPDirResult = HTTPResult & {
+    data:ZFilesDirectoryItem
+}
 export type HTTPUnits = HTTPResult & {
     data:{[UnitId:string]:UnitJSON}
 }
@@ -73,6 +76,13 @@ export type HTTPWbGetResult = HTTPResult & {
         wbName:string,
         wbJSON:any
     }
+}
+
+export type ZFilesDirectory = ZFilesDirectoryItem[]
+export type ZFilesDirectoryItem = {
+    name:string,
+    isFolder:boolean,
+    folderContents:ZFilesDirectory
 }
 /*export type ZWorkbookJSON = {
     activityPath:string,
@@ -108,12 +118,6 @@ export type ZFieldJSON = any;
 export type HTTPResult = {
     msg:string,
     data?:any
-}
-export type ZFilesDirectory = ZFilesDirectoryItem[]
-export type ZFilesDirectoryItem = {
-    name:string,
-    isFolder:boolean,
-    folderContents:ZFilesDirectory
 }
 
 export type ZStepViewDesc = {

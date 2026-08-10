@@ -69,6 +69,9 @@ export class WorkbookClient {
     private fromJSON(json:WorkbookJSON){
         this.rootStepId=json.rootStepId;
         this.unitInstances = {};
+        if (json.flowSheet){
+            this.flowSheet = FlowSheetClient.fromJSON(json.flowSheet,this)
+        }
         for (let id in json.unitInstances){
             let typeId = json.unitInstances[id].unitTypeId;
             let ui = UnitInstanceClient.getInstance(typeId,this.flowSheet!);
@@ -78,9 +81,7 @@ export class WorkbookClient {
             }
         }
         this.unitInstanceCount=json.unitInstanceCount;
-        if (json.flowSheet){
-            this.flowSheet = FlowSheetClient.fromJSON(json.flowSheet,this)
-        }
+        
     }
     dirty(){
         DB.msg("dirty not implemented")

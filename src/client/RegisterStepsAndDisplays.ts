@@ -1,5 +1,5 @@
 import { DB } from "../../../Zing3/share/DB";
-import { TableView } from "../server/units/views/TableView";
+import { TableView } from "./views/TableView";
 import { DisplayInstanceClient } from "./workbook/DisplayInstanceClient";
 import { StepInstanceClient } from "./workbook/StepInstanceClient";
 import { UnitClient } from "./workbook/UnitClient";
