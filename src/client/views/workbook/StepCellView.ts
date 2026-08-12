@@ -7,6 +7,7 @@ import { NameString } from "../../../common/NameString";
 import { DB } from "../../../../../Zing3/share/DB";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
+import { Menu } from "../../menu/Menu";
 
 
 
@@ -19,9 +20,6 @@ export class StepCellView extends UnitCellView{
         } else {
             return this.showClosed()
         }
-    }
-    menu():ZUI {
-        throw new Error("Method not implemented.");
     }
     protected outputConnection(outputId:string):"none" | "good" | "bad"{
         let connection = this.unitInst.flowSheet.outputConnection(<StepInstanceClient>this.unitInst,outputId)

@@ -13,6 +13,7 @@ import { DataSourceRef } from "../../../common/WorkbookJSON";
 import { ZT } from "../../../common/ZT";
 import { ZTValueEdit } from "../ZTValueEdit";
 import { showPopup } from "../../popupZUI";
+import { Menu, MenuItem } from "../../menu/Menu";
 
 
 
@@ -64,13 +65,35 @@ export abstract class UnitCellView extends SheetCellView{
         }).style("StepDo")
         return btn;
     }
-    abstract menu():ZUI
+    private _menu:Menu | undefined;
+    menu():Menu{
+        if (this._menu)
+            return this._menu;
+        let menu = new Menu("unit menu","description");
+        menu.addItem("Create_view",[],(target:any,parameters:any[])=>{
+            let t = <UnitCellView>target;
+            DB.msg("Create_view ",t.unitInst.instanceId)
+        },"create a view")
+        menu.addItem("Connect_input",[],(target:any,parameters:any[])=>{
+            let t = <UnitCellView>target;
+            DB.msg("Connect_input ",t.unitInst.instanceId)
+        },"connect an input")
+        this._menu=menu;
+        return menu;
+    }
     protected menuButton():ZUI{
         let mb = new ImageButtonUI([{
             name:"menu",
             imageSource:"/icons/MenuButton.png"
         }],"menu").click(()=>{
             DB.msg("menu clicked")
+            let menu = this.menu();
+            let menuZUI = menu.menuZUI((menuItem:MenuItem)=>{
+                
+            })
+            showPopup(menuZUI,mb.jq[0].id,()=>{
+                DB.msg("menu closed")
+            })
         })
         mb.style("MenuButton")
         return mb;
@@ -84,16 +107,15 @@ export abstract class UnitCellView extends SheetCellView{
                 imageSource:"/icons/EditNote.png"
             }],"add")
             .click(()=>{
-                DB.msg("note clicked "+this.unitInst.instanceId)
-                DB.msg("   note ",this.unitInst.note)
-                let jq = nb.jq
+                //DB.msg("note clicked "+this.unitInst.instanceId)
+                //DB.msg("   note ",this.unitInst.note)
                 this.editNote(nb.jq[0].id,()=>{
                     let note = this.unitInst.note;
                     if (note.length==0)
                         nb.state="add"
                     else
                         nb.state="edit"
-                    DB.msg("check icon")
+                    //DB.msg("check icon")
                 })
             })
         let note = this.unitInst.note;
@@ -106,9 +128,6 @@ export abstract class UnitCellView extends SheetCellView{
     }
         protected editNote(id:string,checkIcon:()=>void){
             DB.msg("edit note for "+id) 
-           /*let $floatZUI = $("#floatZUI")
-            $floatZUI.removeClass("hidden")
-            $floatZUI.empty();*/
             let inst = this.unitInst;
             let saveNote = inst.note;
             let noteEdit = new TextAreaUI()
@@ -120,7 +139,6 @@ export abstract class UnitCellView extends SheetCellView{
                 })
                 .placeHolder("enter a note here")
                 .style("NoteEdit")
-            /*$floatZUI.append(content.renderJQ())*/
             let content = new DivUI([noteEdit]).style("NoteEditContainer")
             showPopup(content,id,()=>{
                 DB.msg("saveNote",saveNote)

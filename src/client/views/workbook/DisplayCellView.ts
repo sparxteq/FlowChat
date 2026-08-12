@@ -1,6 +1,7 @@
 import { DivUI } from "../../../../../Zing3/zui/DivUI";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../../Zing3/zui/ZUI";
+import { Menu } from "../../menu/Menu";
 import { DisplayInstanceClient } from "../../workbook/DisplayInstanceClient";
 import { UnitCellView } from "./UnitCellView";
 
@@ -14,9 +15,6 @@ export class DisplayCellView extends UnitCellView{
         } else {
             return this.showClosed()
         }
-    }
-    menu():ZUI {
-        throw new Error("Method not implemented.");
     }
     private showOpen():ZUI{
         let doList:ZUI[]=[];

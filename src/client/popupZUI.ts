@@ -1,9 +1,26 @@
 import { ZUI } from "../../../Zing3/zui/ZUI";
 
 
+export function closePopup(): void {
+    if (closed) {
+        return;
+    }
 
-export function showPopup(popupZUI:ZUI,targetId: string,onClose: () => void): void {
-    const $popup = popupZUI.renderJQ();
+    closed = true;
+
+    // Remove outside-click listener.
+    $(document).off("mousedown.popup");
+
+    $popup.hide();
+
+    onClose();
+}
+var onClose:()=>void=()=>{};
+var $popup:any;
+export function showPopup(popupZUI:ZUI,targetId: string
+        ,onCloseP: () => void,outClickToHide=true): void {
+    $popup = popupZUI.renderJQ();
+    onClose=onCloseP;
     const $target = $(`#${targetId}`);
 
     if ($target.length === 0 || $popup.length === 0) {
@@ -63,20 +80,7 @@ export function showPopup(popupZUI:ZUI,targetId: string,onClose: () => void): vo
 
     let closed = false;
 
-    function closePopup(): void {
-        if (closed) {
-            return;
-        }
-
-        closed = true;
-
-        // Remove outside-click listener.
-        $(document).off("mousedown.popup");
-
-        $popup.hide();
-
-        onClose();
-    }
+    
 
     /*
      * Delay registering the handler until after the event
@@ -85,7 +89,8 @@ export function showPopup(popupZUI:ZUI,targetId: string,onClose: () => void): vo
     setTimeout(() => {
 
         $(document).on("mousedown.popup", (event) => {
-
+            if (!outClickToHide)
+                return;
             const target = event.target as Node;
 
             /*

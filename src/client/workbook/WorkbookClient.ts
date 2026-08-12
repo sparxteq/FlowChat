@@ -83,8 +83,30 @@ export class WorkbookClient {
         this.unitInstanceCount=json.unitInstanceCount;
         
     }
+    private saveState:"idle" | "waiting" | "saving"="idle"
+    private saveAgainPending=false;
+
     dirty(){
-        DB.msg("dirty not implemented")
+        switch (this.saveState){
+            case "idle":
+                this.saveState="waiting"
+                setTimeout(()=>{
+                    this.saveState="saving";
+                    this.save().then(()=>{
+                        this.saveState="idle";
+                        if (this.saveAgainPending){
+                            this.saveAgainPending=false;
+                            this.dirty();
+                        } 
+                    })
+                },3000)
+                break;
+            case "waiting":
+                break;
+            case "saving":
+                this.saveAgainPending=true;
+                break;
+        }
     }
     async save():Promise<HTTPResult>{
         let json = this.toJSON();

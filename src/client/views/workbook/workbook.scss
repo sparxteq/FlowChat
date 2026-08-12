@@ -138,6 +138,21 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     height:15px;
     margin-left: 5px;
 }
+.MenuContainer {
+    border: solid 1px black;
+    background-color: white;
+}
+.MenuItem {
+    @include layout(12,none);
+    border: solid 1px white;
+    padding:1px;
+    margin:1px;
+    margin-right:2px;
+    &:hover {
+        border:solid 1px black;
+        background-color: lightgray;
+    }
+}
 .NoteButton {
     @include layoutRight(0);
     width:15px;
