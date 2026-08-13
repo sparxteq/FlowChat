@@ -247,7 +247,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     margin-bottom: 5px;
 }
 .StepCellClosed {
-    @include layout(12);
+    @include layout(12,none);
     border: solid 2px $cellBorder;
     padding: 3px;
     border-radius: 3px;

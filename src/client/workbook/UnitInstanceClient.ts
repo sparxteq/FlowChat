@@ -6,6 +6,8 @@ import { StepInstanceClient } from "./StepInstanceClient";
 import { UnitCellView } from "../views/workbook/UnitCellView";
 import { TypeS } from "../../server/units/types/TypeS";
 import { ZT } from "../../common/ZT";
+import { NameString } from "../../common/NameString";
+import { SheetView } from "../views/workbook/SheetView";
 
 
 
@@ -16,6 +18,7 @@ export abstract class UnitInstanceClient {
             tid=tid.slice(1)
         return tid;
     };
+    abstract unitType():string;
     workbook:WorkbookClient;
     flowSheet:FlowSheetClient;
     constructor(flowSheet?:FlowSheetClient){
@@ -68,7 +71,7 @@ export abstract class UnitInstanceClient {
     note="";
     inputSources:{id:string,dataRef?:DataSourceRef}[]=[]
 
-    abstract cellView():UnitCellView;
+    abstract cellView(sheetView:SheetView):UnitCellView;
     getCell():{row:number,col:number} {
         return {row:this.row,col:this.col};
     }
@@ -179,9 +182,40 @@ export abstract class UnitInstanceClient {
     }
     abstract make(flowSheet:FlowSheetClient):UnitInstanceClient;
     private static registry:{[typeId:string]:UnitInstanceClient}={}
+    private static viewTable:{[typeId:string]:boolean}={}
+    private static unitList(typeIdList:string[]):{name:string,typeId:string}[]{
+        let rslt:{name:string,typeId:string}[]=[]
+        for (let typeId of typeIdList){
+            let name = NameString.toCapSpaced(typeId);
+            rslt.push({name:name,typeId:typeId})
+        }
+        rslt.sort((a,b)=>{
+            return a.name.localeCompare(b.name);
+        })
+        return rslt;
+    }
+    static viewList():{name:string,typeId:string}[]{
+        let typeIdList = Object.keys(this.viewTable);
+        return this.unitList(typeIdList);
+    }
+    private static stepTable:{[typeId:string]:boolean}={}
+    static stepList():{name:string,typeId:string}[]{
+        let typeIdList = Object.keys(this.stepTable);
+        return this.unitList(typeIdList);
+    }
     static register(proto:UnitInstanceClient){
         let typeId = proto.typeId();
         this.registry[typeId]=proto;
+        switch (proto.unitType()){
+            case "view":
+                this.viewTable[typeId]=true;
+                break;
+            case "step":
+                this.stepTable[typeId]=true;
+                break;
+            default:
+                DB.msg("invalid proto.unitType()",proto.unitType())
+        }
     }
     static getInstance(typeId:string,flowSheet:FlowSheetClient):UnitInstanceClient|undefined{
         let proto = this.registry[typeId]

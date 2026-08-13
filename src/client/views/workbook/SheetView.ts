@@ -60,15 +60,21 @@ export class SheetView extends ZUI{
         }
 
     }
+    refreshView(){
+        this.content = this.buildView();
+        ZUI.notify();
+    }
+    flowSheet?:FlowSheetClient;
     private buildView():ZUI{
         let table = new TableUI().style("SheetView")
         let flowSheet = <FlowSheetClient>this.workbook.flowSheet;
+        this.flowSheet=flowSheet;
         let instanceIds=Object.keys(flowSheet.unitInstances);
         let nr = flowSheet.nRows();
         let nc = flowSheet.nCols();
         for (let r=0;r<nr;r++){
             for (let c=0;c<nc;c++){
-                let emptyCell = new EmptyCellView(r,c)
+                let emptyCell = new EmptyCellView(r,c,this)
                 table.cell(r,c,emptyCell)
             }
         }
@@ -76,7 +82,7 @@ export class SheetView extends ZUI{
             let unitInst = this.workbook.getUnitInstance(instId);
             let {row, col}=unitInst.getCell()
 
-            let unitCell = unitInst.cellView();
+            let unitCell = unitInst.cellView(this);
             table.cell(row,col,unitCell)
         }
         return table;

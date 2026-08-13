@@ -1,5 +1,6 @@
 import { StepInstanceJSON } from "../../common/WorkbookJSON";
 import { ZT } from "../../common/ZT";
+import { SheetView } from "../views/workbook/SheetView";
 import { StepCellView } from "../views/workbook/StepCellView";
 import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitClient } from "./UnitClient";
@@ -13,6 +14,9 @@ export class StepInstanceClient extends UnitInstanceClient {
     private _typeId:string;
     typeId():string{
         return this._typeId;
+    }
+    unitType():string{
+        return "step";
     }
     constructor(typeId:string,flowSheet:FlowSheetClient){
         super(flowSheet);
@@ -33,8 +37,8 @@ export class StepInstanceClient extends UnitInstanceClient {
         }
         return rslt;
     }
-    cellView():StepCellView{
-        return new StepCellView(this)
+    cellView(sheetView:SheetView):StepCellView{
+        return new StepCellView(this,sheetView)
     }
     outputType(outputId:string):string | undefined{
         let unit = <UnitClient>this.unitClient
@@ -56,7 +60,9 @@ export class StepInstanceClient extends UnitInstanceClient {
         return ""
     }
     make(flowSheet:FlowSheetClient): UnitInstanceClient {
-        return new StepInstanceClient(this.typeId(),flowSheet);
+        let inst =  new StepInstanceClient(this.typeId(),flowSheet);
+        inst.resolveType();
+        return inst;
     }
     fromJSON(json:StepInstanceJSON){
         super.fromJSON(json);

@@ -14,14 +14,15 @@ import { ZT } from "../../../common/ZT";
 import { ZTValueEdit } from "../ZTValueEdit";
 import { showPopup } from "../../popupZUI";
 import { Menu, MenuItem } from "../../menu/Menu";
+import { SheetView } from "./SheetView";
 
 
 
 
 export abstract class UnitCellView extends SheetCellView{
     unitInst:UnitInstanceClient;
-    constructor(unitInst:UnitInstanceClient){
-        super()
+    constructor(unitInst:UnitInstanceClient,sheetView:SheetView){
+        super(sheetView)
         this.unitInst=unitInst;
         let {row, col}=unitInst.getCell();
         this.str = `Unit ${unitInst.instanceId}:${unitInst.typeId()} [${row},${col}]`
@@ -70,6 +71,9 @@ export abstract class UnitCellView extends SheetCellView{
         if (this._menu)
             return this._menu;
         let menu = new Menu("unit menu","description");
+        menu.addItem("remove",[],(parameters:any[])=>{
+            this.removeUnit()
+        },"remove this unit")
         menu.addItem("Create_view",[],(parameters:any[])=>{
             DB.msg("Create_view ",this.unitInst.instanceId)
         },"create a view")
@@ -86,6 +90,14 @@ export abstract class UnitCellView extends SheetCellView{
         menu.addItem("Create",[],createMenu,"creates animals")
         this._menu=menu;
         return menu;
+    }
+    protected removeUnit(){
+        let inst = this.unitInst;
+        let instanceId = inst.instanceId;
+        let flowSheet = <FlowSheetClient>this.sheetView.flowSheet;
+        flowSheet.delUnitInstance(instanceId);
+        this.sheetView.refreshView();
+
     }
     protected menuButton():ZUI{
         let mb = new ImageButtonUI([{
