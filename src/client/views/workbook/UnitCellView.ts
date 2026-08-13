@@ -70,14 +70,20 @@ export abstract class UnitCellView extends SheetCellView{
         if (this._menu)
             return this._menu;
         let menu = new Menu("unit menu","description");
-        menu.addItem("Create_view",[],(target:any,parameters:any[])=>{
-            let t = <UnitCellView>target;
-            DB.msg("Create_view ",t.unitInst.instanceId)
+        menu.addItem("Create_view",[],(parameters:any[])=>{
+            DB.msg("Create_view ",this.unitInst.instanceId)
         },"create a view")
-        menu.addItem("Connect_input",[],(target:any,parameters:any[])=>{
-            let t = <UnitCellView>target;
-            DB.msg("Connect_input ",t.unitInst.instanceId)
+        menu.addItem("Connect_input",[],(parameters:any[])=>{
+            DB.msg("Connect_input ",this.unitInst.instanceId)
         },"connect an input")
+        let createMenu = new Menu("create","create desc");
+            createMenu.addItem("Dog",[],(parameters:any[])=>{
+                DB.msg("create a dog")
+            },"will create a new dog")
+            createMenu.addItem("Cat",[],(parameters:any[])=>{
+                DB.msg("create a cat")
+            },"will create a new cat")
+        menu.addItem("Create",[],createMenu,"creates animals")
         this._menu=menu;
         return menu;
     }
@@ -86,13 +92,13 @@ export abstract class UnitCellView extends SheetCellView{
             name:"menu",
             imageSource:"/icons/MenuButton.png"
         }],"menu").click(()=>{
-            DB.msg("menu clicked")
+            //DB.msg("menu clicked")
             let menu = this.menu();
             let menuZUI = menu.menuZUI((menuItem:MenuItem)=>{
                 
             })
             showPopup(menuZUI,mb.jq[0].id,()=>{
-                DB.msg("menu closed")
+                //DB.msg("menu closed")
             })
         })
         mb.style("MenuButton")
@@ -241,6 +247,7 @@ export abstract class UnitCellView extends SheetCellView{
                     this.unitInst.displayOpen=true
                     ocBtn.state="open"
                 }
+                this.unitInst.workbook.dirty()
                 this.rebuild();
             })
         ocBtn.style("OpenCloseButton")

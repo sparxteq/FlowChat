@@ -14,7 +14,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     margin-bottom: 5px;
 }
 .DisplayCellClosed {
-    @include layout(12);
+    @include layout(12,none);
     border: solid 2px $cellBorder;
     padding: 3px;
     border-radius: 3px;
@@ -61,12 +61,13 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     @include layout(12)
 }
 .EmptyCellText {
-    @include layout(12);
+    @include layout(0);
     text-align:center;
 
     color:$color-secondary;
 }
 .EmptyCellView {
+    @include layout(12);
     min-width: 80px;
     min-height: 20px;
     background-color: white;
@@ -132,22 +133,39 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     font-size: 9px;
     letter-spacing:1.5px;
 }
+.MenuArrow{
+    @include layoutRight(0);
+    width:10px;
+    height:10px;
+    margin-right: 5px;
+}
 .MenuButton {
     @include layoutRight(0);
     width:15px;
     height:15px;
     margin-left: 5px;
 }
+.MenuButtonEmpty {
+    @include layoutRight(0);
+    width:15px;
+    height:15px;
+    margin-left: 5px;
+    opacity: 0.3;
+    &:hover {
+        opacity:1.0;
+    }
+}
 .MenuContainer {
     border: solid 1px black;
     background-color: white;
 }
 .MenuItem {
-    @include layout(12,none);
+    @include layout(12);
     border: solid 1px white;
     padding:1px;
     margin:1px;
     margin-right:2px;
+    cursor:pointer;
     &:hover {
         border:solid 1px black;
         background-color: lightgray;
