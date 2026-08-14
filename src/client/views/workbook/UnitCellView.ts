@@ -15,6 +15,7 @@ import { ZTValueEdit } from "../ZTValueEdit";
 import { showPopup } from "../../popupZUI";
 import { Menu, MenuItem } from "../../menu/Menu";
 import { SheetView } from "./SheetView";
+import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 
 
 
@@ -42,15 +43,9 @@ export abstract class UnitCellView extends SheetCellView{
     protected inputSelected(inputId:string):boolean{
         let flow = this.unitInst.flowSheet;
         let {row,col}= this.unitInst.getCell();
-        if (flow.selectedCell && flow.selectedCell.row==row && flow.selectedCell.col==col){
-            if (flow.selectedInput){
-                if (flow.selectedInput==inputId)
-                    return true;
-                else
-                    return false;
-            }
+        let wb = flow.workbook;
+        if (wb.inputIsSelected(this.unitInst.instanceId,inputId))
             return true;
-        }
         return false;
     }
     protected stepInstanceName():string{
@@ -74,20 +69,6 @@ export abstract class UnitCellView extends SheetCellView{
         menu.addItem("remove",[],(parameters:any[])=>{
             this.removeUnit()
         },"remove this unit")
-        menu.addItem("Create_view",[],(parameters:any[])=>{
-            DB.msg("Create_view ",this.unitInst.instanceId)
-        },"create a view")
-        menu.addItem("Connect_input",[],(parameters:any[])=>{
-            DB.msg("Connect_input ",this.unitInst.instanceId)
-        },"connect an input")
-        let createMenu = new Menu("create","create desc");
-            createMenu.addItem("Dog",[],(parameters:any[])=>{
-                DB.msg("create a dog")
-            },"will create a new dog")
-            createMenu.addItem("Cat",[],(parameters:any[])=>{
-                DB.msg("create a cat")
-            },"will create a new cat")
-        menu.addItem("Create",[],createMenu,"creates animals")
         this._menu=menu;
         return menu;
     }
@@ -174,13 +155,28 @@ export abstract class UnitCellView extends SheetCellView{
         let inputList:ZUI[]=[];
         for (let input of inputs){
             let inputBlock = this.inputBlock(input);
+            inputBlock.id=inst.instanceId+"_i_"+input.id;
             inputList.push(inputBlock);
         }
         return new DivUI(inputList);
     }
     protected inputBlock(input:{id: string,dataRef?: DataSourceRef}):ZUI{
-        if (!this.unitInst.displayOpen)
-            return new DivUI([]).style("InputBlockClosed")
+        if (!this.unitInst.displayOpen){
+            let style = "InputBlockClosed"
+            let div = new DivUI([])
+            let wb = this.unitInst.workbook;
+            if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
+                style+=" InputBlockSelected"
+            
+            let clicker = new ClickWrapperUI([div])
+                .click((event:Event)=>{
+                    event.stopPropagation();
+                    wb.selectInput(this.unitInst.instanceId,input.id)
+                    this.sheetView.refreshView();
+                    //DB.msg(`input ${input.id} clicked`)
+                })
+            return clicker.style(style);
+        }
         let div = new DivUI([
             new TextUI(NameString.toCapSpaced(input.id)).style("InputBlockText")
         ])
@@ -195,10 +191,18 @@ export abstract class UnitCellView extends SheetCellView{
             case "bad":
                 style+="InputBlockBad"
         }
-        if (this.inputSelected(input.id))
+        let wb = this.unitInst.workbook;
+        if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
             style+=" InputBlockSelected"
         div.style(style)
-        return div;
+        let clicker = new ClickWrapperUI([div])
+            .click((event:Event)=>{
+                event.stopPropagation();
+                wb.selectInput(this.unitInst.instanceId,input.id)
+                this.sheetView.refreshView();
+                //DB.msg(`input ${input.id} clicked`)
+            })
+        return clicker;
     }
     
 

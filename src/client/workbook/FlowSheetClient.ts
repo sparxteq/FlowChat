@@ -19,9 +19,6 @@ export class FlowSheetClient {
             return "/";
         }
     }
-    selectedCell?:{row:number,col:number};
-    selectedInput?:string;
-    selectedOutput?:string;
     inputConnection(unitInst:UnitInstanceClient,inputId:string):"none" | "good" | "bad"{
         let sources = unitInst.inputSources
         for (let source of sources){

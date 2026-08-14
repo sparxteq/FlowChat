@@ -13,6 +13,13 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     margin-top: 5px;
     margin-bottom: 5px;
 }
+.DisplayCellActionBarSelected {
+    @include layout(12,none);
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: solid 3px black;
+    background-color: white;
+}
 .DisplayCellClosed {
     @include layout(12,none);
     border: solid 2px $cellBorder;
@@ -98,6 +105,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     &:hover{
         border-top:solid 3px $ioBorderHover;
         padding-top:0px;
+        cursor: pointer;
     }
 
 }
@@ -110,6 +118,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     &:hover{
         border-top:solid 3px $ioBorderHover;
         padding-top:0px;
+        cursor: pointer;
     }
 }
 .InputBlockNone{
@@ -121,10 +130,16 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     &:hover{
         border-top:solid 3px $ioBorderHover;
         padding-top:0px;
+        cursor: pointer;
     }
 }
 .InputBlockSelected {
     border-color: black;
+    &:hover{
+        border-top:solid 3px $ioBorderHover;
+        padding-top:0px;
+        cursor: pointer;
+    }
 }
 .InputBlockText {
     color:black;
@@ -203,7 +218,8 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     padding:1px;
     &:hover{
         border-bottom:solid 3px $ioBorderHover;
-        padding-bottom:0px
+        padding-bottom:0px;
+        cursor: pointer;
     }
 }
 .OutputBlockClosed{
@@ -217,6 +233,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     &:hover{
         border-top:solid 3px $ioBorderHover;
         padding-top:0px;
+        cursor: pointer;
     }
 
 }
@@ -245,6 +262,13 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     @include layout(12,none);
     margin-top: 5px;
     margin-bottom: 5px;
+}
+.StepCellActionBarSelected {
+    @include layout(12,none);
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: solid 3px black;
+    background-color: white;
 }
 .StepCellClosed {
     @include layout(12,none);

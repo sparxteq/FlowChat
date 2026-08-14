@@ -8,6 +8,7 @@ import { DB } from "../../../../../Zing3/share/DB";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
 import { Menu } from "../../menu/Menu";
+import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 
 
 
@@ -16,7 +17,7 @@ export class StepCellView extends UnitCellView{
     buildView(): ZUI {
         let inst = <StepInstanceClient>this.unitInst
         if (inst.displayOpen){
-            return this.showOpen()
+            return this.showOpen();
         } else {
             return this.showClosed()
         }
@@ -24,20 +25,6 @@ export class StepCellView extends UnitCellView{
     protected outputConnection(outputId:string):"none" | "good" | "bad"{
         let connection = this.unitInst.flowSheet.outputConnection(<StepInstanceClient>this.unitInst,outputId)
         return connection;
-    }
-    protected outputSelected(outputId:string):boolean{
-        let flow = this.unitInst.flowSheet;
-        let {row,col}=this.unitInst.getCell();
-        if (flow.selectedCell && flow.selectedCell.row==row && flow.selectedCell.col==col){
-            if (flow.selectedOutput){
-                if (flow.selectedOutput==outputId)
-                    return true;
-                else
-                    return false
-            }
-            return true;
-        }
-        return false;
     }
     protected outputBar():ZUI{
         let inst = <StepInstanceClient>this.unitInst;
@@ -51,9 +38,11 @@ export class StepCellView extends UnitCellView{
         let outputList:ZUI[]=[];
         for (let output of outputs){
             let outputBlock = this.outputBlock(output);
+            outputBlock.id = inst.instanceId+"_o_"+output;
             outputList.push(outputBlock);
         }
-        return new DivUI(outputList);
+        let bar = new DivUI(outputList);
+        return bar;
     }
     protected outputBlock(output:string):ZUI{
         if (!this.unitInst.displayOpen)
@@ -61,22 +50,41 @@ export class StepCellView extends UnitCellView{
         let div = new DivUI([
             new TextUI(NameString.toCapSpaced(output)).style("OutputBlockText")
         ]).style("OutputBlock")
-        return div;
+        let clicker = new ClickWrapperUI([div])
+            .click((event:Event)=>{
+                event.stopPropagation();
+                //DB.msg(`output ${output} clicked`)
+            })
+        return clicker;
     }
     private showOpen():ZUI{
+        let actionBarStyle="StepCellActionBar"
+        let inst = this.unitInst;
+        let wb = inst.workbook;
+        if (wb.instanceIsSelected(inst.instanceId))
+            actionBarStyle = "StepCellActionBarSelected"
         let doList:ZUI[]=[];
             doList.push(this.actionBar(()=>{
                     DB.msg(`do ${this.unitInst.typeId()}`)
-                }).style("StepCellActionBar"))
+                }).style(actionBarStyle))
             let pe = this.paramEdit()
             if (pe)
                 doList.push(pe.style("StepCellParam"))
             doList.push(this.log().style("StepLog"))
-        let container=new DivUI([
+        let div=new DivUI([
             new DivUI(doList).style("StepCellOpen"),
             this.inputBar().style("StepInputBar"),
             this.outputBar().style("StepOutputBar")
         ]).style("StepOpenContainer")
+        let container = new ClickWrapperUI([div])
+            .click((event:any)=>{
+                event.stopPropagation()
+
+                let wb = this.unitInst.workbook;
+                wb.selectInstance(this.unitInst.instanceId,event.shiftKey)
+                this.sheetView.refreshView();
+            })
+        container.id=this.unitInst.instanceId
         return container
     }
     
@@ -86,11 +94,24 @@ export class StepCellView extends UnitCellView{
         ])
     }
     private showClosed():ZUI{
-        let container=new DivUI([
-            this.actionBar().style("StepCellActionBar"),
+        let actionBarStyle="StepCellActionBar"
+        let inst = this.unitInst;
+        let wb = inst.workbook;
+        if (wb.instanceIsSelected(inst.instanceId))
+            actionBarStyle = "StepCellActionBarSelected"
+        let div=new DivUI([
+            this.actionBar().style(actionBarStyle),
             this.inputBar().style("StepInputBar"),
             this.outputBar().style("StepOutputBar")
         ]).style("StepCellClosed")
+        let container = new ClickWrapperUI([div])
+            .click((event:any)=>{
+                //DB.msg("step cell clicked")
+                let wb = this.unitInst.workbook;
+                wb.selectInstance(this.unitInst.instanceId,event.shiftKey)
+                this.sheetView.refreshView();
+            })
+        container.id=this.unitInst.instanceId;
         return container
     }
 }

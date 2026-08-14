@@ -136,4 +136,75 @@ export class WorkbookClient {
         }
         return rslt;
     }
+
+
+    private selectedInstances:UnitInstanceId[]=[]
+    instanceIsSelected(id:UnitInstanceId):boolean{
+        return this.selectedInstances.indexOf(id)>=0;
+    }
+    selectInstance(id:UnitInstanceId,shiftKey:boolean){
+        this.selectedInput=undefined;
+        if (shiftKey)
+            this.multiSelectInstance(id);
+        else {
+            this.selectedInstances=[id]
+        }
+        this.redrawConnections()
+    }
+        private multiSelectInstance(id:UnitInstanceId){
+            for (let selectedId of this.selectedInstances){
+                if (this.sameFlowSheet(id,selectedId)){
+                    this.selectedInstances=[id]
+                    return;
+                }
+            }
+            this.selectedInstances.push(id);
+        }
+        private redrawConnections(){
+            DB.msg("redrawConnections not implemented")
+        }
+    private sameFlowSheet(instIdA:UnitInstanceId,instIdB:UnitInstanceId):boolean{
+        let instA = this.getUnitInstance(instIdA);
+        let fsA = instA.flowSheet;
+        let instB = this.getUnitInstance(instIdB);
+        let fsB = instB.flowSheet;
+        return fsA==fsB;
+    }
+    private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
+    inputIsSelected(instanceId:UnitInstanceId,inputId:string):boolean{
+        if (this.selectedInput){
+            if (this.selectedInput.instanceId==instanceId){
+                if (this.selectedInput.inputId==inputId)
+                    return true;
+            }
+        }
+        return false;
+    }
+    selectInput(instanceId:UnitInstanceId,inputId:string){
+        this.selectedInstances=[]
+        if (this.inputIsSelected(instanceId,inputId)){
+            this.connectInput(instanceId,inputId)
+         }else 
+            this.selectedInput = {instanceId:instanceId,inputId:inputId}
+        this.redrawConnections();
+    }
+    selectOutput(instanceId:UnitInstanceId,outputId:string){
+        if (this.selectedInput){
+            if ( this.sameFlowSheet(instanceId,this.selectedInput.instanceId)){
+                this.connectInput(this.selectedInput.instanceId,this.selectedInput.inputId,
+                    instanceId,outputId)
+            } else {
+                this.selectedInput=undefined;
+                this.selectedInstances=[];
+            }
+            this.redrawConnections();
+        }
+    }
+    private connectInput(inputInstId:UnitInstanceId,inputId:string,
+            outputInstId?:UnitInstanceId,outputId?:string){
+        if (outputInstId)
+            DB.msg(`connectInput ${outputInstId}.${outputId} > ${inputInstId}.${inputId}`)
+        else
+            DB.msg(`clear input ${inputInstId}.${inputId}`)
+    }
 }
