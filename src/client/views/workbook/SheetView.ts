@@ -79,10 +79,10 @@ export class SheetView extends ZUI{
         //DB.end()
     }
     refreshView(){
-        DB.start("refreshView")
+        //DB.start("refreshView")
         this.content = this.buildView();
         ZUI.notify();
-        DB.end();
+        //DB.end();
     }
     flowSheet?:FlowSheetClient;
     private buildView():ZUI{
@@ -110,13 +110,13 @@ export class SheetView extends ZUI{
         return table;
     }
     private redrawOverlay(){
-        DB.start("SheetView.redrawOverlay")
+        //DB.start("SheetView.redrawOverlay")
         clearOverlay();
         //overlayLine(100,200,300,400,9,"rgba(0,0,255,0.5")
         let wb = this.workbook;
         if (wb){
             wb.redrawConnections();
         }
-        DB.end();
+        //DB.end();
     }
 }

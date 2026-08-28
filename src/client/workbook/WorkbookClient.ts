@@ -142,9 +142,11 @@ export class WorkbookClient {
     private selectedInstances:UnitInstanceId[]=[]
     private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
     redrawConnections(){
-        DB.msg("redrawConnections")
+        //DB.msg("redrawConnections")
         overlayStroke(2,"rgba(255,0,0,1)")
-        this.redrawSelectedInput()
+        if (this.selectedInput)
+            this.redrawInputConnection(this.selectedInput.instanceId,this.selectedInput.inputId)
+        this.redrawSelectedInstances();
     }   
         private inRect(instanceId:string,inputId:string):DOMRect | undefined{
             let id =  WorkbookClient.inputDivId(instanceId,inputId)
@@ -158,29 +160,40 @@ export class WorkbookClient {
             let rect = el?.getBoundingClientRect();
             return rect;
         }
-        private redrawSelectedInput(){
-            if (this.selectedInput){
-                let unitInst = this.getUnitInstance(this.selectedInput.instanceId);
-                let flow = unitInst.flowSheet;
-                let source = flow.inputSource(unitInst,this.selectedInput.inputId)
-                if (source && source.instance){
-                    let inputRect = this.inRect(this.selectedInput.instanceId,this.selectedInput.inputId)
-                    let outputRect = this.outRect(source.instance.instanceId,source.outputId)
-                    if (inputRect && outputRect){
-                        let inputCenter = inputRect.left + inputRect.width/2;
-                        let outputCenter = outputRect.left + outputRect.width/2;
-                        let offset = Math.abs(inputRect.bottom-outputRect.top)/2;
-                        overlayCurve(inputCenter,inputRect.top
-                            ,inputCenter,inputRect.top-offset
-                            ,outputCenter,outputRect.bottom+offset
-                            ,outputCenter,outputRect.bottom)
-                        /*overlayLine(inputCenter,inputRect.top
-                            ,inputCenter,inputRect.top-offset)
-                        overlayLine(outputCenter,outputRect.bottom+offset
-                            ,outputCenter,outputRect.bottom)*/
+        private redrawInputConnection(instanceId:string,inputId:string){
+
+            let unitInst = this.getUnitInstance(instanceId);
+            let flow = unitInst.flowSheet;
+            let source = flow.inputSource(unitInst,inputId)
+            if (source && source.instance){
+                let inputRect = this.inRect(instanceId,inputId)
+                let outputRect = this.outRect(source.instance.instanceId,source.outputId)
+                if (inputRect && outputRect){
+                    let inputCenter = inputRect.left + inputRect.width/2;
+                    let outputCenter = outputRect.left + outputRect.width/2;
+                    let offset = Math.abs(inputRect.bottom-outputRect.top)/2;
+                    overlayCurve(inputCenter,inputRect.top
+                        ,inputCenter,inputRect.top-offset
+                        ,outputCenter,outputRect.bottom+offset
+                        ,outputCenter,outputRect.bottom)
+                    /*overlayLine(inputCenter,inputRect.top
+                        ,inputCenter,inputRect.top-offset)
+                    overlayLine(outputCenter,outputRect.bottom+offset
+                        ,outputCenter,outputRect.bottom)*/
+                }
+            }
+        }
+        private redrawSelectedInstances(){
+            for (let instId of this.selectedInstances){
+                let inst = this.getUnitInstance(instId);
+                if (inst){
+                    let inputSources = inst.inputSources;
+                    for (let inputS of inputSources){
+                        this.redrawInputConnection(instId,inputS.id)
                     }
                 }
             }
+            //DB.msg("redrawSelectedInstances")
         }
     static inputDivId(instanceId:string,inputId:string):string{
         let id = instanceId+"_i_"+inputId;
@@ -204,12 +217,26 @@ export class WorkbookClient {
     }
         private multiSelectInstance(id:UnitInstanceId){
             for (let selectedId of this.selectedInstances){
-                if (this.sameFlowSheet(id,selectedId)){
+                if (selectedId == id)
+                    return;
+                if (!this.sameFlowSheet(id,selectedId)){
                     this.selectedInstances=[id]
                     return;
                 }
             }
             this.selectedInstances.push(id);
+            let rect = new RCRect();
+            for (let selectId of this.selectedInstances){
+                let inst = this.getUnitInstance(selectId)
+                rect.addInst(inst)
+            }
+            this.selectedInstances=[]
+            for (let instId in this.unitInstances){
+                let inst = this.unitInstances[instId]
+                let {row,col}=inst.getCell();
+                if (rect.isIn(row,col))
+                    this.selectedInstances.push(instId)
+            }
         }
     private sameFlowSheet(instIdA:UnitInstanceId,instIdB:UnitInstanceId):boolean{
         let instA = this.getUnitInstance(instIdA);
@@ -260,5 +287,41 @@ export class WorkbookClient {
             inputInst.remInputSource(inputId);
         }
         this.dirty();
+    }
+}
+
+class RCRect{
+    firstCol=-1;
+    lastCol=-1;
+    firstRow=-1;
+    lastRow=-1;
+    addInst(inst:UnitInstanceClient){
+        let {row,col}=inst.getCell();
+        if (this.firstCol<0){
+            this.firstCol=col;
+            this.lastCol=col;
+            this.firstRow=row;
+            this.lastRow=row;
+        } else {
+            if (col<this.firstCol)
+                this.firstCol=col
+            if (col>this.lastCol)
+                this.lastCol=col;
+            if (row<this.firstRow)
+                this.firstRow=row;
+            if (row>this.lastRow)
+                this.lastRow=row;
+        }
+    }
+    isIn(row:number,col:number):boolean{
+        if (col<this.firstCol)
+            return false;
+        if (col>this.lastCol)
+            return false;
+        if (row<this.firstRow)
+            return false;
+        if (row>this.lastRow)
+            return false;
+        return true;
     }
 }

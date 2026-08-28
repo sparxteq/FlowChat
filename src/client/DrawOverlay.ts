@@ -62,7 +62,7 @@ function redrawOverlay(){
     }
     ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
     let color = "";
-    DB.msg("draw",draw)
+    //DB.msg("draw",draw)
     for (let el of draw){
         switch(el.kind){
             case "stroke":
