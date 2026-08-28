@@ -1,6 +1,7 @@
 import { DB } from "../../../../Zing3/share/DB";
 import { HTTPResult } from "../../common/http/httpTypes";
 import { DataSourceRef, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
+import { overlayCurve, overlayLine, overlayRect, overlayStroke } from "../DrawOverlay";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
 import { FlowSheetClient } from "./FlowSheetClient";
@@ -60,7 +61,7 @@ export class WorkbookClient {
         if (!workbookRslt)
             return false;
         if (!workbookRslt.success){
-            DB.msg(`workbookGet`,workbookRslt.msg)
+            //DB.msg(`workbookGet`,workbookRslt.msg)
             return false;
         }
         this.fromJSON(workbookRslt.data.wbJSON)
@@ -139,6 +140,56 @@ export class WorkbookClient {
 
 
     private selectedInstances:UnitInstanceId[]=[]
+    private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
+    redrawConnections(){
+        DB.msg("redrawConnections")
+        overlayStroke(2,"rgba(255,0,0,1)")
+        this.redrawSelectedInput()
+    }   
+        private inRect(instanceId:string,inputId:string):DOMRect | undefined{
+            let id =  WorkbookClient.inputDivId(instanceId,inputId)
+            let el = document.getElementById(id);
+            let rect = el?.getBoundingClientRect();
+            return rect;
+        }
+        private outRect(instanceId:string,outputId:string):DOMRect | undefined{
+            let id =  WorkbookClient.outputDivId(instanceId,outputId)
+            let el = document.getElementById(id);
+            let rect = el?.getBoundingClientRect();
+            return rect;
+        }
+        private redrawSelectedInput(){
+            if (this.selectedInput){
+                let unitInst = this.getUnitInstance(this.selectedInput.instanceId);
+                let flow = unitInst.flowSheet;
+                let source = flow.inputSource(unitInst,this.selectedInput.inputId)
+                if (source && source.instance){
+                    let inputRect = this.inRect(this.selectedInput.instanceId,this.selectedInput.inputId)
+                    let outputRect = this.outRect(source.instance.instanceId,source.outputId)
+                    if (inputRect && outputRect){
+                        let inputCenter = inputRect.left + inputRect.width/2;
+                        let outputCenter = outputRect.left + outputRect.width/2;
+                        let offset = Math.abs(inputRect.bottom-outputRect.top)/2;
+                        overlayCurve(inputCenter,inputRect.top
+                            ,inputCenter,inputRect.top-offset
+                            ,outputCenter,outputRect.bottom+offset
+                            ,outputCenter,outputRect.bottom)
+                        /*overlayLine(inputCenter,inputRect.top
+                            ,inputCenter,inputRect.top-offset)
+                        overlayLine(outputCenter,outputRect.bottom+offset
+                            ,outputCenter,outputRect.bottom)*/
+                    }
+                }
+            }
+        }
+    static inputDivId(instanceId:string,inputId:string):string{
+        let id = instanceId+"_i_"+inputId;
+        return id.toLocaleLowerCase()
+    }
+    static outputDivId(instanceId:string,outputId:string):string{
+        let id = instanceId+"_o_"+outputId;
+        return id.toLocaleLowerCase();
+    }
     instanceIsSelected(id:UnitInstanceId):boolean{
         return this.selectedInstances.indexOf(id)>=0;
     }
@@ -160,17 +211,13 @@ export class WorkbookClient {
             }
             this.selectedInstances.push(id);
         }
-        private redrawConnections(){
-            DB.msg("redrawConnections not implemented")
-        }
     private sameFlowSheet(instIdA:UnitInstanceId,instIdB:UnitInstanceId):boolean{
         let instA = this.getUnitInstance(instIdA);
         let fsA = instA.flowSheet;
         let instB = this.getUnitInstance(instIdB);
         let fsB = instB.flowSheet;
-        return fsA==fsB;
+        return fsA.instanceId==fsB.instanceId;
     }
-    private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
     inputIsSelected(instanceId:UnitInstanceId,inputId:string):boolean{
         if (this.selectedInput){
             if (this.selectedInput.instanceId==instanceId){
@@ -202,9 +249,16 @@ export class WorkbookClient {
     }
     private connectInput(inputInstId:UnitInstanceId,inputId:string,
             outputInstId?:UnitInstanceId,outputId?:string){
-        if (outputInstId)
-            DB.msg(`connectInput ${outputInstId}.${outputId} > ${inputInstId}.${inputId}`)
-        else
-            DB.msg(`clear input ${inputInstId}.${inputId}`)
+        /*DB.msg("connectInput",{
+            in:inputInstId,iid:inputId,out:outputInstId,oid:outputId
+        })*/
+        let inputInst = this.getUnitInstance(inputInstId);
+        if (outputInstId){
+            //DB.msg(`connectInput ${outputInstId}.${outputId} > ${inputInstId}.${inputId}`)
+            inputInst.setInputSource(inputId,outputInstId,outputId!)
+        }else{
+            inputInst.remInputSource(inputId);
+        }
+        this.dirty();
     }
 }

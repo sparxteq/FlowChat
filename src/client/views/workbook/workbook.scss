@@ -92,6 +92,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     &:hover{
         border-top:solid 3px $ioBorderHover;
         padding-top:0px;
+        cursor:pointer;
     }
 }
 .InputBlockClosed{

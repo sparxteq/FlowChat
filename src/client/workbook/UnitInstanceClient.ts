@@ -136,6 +136,49 @@ export abstract class UnitInstanceClient {
             outputId:""
         }
     }
+    setInputSource(inputId:string,outInstId:string,outputId:string){
+        
+        let {row:inRow,col:inCol} = this.getCell();
+        let outInst = this.workbook.getUnitInstance(outInstId);
+        if (outInst){
+            let {row:outRow,col:outCol}=outInst.getCell();
+            for (let i=0;i<this.inputSources.length;i++){
+                let inRef = this.inputSources[i];
+                if (inRef.id==inputId){
+                    inRef.dataRef = {
+                            outputId:outputId,
+                            rowAbsolute:false,
+                            row:outRow-inRow,
+                            colAbsolute:false,
+                            col:outCol-inCol
+                        }
+                    return;
+                }
+            }
+            
+            this.inputSources.push({
+                id:inputId,
+                dataRef:{
+                    outputId:outputId,
+                    rowAbsolute:false,
+                    row:outRow-inRow,
+                    colAbsolute:false,
+                    col:outCol-inCol
+                }
+            })
+        }
+        this.workbook.dirty();
+    } 
+    remInputSource(inputId:string){
+        for (let i=0;i<this.inputSources.length;i++){
+            let inRef = this.inputSources[i];
+            if (inRef.id==inputId){
+                inRef.dataRef=undefined;
+                return;
+            }
+        }
+        this.workbook.dirty()
+    }
     private resolveRefRC(dataRef:DataSourceRef):{row:number,col:number}{
         let row=dataRef.row;
         let col=dataRef.col;

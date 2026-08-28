@@ -9,6 +9,7 @@ import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
 import { Menu } from "../../menu/Menu";
 import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
+import { WorkbookClient } from "../../workbook/WorkbookClient";
 
 
 
@@ -38,22 +39,27 @@ export class StepCellView extends UnitCellView{
         let outputList:ZUI[]=[];
         for (let output of outputs){
             let outputBlock = this.outputBlock(output);
-            outputBlock.id = inst.instanceId+"_o_"+output;
             outputList.push(outputBlock);
         }
         let bar = new DivUI(outputList);
         return bar;
     }
     protected outputBlock(output:string):ZUI{
-        if (!this.unitInst.displayOpen)
-            return new DivUI([]).style("OutputBlockClosed")
+        if (!this.unitInst.displayOpen){
+            let div = new DivUI([]).style("OutputBlockClosed")
+            div.id = WorkbookClient.outputDivId(this.unitInst.instanceId,output)
+            return div;
+        }
         let div = new DivUI([
             new TextUI(NameString.toCapSpaced(output)).style("OutputBlockText")
         ]).style("OutputBlock")
+        div.id = WorkbookClient.outputDivId(this.unitInst.instanceId,output)
         let clicker = new ClickWrapperUI([div])
             .click((event:Event)=>{
                 event.stopPropagation();
-                //DB.msg(`output ${output} clicked`)
+                DB.msg(`output ${output} clicked`)
+                this.unitInst.workbook.selectOutput(this.unitInst.instanceId,output)
+                this.sheetView.refreshView();
             })
         return clicker;
     }

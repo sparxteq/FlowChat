@@ -25,7 +25,9 @@ export class FlowChatEnv {
                     <script>var CLIENT_IS_DEBUG = ${CLIENT_IS_DEBUG}</script>
                     <script src="/client.js"></script>
                     <div id="modaloverlay" class="hidden"></div>
-                    <div id="floatZUI" class="hidden FloatZUI"></div>
+                    <div id="drawOverlay" class="DrawOverlay">
+                        <canvas id="drawCanvas" class="DrawCanvas"></canvas>
+                    </div>
                 </body>
             </html>`
         return body;

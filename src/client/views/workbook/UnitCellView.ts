@@ -16,6 +16,7 @@ import { showPopup } from "../../popupZUI";
 import { Menu, MenuItem } from "../../menu/Menu";
 import { SheetView } from "./SheetView";
 import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
+import { WorkbookClient } from "../../workbook/WorkbookClient";
 
 
 
@@ -155,7 +156,7 @@ export abstract class UnitCellView extends SheetCellView{
         let inputList:ZUI[]=[];
         for (let input of inputs){
             let inputBlock = this.inputBlock(input);
-            inputBlock.id=inst.instanceId+"_i_"+input.id;
+            //inputBlock.id=WorkbookClient.inputDivId(inst.instanceId,input.id);
             inputList.push(inputBlock);
         }
         return new DivUI(inputList);
@@ -165,6 +166,7 @@ export abstract class UnitCellView extends SheetCellView{
             let style = "InputBlockClosed"
             let div = new DivUI([])
             let wb = this.unitInst.workbook;
+            div.id = WorkbookClient.inputDivId(this.unitInst.instanceId,input.id)
             if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
                 style+=" InputBlockSelected"
             
@@ -195,6 +197,7 @@ export abstract class UnitCellView extends SheetCellView{
         if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
             style+=" InputBlockSelected"
         div.style(style)
+        div.id=WorkbookClient.inputDivId(this.unitInst.instanceId,input.id)
         let clicker = new ClickWrapperUI([div])
             .click((event:Event)=>{
                 event.stopPropagation();

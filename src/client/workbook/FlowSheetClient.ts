@@ -41,6 +41,10 @@ export class FlowSheetClient {
         }
         return "bad"
     }
+    inputSource(unitInst:UnitInstanceClient,inputId:string):{instance:UnitInstanceClient,outputId:string}{
+        let source = unitInst.inputSource(unitInst.flowSheet,inputId)
+        return source;
+    }
     outputConnection(unitInst:StepInstanceClient,outputId:string):"none" | "good" | "bad"{
         let {row,col} = unitInst.getCell();
         let workbook = this.workbook;
