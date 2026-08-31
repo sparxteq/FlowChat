@@ -304,23 +304,28 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 }
 .Step_canCompute {
     @include layout(6);
-    border: solid 2px color.adjust($color-primary,$lightness: 30%)
+    border: solid 2px color.adjust($color-primary,$lightness: 30%);
+    padding-left:5px;
 }
 .Step_computed {
     @include layout(6);
-    background-color: color.adjust($color-primary,$lightness: 20%)
+    background-color: color.adjust($color-primary,$lightness: 20%);
+    padding-left:5px;
 }
 .Step_ready {
     @include layout(6);
-    border: solid 4px black;
+    border: solid 3px black;
+    padding-left:5px;
 }
 .Step_statusError {
     @include layout(0);
     background-color: red;
+    padding-left:5px;
 }
 .Step_unconnected {
     @include layout(6);
     background-color: lightgrey;
+    padding-left:5px;
     cursor: none
 }
 .StepInputBar{
