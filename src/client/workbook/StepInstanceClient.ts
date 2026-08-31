@@ -44,7 +44,7 @@ export class StepInstanceClient extends UnitInstanceClient {
         let unit = <UnitClient>this.unitClient
         let outputs=unit.outputTypes;
         for (let o of outputs){
-            if (o.outputId==outputId)
+            if (o.outputId.toLocaleLowerCase()==outputId.toLocaleLowerCase())
                 return o.typeName;
         }
     }

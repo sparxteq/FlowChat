@@ -52,14 +52,32 @@ export abstract class UnitCellView extends SheetCellView{
     protected stepInstanceName():string{
         return NameString.toCapSpaced(this.unitInst.typeId())
     }
+    private nameStyle():string{
+        switch(this.unitInst.execStatus){
+            case "unconnected":
+                return "Step_unconnected"
+            case "ready":
+                return "Step_ready"
+            case "computed":
+                return "Step_computed"
+            case "canCompute":
+                return "Step_canCompute"
+            default:
+                return "Step_statusError"
+        }
+    }
     protected name():ZUI{
         let name= this.stepInstanceName()
-        return new TextUI(`<b>${name}</b>`).style("UnitInstanceName")
+        return new TextUI(`<b>${name}</b>`).style(()=>{
+            return this.nameStyle();
+        })
     }
     protected actionButton(click:()=>void):ZUI{
         let btn = new ButtonUI(this.stepInstanceName()).click(()=>{
             click();
-        }).style("StepDo")
+        }).style(()=>{
+            return this.nameStyle();
+        })
         return btn;
     }
     private _menu:Menu | undefined;
@@ -192,6 +210,7 @@ export abstract class UnitCellView extends SheetCellView{
                 break;
             case "bad":
                 style+="InputBlockBad"
+                break;
         }
         let wb = this.unitInst.workbook;
         if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
@@ -240,6 +259,7 @@ export abstract class UnitCellView extends SheetCellView{
         let email = wb.userEmail;
         return new ZTValueEdit(pType,pValue,(pData:any)=>{
                 this.unitInst.paramValue = pData;
+                this.unitInst.paramChangeTime=Date.now();
                 wb.dirty();
             },projectId,activityId,email)
         

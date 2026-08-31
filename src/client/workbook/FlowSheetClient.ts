@@ -42,7 +42,7 @@ export class FlowSheetClient {
         return "bad"
     }
     inputSource(unitInst:UnitInstanceClient,inputId:string):{instance:UnitInstanceClient,outputId:string}{
-        let source = unitInst.inputSource(unitInst.flowSheet,inputId)
+        let source = unitInst.inputSource(inputId)
         return source;
     }
     outputConnection(unitInst:StepInstanceClient,outputId:string):"none" | "good" | "bad"{

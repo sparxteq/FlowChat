@@ -30,6 +30,8 @@ export type UnitInstanceJSON = {
     paramValue:ParamValueJSON,
     inputSources:{id:string,dataRef?:DataSourceRef}[],
     note:string,
+    stepComputeTime:number,
+    paramChangeTime:number
 }
 export type UnitTypeId=string;
 export type StepInstanceJSON = UnitInstanceJSON & {

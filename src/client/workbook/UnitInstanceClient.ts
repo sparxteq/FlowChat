@@ -21,7 +21,10 @@ export abstract class UnitInstanceClient {
     abstract unitType():string;
     workbook:WorkbookClient;
     flowSheet:FlowSheetClient;
+    execStatus:ExecuteStatus;
+    stepComputeTime=0;
     constructor(flowSheet?:FlowSheetClient){
+        this.execStatus = "unknown"
         if (flowSheet){
             this.flowSheet=<FlowSheetClient>flowSheet;
             this.workbook=(<FlowSheetClient>flowSheet).workbook;
@@ -38,7 +41,6 @@ export abstract class UnitInstanceClient {
         }
         return nameToCheck
     }
-
     findInputDataRef(inputId:string):DataSourceRef|undefined{
         let inputs = this.inputSources;
         for (let input of inputs){
@@ -66,6 +68,7 @@ export abstract class UnitInstanceClient {
 
     instanceId="";
     paramValue:ParamValueJSON={}
+    paramChangeTime=0;
     protected row=-1;
     protected col=-1;
     note="";
@@ -115,7 +118,8 @@ export abstract class UnitInstanceClient {
             }
         }
     }
-    inputSource(sheet:FlowSheetClient,inputId:string):{instance:UnitInstanceClient,outputId:string}{
+    inputSource(inputId:string):{instance:UnitInstanceClient,outputId:string}{
+        let sheet = this.flowSheet;
         for (let inRef of this.inputSources){
             if (inRef.id==inputId){
                 let dataRef = inRef.dataRef;
@@ -206,6 +210,8 @@ export abstract class UnitInstanceClient {
         this.paramValue=json.paramValue;
         this.inputSources=json.inputSources;
         this.note = json.note;
+        this.stepComputeTime = json.stepComputeTime;
+        this.paramChangeTime = json.paramChangeTime;
     }
 
     protected abstract resolveType():void;
@@ -219,7 +225,9 @@ export abstract class UnitInstanceClient {
             row:this.row,
             col:this.col,
             inputSources:this.inputSources,
-            note:this.note
+            note:this.note,
+            stepComputeTime:this.stepComputeTime,
+            paramChangeTime:this.paramChangeTime
         }
         return rslt;
     }
@@ -271,3 +279,19 @@ export abstract class UnitInstanceClient {
 export function registerUnits(){
 
 }
+
+export type ExecuteStatus = 
+    "unknown"           // status is not yet computed
+    | "checking"        // in process of checking the status (detects loops)
+    | "unconnected"     // no path to compute all inputs
+    | "ready"           // all inputs have been computed but this step's outputs are not
+    | "computed"        // all output times are newer than input or parameter times
+    | "canCompute"      // connected but not ready or computed. If this instance is 
+                        // is selected, there is a sequence of precursor instances that
+                        // can be computed to make this instance ready
+
+export type InputExecStatus = 
+    "unconnected"       // No source or source instance is unconnected
+    | "present"         // There is a connected output with a computed value
+    | "canCompute"     // There is a connected output to a connected source but no 
+                        // computed value

@@ -6,7 +6,7 @@ import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
 import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitClient } from "./UnitClient";
-import { UnitInstanceClient } from "./UnitInstanceClient";
+import { InputExecStatus, UnitInstanceClient } from "./UnitInstanceClient";
 
 
 
@@ -53,6 +53,70 @@ export class WorkbookClient {
         }
     }
         
+    updateExecStatus(){
+        for (let instId in this.unitInstances){
+            let inst = this.getUnitInstance(instId);
+            inst.execStatus="unknown"
+        }
+        for (let instId in this.unitInstances){
+            let inst = this.getUnitInstance(instId);
+            this.updateInstExecStatus(inst);
+        }
+    }
+        private updateInstExecStatus(inst:UnitInstanceClient){
+            if (inst.execStatus=="checking"){
+                inst.execStatus = "unconnected"
+                return;
+            }
+            if (inst.execStatus!="unknown")
+                return;
+            inst.execStatus = "checking";
+            let cumInputStatus:InputExecStatus = "present";
+            let latestSourceExecTime = inst.paramChangeTime;
+            for (let inputS of inst.inputSources){
+                if (inputS.dataRef){
+                    let inSource = inst.inputSource(inputS.id);
+                    let outInst = inSource.instance;
+                    let outExecTime = outInst.stepComputeTime;
+                    if (outExecTime>latestSourceExecTime)
+                        latestSourceExecTime=outExecTime;
+                    this.updateInstExecStatus(outInst);
+                    let outStatus = outInst.execStatus;
+                    switch(outStatus){
+                        case "unconnected":
+                            cumInputStatus="unconnected"
+                            break;
+                        case "ready": 
+                        case "canCompute":
+                            if (cumInputStatus == "present")
+                                cumInputStatus = "canCompute"
+                            break;
+                        case "computed": // no change
+                            break;
+                    }
+                } else {
+                    cumInputStatus = "unconnected"
+                }
+            }
+            switch(cumInputStatus){
+                case "unconnected":
+                    inst.execStatus="unconnected"
+                    break;
+                case "present":
+                    if (inst.inputSources.length==0 && !inst.stepComputeTime){
+                        inst.execStatus="ready"
+                        break;
+                    }
+                    if (latestSourceExecTime>inst.stepComputeTime)
+                        inst.execStatus="ready";
+                    else
+                        inst.execStatus="computed"
+                    break;
+                case "canCompute":
+                    inst.execStatus="canCompute"
+                    break;
+            }
+        }
     
     async load():Promise<boolean>{
         let workbookRslt = await this.workClient.workbookGet(this.workbook
@@ -65,6 +129,7 @@ export class WorkbookClient {
             return false;
         }
         this.fromJSON(workbookRslt.data.wbJSON)
+        this.updateExecStatus();
         return true;
     }
     private fromJSON(json:WorkbookJSON){
@@ -88,6 +153,7 @@ export class WorkbookClient {
     private saveAgainPending=false;
 
     dirty(){
+        this.updateExecStatus();
         switch (this.saveState){
             case "idle":
                 this.saveState="waiting"

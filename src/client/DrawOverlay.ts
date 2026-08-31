@@ -109,6 +109,9 @@ window.addEventListener("resize",()=>{
     resize()
     //DB.end();
 })
+window.addEventListener("scroll",()=>{
+    resize();
+})
 
 type OverlayDraw=OverlayElement[];
 type OverlayKind = "stroke" | "line" | "rect" | "curve"

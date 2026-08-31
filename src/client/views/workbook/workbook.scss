@@ -302,6 +302,27 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 .StepDo{
     @include layout(6)
 }
+.Step_canCompute {
+    @include layout(6);
+    border: solid 2px color.adjust($color-primary,$lightness: 30%)
+}
+.Step_computed {
+    @include layout(6);
+    background-color: color.adjust($color-primary,$lightness: 20%)
+}
+.Step_ready {
+    @include layout(6);
+    border: solid 4px black;
+}
+.Step_statusError {
+    @include layout(0);
+    background-color: red;
+}
+.Step_unconnected {
+    @include layout(6);
+    background-color: lightgrey;
+    cursor: none
+}
 .StepInputBar{
     width:100%;
     position:absolute;
