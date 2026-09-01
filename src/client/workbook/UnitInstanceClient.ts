@@ -4,10 +4,10 @@ import { FlowSheetClient } from "./FlowSheetClient";
 import { WorkbookClient } from "./WorkbookClient";
 import { StepInstanceClient } from "./StepInstanceClient";
 import { UnitCellView } from "../views/workbook/UnitCellView";
-import { TypeS } from "../../server/units/types/TypeS";
 import { ZT } from "../../common/ZT";
 import { NameString } from "../../common/NameString";
 import { SheetView } from "../views/workbook/SheetView";
+import { TypeClient } from "./TypeClient";
 
 
 
@@ -35,7 +35,7 @@ export abstract class UnitInstanceClient {
     }
     abstract paramType():ZT;
     checkType(nameToCheck:string):string{
-        let t = TypeS.getType(nameToCheck);
+        let t = TypeClient.getType(nameToCheck);
         if (!t){
             DB.msg(`type ${nameToCheck} does not exist`)
         }
@@ -57,7 +57,7 @@ export abstract class UnitInstanceClient {
             let outputType = sourceInst.outputType(outputId)
             if (outputType){
                 let inputType = this.inputTypes()[inputId];
-                return TypeS.typeMatch(inputType,outputType)
+                return TypeClient.typeMatch(inputType,outputType)
             } else {
                 return false;
             }

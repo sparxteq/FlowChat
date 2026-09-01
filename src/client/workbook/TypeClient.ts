@@ -25,6 +25,16 @@ export class TypeClient{
         }
         this.description=json.description;
     }
+    static typeMatch(inputType:string,outputType:string):boolean{
+        let outType = this.getType(outputType);
+        if (inputType==outputType)
+            return true;
+        for (let st of outType.superTypes){
+            if (st.typeName==inputType)
+                return true;
+        }
+        return false;
+    }
     
     private static registry:{[step:string]:TypeClient}={}
     private static register(typeC:TypeClient){

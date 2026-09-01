@@ -7,6 +7,14 @@ import { UnitInstanceClient } from "./UnitInstanceClient";
 
 
 export abstract class DisplayInstanceClient extends UnitInstanceClient{
+    constructor(flowSheet?:FlowSheetClient){
+        super(flowSheet)
+        let inputTypes = this.inputTypes();
+        this.inputSources=[];
+        for (let inputId in inputTypes){
+            this.inputSources.push({id:inputId})
+        }
+    }
     unitType():string{
         return "view";
     }

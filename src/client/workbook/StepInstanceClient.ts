@@ -21,6 +21,7 @@ export class StepInstanceClient extends UnitInstanceClient {
     constructor(typeId:string,flowSheet:FlowSheetClient){
         super(flowSheet);
         this._typeId=typeId;
+        this.resolveType();
     }
     unitClient:UnitClient=<any>undefined;
     resolveType(){
