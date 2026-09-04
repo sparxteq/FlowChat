@@ -64,6 +64,8 @@ export class WorkbookClient {
         }
     }
         private updateInstExecStatus(inst:UnitInstanceClient){
+            if (!inst.stepComputeTime)
+                inst.stepComputeTime=0;
             if (inst.execStatus=="checking"){
                 inst.execStatus = "unconnected"
                 return;
@@ -73,6 +75,8 @@ export class WorkbookClient {
             inst.execStatus = "checking";
             let cumInputStatus:InputExecStatus = "present";
             let latestSourceExecTime = inst.paramChangeTime;
+            if (!latestSourceExecTime)
+                latestSourceExecTime=0;
             for (let inputS of inst.inputSources){
                 if (inputS.dataRef){
                     let inSource = inst.inputSource(inputS.id);

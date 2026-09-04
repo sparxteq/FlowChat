@@ -236,6 +236,7 @@ export class WorkServer {
         return json;
     }
     static runStart(instanceInfo:StepRunJSON):HTTPRunStart{
+        debugger;
         let session = new RunSession(instanceInfo)
         let success = session.start();
         let rslt:HTTPRunStart = {
@@ -247,8 +248,7 @@ export class WorkServer {
         return rslt;
     }
     static outputVarFile(email:string,actName:string,projName:string,wbName:string,instanceId:string,outputId:string):string{
-        let wbDF = this.workbookDataFile(email,actName,projName,wbName);
-        let vars = wbDF+"/vars"
+        let vars = this.workbookVarsFolder(email,actName,projName,wbName);
         let varFileName = instanceId+"_"+outputId;
         let rslt = vars+"/"+varFileName;
         return rslt;
@@ -340,6 +340,10 @@ export class WorkServer {
     private static workbookDataFile(email:string,actName:string,projName:string,workbookName:string):string{
         let wbF = this.wbFolderName(email,actName,projName,workbookName)
         return wbF+"/.wbData.json"
+    }
+    private static workbookVarsFolder(email:string,actName:string,projName:string,workbookName:string):string{
+        let wbF = this.wbFolderName(email,actName,projName,workbookName)
+        return wbF+"/vars"
     }
     static async workbookGet(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbGetResult>{
         let rslt:HTTPWbGetResult={

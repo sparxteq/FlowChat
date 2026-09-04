@@ -1,3 +1,4 @@
+import { DB } from "../../../Zing3/share/DB";
 import { LogMem } from "../client/log/LogMem";
 import { StepRunJSON } from "../common/WorkbookJSON";
 import { Unit } from "./units/Unit";
@@ -20,7 +21,11 @@ export class RunSession {
         unit.run(this.instanceInfo,this.log).then((success:boolean)=>{
             this.log.done(success);
             this.sessionDoneTime=Date.now();
-        })
+        }).catch((reason:any)=>{
+            DB.msg(`session ${this.instanceInfo.unitId} failed for`,reason)
+            this.log.done(false);
+        }
+    )
         return true;
     }
     private static sessionRegistry:{[sessionId:string]:RunSession}={}

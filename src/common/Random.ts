@@ -13,17 +13,17 @@ function random(seed: number): () => number { // mulberry32
     };
 }
 
-export function randomInt(seed:number):(min:number,max:number)=>number {
+export function randomInt(seed:number,min:number,max:number):()=>number {
     let mul = random(seed)
-    return (min:number,max:number):number=>{
+    return ():number=>{
         let rnd = mul();
         return Math.floor(rnd*(max-min+1))+min
     }
 }
 
-export function randomF(seed:number):(min:number,max:number)=>number {
+export function randomF(seed:number,min=0,max=1):()=>number {
     let mul=random(seed);
-    return (min=0,max=1):number=>{
+    return ():number=>{
         let rnd = mul();
         return rnd*(max-min)+min;
     }

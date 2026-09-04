@@ -26,14 +26,30 @@ export abstract class Unit {
         }
         return nameToCheck
     }
-    outputFile(outputId:string,instanceInfo:StepRunJSON):FilesFS{
+    
+    outputFileName(outputId:string,instanceInfo:StepRunJSON):string{
+        let oTypes = this.outputTypes();
+        let found = false;
+        for (let ot of oTypes){
+            if (ot.outputId==outputId)
+                found=true;
+        }
+        if (!found)
+            throw "**** no such outputId "+outputId+" on "+instanceInfo.unitId;
         let i = instanceInfo;
         let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,i.instanceId
             ,outputId)
-        let f = new FilesFS(fn);
-        return f;
+        return fn;
     }
-    inputFile(inputId:string,instanceInfo:StepRunJSON):FilesFS{
+    inputFileName(inputId:string,instanceInfo:StepRunJSON):string{
+        let iTypes = this.inputTypes();
+        let found = false;
+        for (let ot of iTypes){
+            if (ot.inputId==inputId)
+                found=true;
+        }
+        if (!found)
+            return "**** no such inputId "+inputId+" on "+instanceInfo.unitId;
         let i = instanceInfo;
         let inSource:{id:string,sourceInstId:string,outputId:string}=<any>undefined;
         for (let inputS of instanceInfo.inputSources){
@@ -41,8 +57,7 @@ export abstract class Unit {
                 inSource=inputS;
         }
         let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,inSource.sourceInstId,inSource.outputId)
-        let f = new FilesFS(fn);
-        return f;
+        return fn;
     }
     static uploadJSON():{[unitId:string]:UnitJSON}{
         let rslt:{[unitId:string]:UnitJSON}={}

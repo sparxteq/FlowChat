@@ -20,7 +20,7 @@ export class WriteTableCSV extends WriteTable{
         let cols = this.getColTypes();
         this.file = new FilesFS(this.fullSourceId);
         if (this.file){
-            await this.file.openW(false);
+            await this.file.openW(true);
             await this.writeColHeaders(cols);
 
         }

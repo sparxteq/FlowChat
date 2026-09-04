@@ -1,5 +1,5 @@
-import { FilesFS } from "../server/files/FilesFS";
-import { validExtension } from "./files/ext";
+
+import { fileExtension, validExtension } from "./files/ext";
 
 
 
@@ -311,7 +311,7 @@ export class ZFileName extends ZT{
     valueTypeCheck(value: any): string {
         if (typeof value != "string")
             return `ZFileName ${value} is not a file name`
-        let ext = FilesFS.extension(value)
+        let ext = fileExtension(value)
         let v = validExtension(ext)
         if (!v)
             return `ZFileName "${value}" does not have a valid extension`
