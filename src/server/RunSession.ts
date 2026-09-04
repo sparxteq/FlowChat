@@ -18,14 +18,20 @@ export class RunSession {
         let unit = Unit.getUnit(this.instanceInfo.unitId)
         if (!unit)
             return false;
-        unit.run(this.instanceInfo,this.log).then((success:boolean)=>{
-            this.log.done(success);
-            this.sessionDoneTime=Date.now();
-        }).catch((reason:any)=>{
-            DB.msg(`session ${this.instanceInfo.unitId} failed for`,reason)
-            this.log.done(false);
+        try{
+            unit.run(this.instanceInfo,this.log).then((success:boolean)=>{
+                this.log.done(success);
+                this.sessionDoneTime=Date.now();
+            }).catch((reason:any)=>{
+                DB.msg(`session ${this.instanceInfo.unitId} failed for`,reason)
+                this.log.done(false);
+            })
+        } catch (e) {
+            if (e instanceof Error){
+                DB.msg(`session ${this.instanceInfo.unitId} failed for`,e.message)
+                this.log.done(false);
+            }
         }
-    )
         return true;
     }
     private static sessionRegistry:{[sessionId:string]:RunSession}={}

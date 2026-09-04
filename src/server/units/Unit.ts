@@ -31,7 +31,7 @@ export abstract class Unit {
         let oTypes = this.outputTypes();
         let found = false;
         for (let ot of oTypes){
-            if (ot.outputId==outputId)
+            if (ot.outputId.toLowerCase()==outputId.toLowerCase())
                 found=true;
         }
         if (!found)
@@ -42,20 +42,15 @@ export abstract class Unit {
         return fn;
     }
     inputFileName(inputId:string,instanceInfo:StepRunJSON):string{
-        let iTypes = this.inputTypes();
-        let found = false;
-        for (let ot of iTypes){
-            if (ot.inputId==inputId)
-                found=true;
-        }
-        if (!found)
-            return "**** no such inputId "+inputId+" on "+instanceInfo.unitId;
         let i = instanceInfo;
         let inSource:{id:string,sourceInstId:string,outputId:string}=<any>undefined;
         for (let inputS of instanceInfo.inputSources){
-            if (inputS.id==inputId)
+            if (inputS.id.toLowerCase()==inputId.toLowerCase())
                 inSource=inputS;
         }
+        if (!inSource)
+            throw "**** no such inputId "+inputId+" on "+instanceInfo.unitId;
+
         let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,inSource.sourceInstId,inSource.outputId)
         return fn;
     }
