@@ -1,6 +1,6 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
-import { WorkbookJSON } from "../../common/WorkbookJSON";
+import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPLog, HTTPLogResponse, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
+import { ParamValueJSON, StepRunJSON, WorkbookJSON } from "../../common/WorkbookJSON";
 
 
 export class ClientHTTP{
@@ -67,7 +67,29 @@ export class ClientHTTP{
         let json = <HTTPDirResult>await this.do("projectSourcesTree",{email:email,actPath:actPath,projId:projId})
         return json.data;
     }
-
+    async run(instanceInfo:StepRunJSON
+                ,logResponse:HTTPLogResponse):Promise<HTTPResult>{
+        let start = <HTTPRunStart> await this.do("runStart",{
+            instanceInfo:instanceInfo
+        })
+        if (start.success){
+            let sessionId = start.data.runSessionId;
+            let status = await this.runStatus(sessionId,logResponse);
+            return status;
+        } else {
+            return start
+        }
+    }
+        async runStatus(sessionId:string,logResponse:HTTPLogResponse):Promise<HTTPResult>{
+            while(true){
+                let rslt = <HTTPLog> await this.do("runStatus",{sessionId:sessionId})
+                if (rslt.data.runStatus!="running"){
+                    return rslt;
+                }
+                logResponse(rslt.data.log)
+                await new Promise<void>(resolve =>setTimeout(resolve,3000))
+            }
+        }
     async units():Promise<HTTPUnits>{
         let rslt = <HTTPUnits> await this.do("units",{})
         return rslt;

@@ -1,6 +1,7 @@
 import { TypeName, StepRunJSON } from "../../common/WorkbookJSON";
 import { Unit } from "./Unit";
 import { ZT, ZDict, ZString } from "../../common/ZT";
+import { DB } from "../../../../Zing3/share/DB";
 
 
 
@@ -25,8 +26,11 @@ export class RandomTable extends Unit{
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [ {outputId:"table",typeName:this.checkType("table")}]
     }
-    run(instanceInfo: StepRunJSON): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async run(instanceInfo: StepRunJSON): Promise<boolean> {
+        DB.msg("RandomTable.run",instanceInfo);
+        let outFile = this.outputFile("table",instanceInfo);
+        
+        return true;
     }
     
 }

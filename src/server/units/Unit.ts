@@ -3,6 +3,9 @@ import { UnitJSON, StepRunJSON, TypeName } from "../../common/WorkbookJSON";
 import { TypeS } from "./types/TypeS";
 import { DB } from "../../../../Zing3/share/DB";
 import { ZT } from "../../common/ZT";
+import { Log } from "../../client/log/Log";
+import { WorkServer } from "../WorkServer";
+import { FilesFS } from "../files/FilesFS"
 
 
 export abstract class Unit {
@@ -14,7 +17,7 @@ export abstract class Unit {
     abstract inputTypes():{inputId:string,typeName:TypeName}[]
     abstract outputTypes():{outputId:string,typeName:TypeName}[]
 
-    abstract run(instanceInfo:StepRunJSON):Promise<boolean>;
+    abstract run(instanceInfo:StepRunJSON,log:Log):Promise<boolean>;
     
     checkType(nameToCheck:string):string{
         let t = TypeS.getType(nameToCheck);
@@ -22,6 +25,24 @@ export abstract class Unit {
             DB.msg(`type ${nameToCheck} does not exist`)
         }
         return nameToCheck
+    }
+    outputFile(outputId:string,instanceInfo:StepRunJSON):FilesFS{
+        let i = instanceInfo;
+        let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,i.instanceId
+            ,outputId)
+        let f = new FilesFS(fn);
+        return f;
+    }
+    inputFile(inputId:string,instanceInfo:StepRunJSON):FilesFS{
+        let i = instanceInfo;
+        let inSource:{id:string,sourceInstId:string,outputId:string}=<any>undefined;
+        for (let inputS of instanceInfo.inputSources){
+            if (inputS.id==inputId)
+                inSource=inputS;
+        }
+        let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,inSource.sourceInstId,inSource.outputId)
+        let f = new FilesFS(fn);
+        return f;
     }
     static uploadJSON():{[unitId:string]:UnitJSON}{
         let rslt:{[unitId:string]:UnitJSON}={}

@@ -17,6 +17,20 @@ export type HTTPResult = {
     msg?:string,
     data?:any
 }
+export type HTTPLog = HTTPResult & {
+    data:{stack:HTTPLogEntry[],runStatus:"complete"|"running"|"failed"}
+}
+export type HTTPLogEntry = {
+    type:"M" | "Sc", // Message, Section
+    name?:string,            // only used for Section
+    messages?: HTTPLogEntry[],  // only used for Section
+    text?:string,            // only used for messages 
+    data?:any,               // only used for messages
+    startTime?:number,       // time in millis only used on sections
+    endTime?:number,         // time in millis only used on sections
+    status?:string          // used only on sections
+}
+export type HTTPLogResponse = (logResponse:HTTPLog)=>void;
 export type HTTPActList = HTTPResult &{
     data:{
         email:string,
@@ -41,6 +55,11 @@ export type HTTPProjResult = HTTPResult & {
         email:string,
         actName:string,
         projName:string
+    }
+}
+export type HTTPRunStart = HTTPResult & {
+    data:{ 
+        runSessionId:string
     }
 }
 export type HTTPDirResult = HTTPResult & {

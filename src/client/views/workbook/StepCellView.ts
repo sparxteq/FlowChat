@@ -10,6 +10,9 @@ import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
 import { Menu } from "../../menu/Menu";
 import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 import { WorkbookClient } from "../../workbook/WorkbookClient";
+import { http } from "../../http/ClientHTTP";
+import { curUser, HTTPLog, HTTPLogResponse, HTTPResult } from "../../../common/http/httpTypes";
+import { StepRunJSON } from "../../../common/WorkbookJSON";
 
 
 
@@ -57,7 +60,7 @@ export class StepCellView extends UnitCellView{
         let clicker = new ClickWrapperUI([div])
             .click((event:Event)=>{
                 event.stopPropagation();
-                DB.msg(`output ${output} clicked`)
+                //DB.msg(`output ${output} clicked`)
                 this.unitInst.workbook.selectOutput(this.unitInst.instanceId,output)
                 this.sheetView.refreshView();
             })
@@ -72,6 +75,35 @@ export class StepCellView extends UnitCellView{
         let doList:ZUI[]=[];
             doList.push(this.actionBar(()=>{
                     DB.msg(`do ${this.unitInst.typeId()}`)
+                    let instanceId = this.unitInst.instanceId;
+                    let unitId = this.unitInst.typeId();
+                    let wbId = wb.workbook;
+                    let projId = wb.project;
+                    let actId = wb.activity;
+                    let paramValue = this.unitInst.paramValue;
+                    let email = http.curUser!.email
+                    let instanceInfo:StepRunJSON = {
+                        instanceId:instanceId,
+                        unitId:unitId,
+                        wbId:wbId,
+                        projId:projId,
+                        actId:actId,
+                        userEmail:email,
+                        paramValue:paramValue,
+                        inputSources:this.inputInstSources()
+                    }
+                    http.run(instanceInfo,(logResponse:HTTPLog)=>{
+                        DB.msg(`log for ${this.stepInstanceName()}`,logResponse)
+                    }).then((rslt:HTTPResult)=>{
+                        if (rslt.success){
+                            this.unitInst.stepComputeTime=Date.now();
+                        } else {
+                            this.unitInst.stepComputeTime=0;
+                        }
+                        this.buildView();
+                        ZUI.notify();
+                        this.unitInst.workbook.dirty();
+                    })
                 }).style(actionBarStyle))
             let pe = this.paramEdit()
             if (pe)
@@ -93,6 +125,21 @@ export class StepCellView extends UnitCellView{
         container.id=this.unitInst.instanceId
         return container
     }
+        inputInstSources():{id:string,sourceInstId:string,outputId:string}[]{
+            let rslt:{id:string,sourceInstId:string,outputId:string}[]=[];
+            let flow = this.unitInst.flowSheet;
+            for (let inputS of this.unitInst.inputSources){
+                let dataRef = inputS.dataRef
+                if (dataRef){
+                    let {refRow,refCol}=flow.resolveRef(dataRef,this.unitInst);
+                    let srcInst = flow.rcInstance(refRow,refCol);
+                    if (srcInst){
+                        rslt.push({id:inputS.id,sourceInstId:srcInst.instanceId,outputId:dataRef.outputId})
+                    }
+                }
+            }
+            return rslt;
+        }
     
     private log():ZUI{
         return new DivUI([

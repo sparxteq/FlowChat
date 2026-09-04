@@ -37,6 +37,12 @@ export class ServerHTTP{
             case "projectSourcesTree":
                 rslt = await WorkServer.projectSourcesTree(data.email,data.actPath,data.projId)
                 break;
+            case "runStatus":
+                rslt = await WorkServer.runStatus(data.sessionId);
+                break;
+            case "runStart":
+                rslt = await WorkServer.runStart(data.instanceInfo)
+                break;
             case "units":
                 rslt = { success:true, msg:"",data:await WorkServer.units()}
                 break;

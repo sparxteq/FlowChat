@@ -1,8 +1,9 @@
 
 import { Files } from "../common/files/Files";
-import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPProjList, HTTPProjResult, HTTPResult, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
-import { UnitJSON, TypeJSON, WorkbookJSON } from "../common/WorkbookJSON";
+import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPLog, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
+import { UnitJSON, TypeJSON, WorkbookJSON, StepRunJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
+import { RunSession } from "./RunSession";
 import { TypeS } from "./units/types/TypeS";
 import { Unit } from "./units/Unit";
 
@@ -229,6 +230,29 @@ export class WorkServer {
             else
                 return path.substring(i+1)
         }
+    static runStatus(sessionId:string):HTTPLog{
+        let session = RunSession.getSession(sessionId);
+        let json:HTTPLog = session.log.toJSON();
+        return json;
+    }
+    static runStart(instanceInfo:StepRunJSON):HTTPRunStart{
+        let session = new RunSession(instanceInfo)
+        let success = session.start();
+        let rslt:HTTPRunStart = {
+            success:success,
+            data:{
+                runSessionId:session.sessionId
+            }
+        }
+        return rslt;
+    }
+    static outputVarFile(email:string,actName:string,projName:string,wbName:string,instanceId:string,outputId:string):string{
+        let wbDF = this.workbookDataFile(email,actName,projName,wbName);
+        let vars = wbDF+"/vars"
+        let varFileName = instanceId+"_"+outputId;
+        let rslt = vars+"/"+varFileName;
+        return rslt;
+    }
     static units():{[unitId:string]:UnitJSON}{
         let up = Unit.uploadJSON();
         return up;

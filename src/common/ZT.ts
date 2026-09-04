@@ -1,3 +1,5 @@
+import { FilesFS } from "../server/files/FilesFS";
+import { validExtension } from "./files/ext";
 
 
 
@@ -23,6 +25,8 @@ export abstract class ZT {
     empty():boolean{
         return false;
     }
+    abstract valueTypeCheck(val:any):string;
+    abstract typeMatch(other:ZT):string;
     protected abstract subToJSON(json:any):any;
     protected abstract subFromJSON(json:any):void;
     static fromJSON(json:any):ZT{
@@ -92,7 +96,42 @@ export class ZDict extends ZT{
         this.fields.push(field)
         return this;
     }
-    
+    valueTypeCheck(value: any): string {
+        if (typeof value !="object")
+            return `ZDict recieved a value that is not an object\n`;
+        if (Array.isArray(value))
+            return `ZDict received an array\n`;
+        let err=""
+        for (let field of this.fields){
+            let vf = value[field.fieldName];
+            if (!vf && vf!=0)
+                err+= `ZDict value does not have field "${field.fieldName}"\n`
+            let fErr = field.type.valueTypeCheck(vf);
+            err+=fErr;
+        }
+        for (let fieldName in value){
+            let f = this.getField(fieldName)
+            if (!f)
+                err+=`ZDict does not have field "${fieldName}"`
+        }
+        return err;
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZDict))
+            return `ZDict.typeMatch other is not ZDict`
+        let err="";
+        for (let field of this.fields){
+            let fn = field.fieldName;
+            let otherField = other.getField(fn);
+            if (otherField){
+                let fieldErr = field.type.typeMatch(otherField.type)
+                err+=fieldErr;
+            } else {
+                err+=`field ${fn} not present in other`
+            }
+        }
+        return err;
+    }
     fieldNames():string[]{
         let names:string[]=[];
         for (let field of this.fields)
@@ -129,6 +168,17 @@ export class ZNumber extends ZT{
             return this.info.default;
         return 0
     }
+    valueTypeCheck(value: any): string {
+        if (typeof value == "number")
+            return ""
+        else 
+            return `ZNumber ${value} is not a number`
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZNumber))
+            return `ZNumber other is not a ZNumber\n`
+        return "";
+    }
     protected subToJSON(json: any) {
         return json;
     }
@@ -158,6 +208,30 @@ export class ZArray extends ZT{
     protected subFromJSON(json: any) {
         let elType = ZT.fromJSON(json.elType)
         this.elementType = elType
+    }
+    valueTypeCheck(value: any): string {
+        if (Array.isArray(value)){
+            let t = this.elementType;
+            let err=""
+            for (let ei in value){
+                let el = value[ei]
+                let vterr = t.valueTypeCheck(el);
+                if (vterr!="")
+                    err+=`ZArray value[${ei}] does not match element type\n\t${vterr}`
+                        
+            }
+            return err;
+        } else {
+            return `ZArray value is not an array`
+        }
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZArray)){
+            return `other is not ZArray`
+        }
+        let t = this.elementType;
+        let ot = other.elementType;
+        return (t.typeMatch(ot))
     }
 }
 
@@ -207,6 +281,18 @@ export class ZString extends ZT{
     protected subFromJSON(json: any) {
         return;
     }
+    valueTypeCheck(value: any): string {
+        if (typeof value == "string")
+            return ""
+        else {
+            return `ZString ${value} is not a string`
+        }
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZString || other instanceof ZFileName))
+            return `ZString other is not a ZString\n`
+        return "";
+    }
 }
 
 
@@ -221,6 +307,20 @@ export class ZFileName extends ZT{
     }
     protected subFromJSON(json: any) {
         return;
+    }
+    valueTypeCheck(value: any): string {
+        if (typeof value != "string")
+            return `ZFileName ${value} is not a file name`
+        let ext = FilesFS.extension(value)
+        let v = validExtension(ext)
+        if (!v)
+            return `ZFileName "${value}" does not have a valid extension`
+        return "";
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZFileName))
+            return `ZFileName other is not a ZFileName\n`
+        return "";
     }
 }
 
@@ -238,6 +338,18 @@ export class ZBoolean extends ZT{
     protected subFromJSON(json: any) {
         return;
     }
+    valueTypeCheck(value: any): string {
+        if (typeof value == "boolean")
+            return ""
+        else 
+            return `ZBoolean ${value} is not boolean`
+    }
+    
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZBoolean))
+            return `ZBoolean other is not a ZBoolean\n`
+        return "";
+    }
 }
 
 export class ZAny extends ZT{
@@ -252,6 +364,12 @@ export class ZAny extends ZT{
     }
     protected subFromJSON(json: any) {
         return;
+    }
+    valueTypeCheck(value: any): string {
+        return ""
+    }
+    typeMatch(other:ZT):string{
+        return "";
     }
 }
 
@@ -300,6 +418,29 @@ export class ZCode extends ZT{
         return 
     }
     
+    valueTypeCheck(value: any): string {
+        for (let code of this.codes){
+            if (code.value==value)
+                return ""
+        }
+        return `ZCode "${value}" is not a valid code`
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZCode))
+            return `ZCode other is not a ZCode\n`
+        let err = "";
+        let otherVals = other.codeVals();
+        let thisVals = this.codeVals();
+        for (let v of thisVals){
+            if (otherVals.indexOf(v)<0)
+                err += `value ${v} is not found in other`
+        }
+        for (let v of otherVals){
+            if (thisVals.indexOf(v)<0)
+                err += `value ${v} is not found in this`
+        }
+        return err;
+    }
 }
 
 export class ZCodeSpec {
@@ -363,6 +504,30 @@ export class ZAlternative  extends ZT{
         }
     }
 
+    valueTypeCheck(value: any): string {
+        for (let alt of this.alternatives){
+            let err = alt.valueTypeCheck(value)
+            if (err=="")
+                return "";
+        }
+        return `ZAlternative ${value} does not match any of the alternative types`
+    }
+    typeMatch(other:ZT):string{
+        if (!(other instanceof ZAlternative))
+            return `other is not a ZAlternative`
+        for (let alt of this.alternatives){
+            let found = false;
+            for (let oAltI =0;oAltI< other.alternatives.length && !found;oAltI++){
+                let oAlt=other.alternatives[oAltI]
+                if (alt.typeMatch(oAlt)==""){
+                    found=true;
+                }
+            }
+            if(!found)
+                return "ZAlternative type missmatch"
+        }
+        return "";
+    }
 }
 
 export function ztMake(type:string):ZT{

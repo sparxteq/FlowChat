@@ -45,7 +45,7 @@ export type StepRunJSON = {
     wbId:string,
     instanceId:string,
     paramValue:ParamValueJSON
-    inputSources:{id:string,dataRef?:DataSourceRef}[],
+    inputSources:{id:string,sourceInstId:string,outputId:string}[],
 }
 
 export type UnitJSON = {

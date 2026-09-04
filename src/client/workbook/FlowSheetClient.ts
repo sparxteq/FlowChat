@@ -64,7 +64,7 @@ export class FlowSheetClient {
         }
         return "bad"
     }
-    private resolveRef(dataRef:DataSourceRef,unitInst:UnitInstanceClient):{refRow:number,refCol:number}{
+    resolveRef(dataRef:DataSourceRef,unitInst:UnitInstanceClient):{refRow:number,refCol:number}{
         let {row,col}=unitInst.getCell();
         let refRow = dataRef.row;
         if (!dataRef.rowAbsolute)
