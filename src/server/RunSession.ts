@@ -7,6 +7,7 @@ export class RunSession {
     instanceInfo:StepRunJSON
     sessionId:string;
     log:LogMem;
+    sessionDoneTime=0;
     constructor(instanceInfo:StepRunJSON){
         this.instanceInfo=instanceInfo;
         this.sessionId = RunSession.generateSessionId(this);
@@ -18,6 +19,7 @@ export class RunSession {
             return false;
         unit.run(this.instanceInfo,this.log).then((success:boolean)=>{
             this.log.done(success);
+            this.sessionDoneTime=Date.now();
         })
         return true;
     }
@@ -33,6 +35,18 @@ export class RunSession {
         return sessionId;
     }
     static getSession(sessionId:string):RunSession{
+        this.purgeSessions();
         return this.sessionRegistry[sessionId]
+    }
+    private static purgeSessions(){
+        for (let id in this.sessionRegistry){
+            let session = this.sessionRegistry[id];
+            if (session.sessionDoneTime){
+                let idleTime = Date.now()-session.sessionDoneTime;
+                if (idleTime>60*1000){
+                    delete this.sessionRegistry[id]
+                }
+            }
+        }
     }
 }
