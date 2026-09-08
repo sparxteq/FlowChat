@@ -1,5 +1,5 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPLog, HTTPLogResponse, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPLog, HTTPLogResponse, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
 import { ParamValueJSON, StepRunJSON, WorkbookJSON } from "../../common/WorkbookJSON";
 
 
@@ -122,6 +122,11 @@ export class ClientHTTP{
         let rslt = <HTTPResult> await this.do("workbookSave",
             {email:email,actName:actName,projName:projId,wbName:wbName,json:json}
         )
+        return rslt;
+    }
+    async varGetCSV(email:string,actName:string,projName:string,workbookName:string,instanceId:string,outputId:string):Promise<HTTPCSVGetResult>{
+        let rslt = <HTTPCSVGetResult>await this.do("varGetCSV"
+            ,{email:email,actName:actName,projName:projName,wbName:workbookName,instanceId:instanceId,outputId:outputId})
         return rslt;
     }
 

@@ -1,9 +1,10 @@
 
 import { Files } from "../common/files/Files";
-import { HTTPActList, HTTPActResult, HTTPDirResult, HTTPLog, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPLog, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
 import { UnitJSON, TypeJSON, WorkbookJSON, StepRunJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
 import { RunSession } from "./RunSession";
+import { ReadTableCSV } from "./tables/ReadTableCSV";
 import { TypeS } from "./units/types/TypeS";
 import { Unit } from "./units/Unit";
 
@@ -406,5 +407,26 @@ export class WorkServer {
             rslt.msg=`failed to create ${wbFileN}`
             return rslt;
         }
+    }
+    static async varGetCSV(email:string,actName:string,projName:string
+        ,wbName:string,instanceId:string,outputId:string):Promise<HTTPCSVGetResult>{
+        let rslt:HTTPCSVGetResult = {
+            success:true,
+            data:{
+                email:email,
+                actName:actName,
+                projName:projName,
+                wbName:wbName,
+                instanceId:instanceId,
+                outputId:outputId,
+                csv:""
+            }
+        }
+        let fileName = this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
+        let file = new ReadTableCSV(fileName);
+        let csv = await file.readToStr()
+        rslt.success = csv!="";
+        rslt.data.csv=csv;
+        return rslt;
     }
 }

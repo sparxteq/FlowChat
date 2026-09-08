@@ -85,5 +85,37 @@ export class ReadTableCSV extends ReadTable{
         }
         return null;
     }
-    
+    async readToStr():Promise<string>{
+        await this.openR();
+        let types = this.getColTypes();
+        let colNames:string[] = [];
+        for (let t of types){
+            let name =t.fieldName;
+            colNames.push(name);
+        }
+        let csvLines:string[]=[]
+        let headers = colNames.join(",");
+        csvLines.push(headers);
+        let row = await this.nextRow();
+        while(row){
+            let rowLine = this.rowLine(row);
+            csvLines.push(rowLine)
+            row = await this.nextRow();
+        }
+        let csvStr = csvLines.join("\n");
+        return csvStr;
+    }
+        private rowLine(row:any[]):string{
+            let conts:string[]=[];
+            for (let item of row){
+                if (typeof item == "number")
+                    conts.push(item.toString())
+                else if (typeof item == "string")
+                    conts.push(item)
+                else
+                    conts.push("")
+            }
+            let rslt = conts.join(",")
+            return rslt;
+        }
 }

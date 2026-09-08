@@ -96,6 +96,17 @@ export type HTTPWbGetResult = HTTPResult & {
         wbJSON:any
     }
 }
+export type HTTPCSVGetResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string,
+        wbName:string,
+        instanceId:string,
+        outputId:string,
+        csv:string
+    }
+}
 
 export type ZFilesDirectory = ZFilesDirectoryItem[]
 export type ZFilesDirectoryItem = {

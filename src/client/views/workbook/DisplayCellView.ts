@@ -3,6 +3,7 @@ import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 import { DivUI } from "../../../../../Zing3/zui/DivUI";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../../Zing3/zui/ZUI";
+import { StepRunJSON } from "../../../common/WorkbookJSON";
 import { Menu } from "../../menu/Menu";
 import { DisplayInstanceClient } from "../../workbook/DisplayInstanceClient";
 import { UnitCellView } from "./UnitCellView";
@@ -64,10 +65,38 @@ export class DisplayCellView extends UnitCellView{
         container.id=this.unitInst.instanceId;
         return container
     }
+    private computedDisplay:ZUI = <any>undefined;
     private display():ZUI{
-        return new DivUI([
-            new TextUI("display")
-        ])
+        switch (this.unitInst.execStatus){
+            case "ready":
+                this.computeAndUpdateDisplay().then((display:ZUI)=>{
+                    this.computedDisplay=display;
+                    return this.computedDisplay
+                });
+                return new TextUI("computing")
+                break;
+            case "computed":
+                if (!this.computedDisplay){
+                    this.computeAndUpdateDisplay().then((display:ZUI)=>{
+                        this.computedDisplay=display;
+                        this.rebuild();
+                    });
+                    return new TextUI("computing")
+                } else {
+                    return this.computedDisplay
+                }
+            default:
+                return new TextUI("not available")
+        }
+    }
+    private async computeAndUpdateDisplay():Promise<ZUI>{
+        let display = await (<DisplayInstanceClient>this.unitInst).computeDisplay();
+        this.unitInst.stepComputeTime=Date.now();
+        let inst = this.unitInst;
+        let wb = inst.workbook;
+        this.computedDisplay=display;
+        wb.updateExecStatus();
+        return this.display();
     }
     
 }

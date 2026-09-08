@@ -168,6 +168,25 @@ $font-size-l2: 32px;
     padding:0px;
     cursor:pointer;
 }
+
+.TSTableCell {
+  padding-top: 3px;
+  padding-bottom: 3Px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: black;
+}
+.TSTableHeader {
+  font-size: 13px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: white;
+  color: black;
+  font-weight: bold;
+  margin-top: 0px;
+  cursor: pointer;
+}
 .ViewTreeSingle-ocCheck {
     margin-top:10px;
 }

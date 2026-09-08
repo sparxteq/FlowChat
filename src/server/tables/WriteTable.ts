@@ -1,5 +1,5 @@
 import { Names } from "../../common/Names";
-import { TableAb } from "./TableAb";
+import { TableAb } from "../../common/TableAb";
 
 
 

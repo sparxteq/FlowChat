@@ -1,5 +1,5 @@
+import { TableAb } from "../../common/TableAb";
 import { FilesFS } from "../files/FilesFS";
-import { TableAb } from "./TableAb";
 
 export abstract class ReadTable extends TableAb {
     

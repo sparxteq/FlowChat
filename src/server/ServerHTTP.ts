@@ -65,6 +65,11 @@ export class ServerHTTP{
                 rslt = await WorkServer.workbookSave(data.email,data.actName
                     ,data.projName,data.wbName,data.json
                 )
+                break;
+            case "varGetCSV":
+                rslt = await WorkServer.varGetCSV(data.email,data.actName
+                    ,data.projName,data.wbName,data.instanceId,data.outputId)
+                break;
         }
         return rslt;
     }
