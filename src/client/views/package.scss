@@ -134,14 +134,14 @@ $font-size-l2: 32px;
 }
 .TableCol-selected{
     height:6px;
-    width:100%;
+    @include layout(12);
     background-color:green;
     padding:0px;
     cursor: pointer;
 }
 .TableCol-unselected{
-    height:10px;
-    width:100%;
+    @include layout(12);
+    height:6px;
     background-color: rgb(235, 233, 233);
     border:lightgray 1px solid;
     padding:0px;
@@ -175,6 +175,9 @@ $font-size-l2: 32px;
   padding-left: 10px;
   padding-right: 10px;
   color: black;
+}
+.TSColumnName {
+    @include layout(0);
 }
 .TSTableHeader {
   font-size: 13px;

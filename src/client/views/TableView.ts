@@ -14,6 +14,7 @@ import { curUser } from "../../common/http/httpTypes";
 import { TableMem } from "../../common/TableMem";
 import { DB } from "../../../../Zing3/share/DB";
 import { InteractiveViewTable } from "./InteractiveViewTable";
+import { PageManager } from "../../../../Zing3/zui/PageManager";
 
 
 
@@ -56,9 +57,36 @@ class TableViewContent extends ZUI{
     private colSortOff=false;
     private colSelectionOff=false;
     private rowSelectionOff=false;
+    private thisId=""
     constructor(viewTable:TableMem){
         super();
+        if (this.thisId=="")
+            this.thisId="TV"+Math.floor(Math.random()*1000000);
+        //DB.msg("constructor id",this.thisId)
         this.viewTable=new InteractiveViewTable(viewTable);
+        let here = this;
+        PageManager.addAfterDOMNotice(()=>{
+            let id = here.thisId;
+            //DB.msg("after DOM id",id);
+            const div = document.getElementById(id!)!;
+            if (!div) return;
+            let resizeTimer: ReturnType<typeof setTimeout>;
+
+            const observer = new ResizeObserver(entries => {
+                clearTimeout(resizeTimer);
+
+                const newHeight = entries[0].contentRect.height;
+
+                resizeTimer = setTimeout(() => {
+                    let oldHeight=Number.parseInt(div.style.height);
+                    //DB.msg(`old ${oldHeight} new ${newHeight}`)
+                    if (Math.abs(oldHeight-newHeight)>5)
+                        div.style.height = `${newHeight}px`;
+                }, 300);
+            })
+            observer.observe(div);
+        });
+
     }
     private headerClass:string = "TSTableHeader";
     headerStyle(style:string):TableViewContent{
@@ -79,9 +107,11 @@ class TableViewContent extends ZUI{
         return table;
     }
     renderJQ():JQuery{
+            
+        //DB.msg("renderJQ id",this.thisId)
         if(this.viewTable.isEmpty())
-            return $("<div><b>This table is empty or missing</b></div>")
-        this.jq = $("<table></table>");
+            return $(`<div><b>This table is empty or missing</b></div>`)
+        this.jq = $(`<table id="${this.thisId}"></table>`);
         this.refresh();
         return this.jq;
     }
@@ -115,8 +145,9 @@ class TableViewContent extends ZUI{
         }
         let colHighlightsB = this.table().highlightColsB();
         for (let cName of columnNames){
-            let name = $(`<div>${cName}</div>`)
+            let name = $(`<div class="TSColumnName">${cName}</div>`)
             name.click((event)=>{
+                    event.stopPropagation()
                     this.doColClick(cName);
             })
             let th = $(`<th></th>`);
@@ -136,6 +167,7 @@ class TableViewContent extends ZUI{
             }
             let select = $(`<div class="${selectClass}"></div>`)
             select.click((event)=>{
+                event.stopPropagation()
                 let colB = this.viewTable.columnIdx(cName);
                 this.viewTable.addHighlightColB(colB)
             })
@@ -212,6 +244,7 @@ class TableViewContent extends ZUI{
         if (!this.rowSelectionOff){
             let selectBar = $(`<td class="${selectClass}"></td>`)
             selectBar.click((event)=>{
+                event.stopPropagation()
                 this.doRowSelect(rowV)
         })
         rowJQ.append(selectBar)
@@ -238,6 +271,7 @@ class TableViewContent extends ZUI{
             let box = $(`<td class='${sortClass}'></td>`)
             box.click((event)=>{
                 //DB.msg(`boxClick V${rowV} B${rowB}`)
+                event.stopPropagation();
                 if (colSort.rowIdxB!=rowB)
                     colSort={rowIdxB:rowB,descending:true}
                 else {
