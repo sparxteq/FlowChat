@@ -8,6 +8,7 @@ import { WorkbookClient } from "./WorkbookClient";
 export class FlowSheetClient {
     workbook:WorkbookClient;
     instanceId?:UnitInstanceId;
+    
     constructor(workbook:WorkbookClient,instanceId?:UnitInstanceId){
         this.workbook=workbook;
         this.instanceId=instanceId;
@@ -115,6 +116,26 @@ export class FlowSheetClient {
         }
         return nr+2;
     }
+    private columnWidths:number[]=[]
+    private initColWidth = 200;
+    getColWidths():number[]{
+        if (this.columnWidths.length > this.nCols())
+            this.columnWidths.length = this.nCols()
+        else if (this.columnWidths.length<this.nCols()){
+            let diff = this.nCols()-this.columnWidths.length;
+            for (let i=0;i<diff;i++)
+                this.columnWidths.push(this.initColWidth)
+        }
+        return this.columnWidths
+    }
+    setColWidths(newWidths:number[]){
+        if (this.columnWidths.length>newWidths.length)
+            this.columnWidths.length = newWidths.length;
+        for (let i=0;i<newWidths.length;i++){
+            this.columnWidths[i]=newWidths[i];
+        }
+        this.workbook.dirty();
+    }
     nCols():number{
         let nc=0;
         for (let uId in this.unitInstances){
@@ -189,11 +210,13 @@ export class FlowSheetClient {
         for (let ui of json.unitInstances){
             ft.unitInstances[ui]=true;
         }
+        ft.columnWidths=json.colWidths;
         return ft;
     }
     toJSON():FlowSheetJSON{
         let rslt:FlowSheetJSON = {
-            unitInstances:Object.keys(this.unitInstances)
+            unitInstances:Object.keys(this.unitInstances),
+            colWidths:this.columnWidths
         }
         return rslt;
     }

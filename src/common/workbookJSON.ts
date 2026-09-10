@@ -8,7 +8,8 @@ export type WorkbookJSON = {
     flowSheet?:FlowSheetJSON;
 }
 export type FlowSheetJSON = {
-    unitInstances:UnitInstanceId[]
+    unitInstances:UnitInstanceId[],
+    colWidths:number[]
 }
 export type UnitId= string // id for a Unit from the UnitRegistry
 export type UnitInstanceId = string;    // id for a stepinstance from the workbook's stepInstances

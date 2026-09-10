@@ -87,7 +87,10 @@ export class SheetView extends ZUI{
     flowSheet?:FlowSheetClient;
     private buildView():ZUI{
         //DB.start("buildView")
-        let table = new TableUI().style("SheetView")
+        let table = new TableUI().resizeColumns(
+            (colWidths:number[])=>{this.flowSheet!.setColWidths(colWidths)},
+            ()=>{ return this.flowSheet!.getColWidths()}
+        ).style("SheetView")
         let flowSheet = <FlowSheetClient>this.workbook.flowSheet;
         this.flowSheet=flowSheet;
         let instanceIds=Object.keys(flowSheet.unitInstances);
