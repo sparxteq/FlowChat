@@ -1,20 +1,16 @@
-
-import { TypeName, StepRunJSON } from "../../common/WorkbookJSON";
-import { Unit } from "../../server/units/Unit";
-import { ZT, ZDict } from "../../common/ZT";
-import { DisplayInstanceClient, StepViewSelections } from "../workbook/DisplayInstanceClient";
-import { UnitCellView } from "./workbook/UnitCellView";
-import { UnitInstanceClient } from "../workbook/UnitInstanceClient";
-import { WorkbookClient } from "../workbook/WorkbookClient";
-import { FlowSheetClient } from "../workbook/FlowSheetClient";
-import { ZUI } from "../../../../Zing3/zui/ZUI";
-import { TextUI } from "../../../../Zing3/zui/TextUI";
-import { http } from "../http/ClientHTTP";
-import { curUser } from "../../common/http/httpTypes";
-import { TableMem } from "../../common/TableMem";
 import { DB } from "../../../../Zing3/share/DB";
-import { InteractiveViewTable } from "./InteractiveViewTable";
+import { DivUI } from "../../../../Zing3/zui/DivUI";
 import { PageManager } from "../../../../Zing3/zui/PageManager";
+import { TextUI } from "../../../../Zing3/zui/TextUI";
+import { ZUI } from "../../../../Zing3/zui/ZUI";
+import { TableMem } from "../../common/TableMem";
+import { TypeName } from "../../common/WorkbookJSON";
+import { ZT, ZDict } from "../../common/ZT";
+import { DisplayInstanceClient } from "../workbook/DisplayInstanceClient";
+import { FlowSheetClient } from "../workbook/FlowSheetClient";
+import { UnitInstanceClient } from "../workbook/UnitInstanceClient";
+import { InteractiveViewTable } from "./InteractiveViewTable";
+import { TableDownload } from "./TableDownload"
 
 
 
@@ -45,7 +41,10 @@ export class TableView extends DisplayInstanceClient{
         let name = this.constructor.name;
         if (variable instanceof TableMem){
             this.table=variable;
-            return new TableViewContent(this.table)
+            return new DivUI([
+                new TableViewContent(this.table).style("col-12"),
+                new TableDownload(this.table,name).style("col-12")
+            ]) 
         }
         return new TextUI(`display ${name} error ${variable}`).style("col-12")
     }

@@ -118,6 +118,7 @@ export class FlowSheetClient {
     }
     private columnWidths:number[]=[]
     private initColWidth = 200;
+    private lastColWidth=50;
     getColWidths():number[]{
         if (this.columnWidths.length > this.nCols())
             this.columnWidths.length = this.nCols()
@@ -134,6 +135,7 @@ export class FlowSheetClient {
         for (let i=0;i<newWidths.length;i++){
             this.columnWidths[i]=newWidths[i];
         }
+        this.columnWidths[this.nCols()-1]=this.lastColWidth;
         this.workbook.dirty();
     }
     nCols():number{

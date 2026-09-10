@@ -59,6 +59,55 @@ export class TableMem extends TableAb{
         }
         return row;
     }
+    toCSVString():string{
+        let lines:string[]=[];
+        lines.push(this.headerString());
+        this.startRows();
+        for (let i=0;i<this.nRows();i++){
+            lines.push(this.rowToString(this.cells[i]))
+        }
+        let rslt = lines.join("\n")
+        return rslt;
+    }
+        private headerString():string{
+            let colTypes = this.getColTypes();
+            let colNames:string[]=[];
+            for (let ct of colTypes){
+                let fn = this.csvEncode(ct.fieldName)
+                colNames.push(fn)
+            }
+            return colNames.join(",")
+        }
+        private rowToString(row:any[]):string{
+            let iSt:string[]=[];
+            for (let item of row){
+                let s ="";
+                switch(typeof item){
+                    case "number":
+                        s = item.toString();
+                        break;
+                    case "string":
+                        s=item;
+                        break;
+                    default:
+                        break;
+                }
+                iSt.push(s);
+            }
+            return iSt.join(",")
+        }
+        private  csvEncode(value: string): string {
+            if (
+                value.includes(",") ||
+                value.includes("\n") ||
+                value.includes("\r") ||
+                value.includes('"')
+            ) {
+                return `"${value.replace(/"/g, '""')}"`;
+            }
+
+            return value;
+        }
     isEmpty():boolean{
         return !this.cells || this.cells.length==0
     }
