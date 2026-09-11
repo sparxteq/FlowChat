@@ -53,7 +53,7 @@ export class WorkbookView extends ZUI{
 
                     http.workbookAdd(LoginView.email,ActivityView.curActivity,ProjectView.curProj,newWorkbook).then((rslt:HTTPProjResult)=>{
                         if (rslt.success){
-                            WorkbookView.curWorkbook=rslt.data;
+                            WorkbookView.curWorkbook=rslt.data.wbName;
                             this.context.reloadViews();
                         } else {
                             Modal.alert(`could not create workbook ${newWorkbook}`)

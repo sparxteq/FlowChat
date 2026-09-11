@@ -14,14 +14,17 @@ export class MergeRows extends Unit{
     paramType(): ZT {
         return new ZDict()
     }
+    defaultParam():any{
+        return {}
+    }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
-        return [ {inputId:"tableA",typeName:this.checkType("table")},
-            {inputId:"tableB",typeName:this.checkType("table")}
+        return [ {inputId:"tableA",typeName:this.checkType("CSV")},
+            {inputId:"tableB",typeName:this.checkType("CSV")}
         ]
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"merged.csv",typeName:this.checkType("table")}
+            {outputId:"merged.csv",typeName:this.checkType("CSV")}
         ]
     }
     async run(instanceInfo: StepRunJSON): Promise<boolean> {

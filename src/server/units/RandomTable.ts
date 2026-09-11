@@ -22,11 +22,14 @@ export class RandomTable extends Unit{
             .array("columnNames",new ZString())
             .num("nRows")
     }
+    defaultParam(){
+        return { seed:7, columnNames:[],nRows:10}
+    }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
         return []
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
-        return [ {outputId:"table.csv",typeName:this.checkType("table")}]
+        return [ {outputId:"table.csv",typeName:this.checkType("CSV")}]
     }
     async run(instanceInfo: StepRunJSON): Promise<boolean> {
         let outFileName = this.outputFileName("table.csv",instanceInfo);

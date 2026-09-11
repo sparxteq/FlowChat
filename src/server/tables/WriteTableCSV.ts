@@ -1,6 +1,6 @@
+import { TableAb } from "../../common/TableAb";
 import { ZField } from "../../common/ZT";
 import { FilesFS } from "../files/FilesFS";
-import { TableAb } from "./TableAb";
 import { WriteTable } from "./WriteTable";
 
 

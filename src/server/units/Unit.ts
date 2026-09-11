@@ -16,6 +16,7 @@ export abstract class Unit {
     abstract paramType():ZT;
     abstract inputTypes():{inputId:string,typeName:TypeName}[]
     abstract outputTypes():{outputId:string,typeName:TypeName}[]
+    abstract defaultParam():any;
 
     abstract run(instanceInfo:StepRunJSON,log:Log):Promise<boolean>;
     
@@ -26,7 +27,12 @@ export abstract class Unit {
         }
         return nameToCheck
     }
-    
+    projectFileName(fileName:string,instanceInfo:StepRunJSON):string{
+        let ii=instanceInfo;
+        let sourcesFolder = WorkServer.projFolderName(ii.userEmail,ii.actId,ii.projId);
+        let rslt = sourcesFolder+"/"+fileName;
+        return rslt;
+    }
     outputFileName(outputId:string,instanceInfo:StepRunJSON):string{
         let oTypes = this.outputTypes();
         let found = false;
@@ -68,6 +74,7 @@ export abstract class Unit {
             unitTypeId:this.unitTypeId(),
             description:this.description(),
             paramType:this.paramType().toJSON(),
+            defaultParam:this.defaultParam(),
             inputTypes:this.inputTypes(),
             outputTypes:this.outputTypes()
         }

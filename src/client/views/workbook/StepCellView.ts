@@ -123,7 +123,8 @@ export class StepCellView extends UnitCellView{
                 this.sheetView.refreshView();
             })
         container.id=this.unitInst.instanceId
-        return container
+        //return container
+        return div;
     }
         inputInstSources():{id:string,sourceInstId:string,outputId:string}[]{
             let rslt:{id:string,sourceInstId:string,outputId:string}[]=[];

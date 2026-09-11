@@ -22,9 +22,12 @@ export class TableView extends DisplayInstanceClient{
     paramType(): ZT {
         return new ZDict();
     }
+    defaultParam():any{
+        return {}
+    }
     inputTypes(): { [inputId: string]: string; } {
         return {
-            table:this.checkType("table")
+            table:this.checkType("CSV")
         };
     }
     

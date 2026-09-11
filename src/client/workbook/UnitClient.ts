@@ -10,6 +10,7 @@ export class UnitClient{
     unitTypeId:string="";
     description:string="";
     paramType:ZT=<any>undefined;
+    defaultParam:any;
     inputTypes:{inputId:string,typeName:TypeName}[]=[]
     outputTypes:{outputId:string,typeName:TypeName}[]=[]
     static async loadUnits():Promise<void>{
@@ -28,6 +29,7 @@ export class UnitClient{
         this.description=json.description;
         let zd = ZT.fromJSON(json.paramType);
         this.paramType=zd;
+        this.defaultParam = json.defaultParam;
         this.inputTypes=json.inputTypes;
         this.outputTypes= json.outputTypes;
 

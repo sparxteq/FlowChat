@@ -16,7 +16,6 @@ export class WorkbookClient {
     project:string;
     workbook:string;
     private workClient:WorkClient;
-    private rootStepId="";
     private unitInstances:{[instanceId:string]:UnitInstanceClient}={}
     private unitInstanceCount=0;
     flowSheet?:FlowSheetClient
@@ -132,12 +131,22 @@ export class WorkbookClient {
             //DB.msg(`workbookGet`,workbookRslt.msg)
             return false;
         }
-        this.fromJSON(workbookRslt.data.wbJSON)
+        let wbJSON = workbookRslt.data.wbJSON;
+        if (!wbJSON || Object.keys(wbJSON).length==0){
+            this.init();
+            await this.save();
+        } else {
+            this.fromJSON(workbookRslt.data.wbJSON)
+        }
         this.updateExecStatus();
         return true;
     }
+    private init(){
+        this.unitInstances={};
+        this.unitInstanceCount=0
+        this.flowSheet = new FlowSheetClient(this);
+    }
     private fromJSON(json:WorkbookJSON){
-        this.rootStepId=json.rootStepId;
         this.unitInstances = {};
         if (json.flowSheet){
             this.flowSheet = FlowSheetClient.fromJSON(json.flowSheet,this)
@@ -189,7 +198,6 @@ export class WorkbookClient {
     }
     toJSON():WorkbookJSON{
         let json:WorkbookJSON={
-            rootStepId:this.rootStepId,
             unitInstances:this.unitsToJSON(),
             unitInstanceCount:this.unitInstanceCount,
         }

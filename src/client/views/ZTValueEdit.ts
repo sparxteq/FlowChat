@@ -59,7 +59,7 @@ export class ZTValueEdit extends ZTValueView{
         let valCol = 1;
         return new DivUI([
             new TextUI(userName+":").style(`ZT-fieldLabel`),
-            this.pickTypeEdit(field.type,container,fieldName,info).style(`ZT-fieldValue`)
+            this.pickTypeEdit(field.type,container,fieldName,info)//.style(`ZT-fieldValue`)
         ])
         //.style("col-4");
     }

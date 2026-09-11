@@ -30,6 +30,9 @@ export class StepInstanceClient extends UnitInstanceClient {
     paramType():ZT{
         return this.unitClient.paramType
     }
+    defaultParam():any{
+        return this.unitClient.defaultParam;
+    }
     inputTypes(): { [inputId: string]: string; } {
         let inputTypes = this.unitClient.inputTypes;
         let rslt:{[inputId:string]:string}={};

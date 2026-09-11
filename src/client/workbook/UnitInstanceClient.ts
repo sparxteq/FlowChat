@@ -34,6 +34,7 @@ export abstract class UnitInstanceClient {
         }
     }
     abstract paramType():ZT;
+
     checkType(nameToCheck:string):string{
         let t = TypeClient.getType(nameToCheck);
         if (!t){
@@ -208,12 +209,14 @@ export abstract class UnitInstanceClient {
         this.row = json.row;
         this.col = json.col;
         this.paramValue=json.paramValue;
+        if (Object.keys(this.paramValue).length==0)
+            this.paramValue = this.defaultParam();
         this.inputSources=json.inputSources;
         this.note = json.note;
         this.stepComputeTime = json.stepComputeTime;
         this.paramChangeTime = json.paramChangeTime;
     }
-
+    abstract defaultParam():any;
     protected abstract resolveType():void;
 
     toJSON():UnitInstanceJSON{

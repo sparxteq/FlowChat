@@ -106,7 +106,7 @@ export class WorkServer {
             rslt.msg=s;
         return rslt;
     }
-    private static projFolderName(email:string,actName:string,projName:string):string{
+    static projFolderName(email:string,actName:string,projName:string):string{
         let aF = this.activityFolder(email,actName);
         return aF+"/"+projName;
     }
@@ -193,7 +193,7 @@ export class WorkServer {
         }
         let projSourcesFolderN = this.projSourcesFolderName(email,actName,projName);
         let fs = new FilesFSSource();
-        let projSF = await fs.getFolder(projSourcesFolderN,false);
+        let projSF = await fs.getFolder(projSourcesFolderN,true);
         if (projSF && await projSF.isFolder()){
             let tree = await this.filesTree(projSF)
             rslt.success=true;
@@ -280,8 +280,13 @@ export class WorkServer {
         }
         if (projFolder && await projFolder.isFolder()){
             let wbList = await projFolder.folderNames()
+            let nameList:string[]=[];
+            for (let wbName of wbList){
+                if (!wbName.startsWith("_"))
+                    nameList.push(wbName);
+            }
             rslt.success=true;
-            rslt.data.wbList=wbList;
+            rslt.data.wbList=nameList;
         }
         return rslt;
     }

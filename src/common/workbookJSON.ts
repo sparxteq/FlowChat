@@ -2,7 +2,6 @@ import { ZT, ZTJSON } from "./ZT";
 
 
 export type WorkbookJSON = {
-    rootStepId:string;
     unitInstances:{[unitInstanceId:string]:UnitInstanceJSON};
     unitInstanceCount:number;
     flowSheet?:FlowSheetJSON;
@@ -53,6 +52,7 @@ export type UnitJSON = {
     unitTypeId:UnitTypeId,
     description:string,
     paramType:ZTJSON,
+    defaultParam:any,
     inputTypes:{inputId:string,typeName:TypeName}[],
     outputTypes:{outputId:string,typeName:TypeName}[]
 }
