@@ -1,6 +1,7 @@
 import { MergeRows } from "./MergeRows";
 import { RandomTable } from "./RandomTable";
 import { SelectAssembly } from "./SelectAssembly";
+import { StudySpecification } from "./StudySpecification";
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
 
@@ -11,4 +12,5 @@ export function registerStepsAndTypes(){
     Unit.register(new RandomTable())
     Unit.register(new MergeRows())
     Unit.register(new SelectAssembly())
+    Unit.register(new StudySpecification())
 }

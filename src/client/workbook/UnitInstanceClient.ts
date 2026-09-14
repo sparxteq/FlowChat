@@ -275,6 +275,7 @@ export abstract class UnitInstanceClient {
         let proto = this.registry[typeId]
         if (proto){
             let newInst = proto.make(flowSheet);
+            newInst.paramValue=newInst.defaultParam();
             return newInst;
         }
     }

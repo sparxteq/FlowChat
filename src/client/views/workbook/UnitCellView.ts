@@ -170,38 +170,39 @@ export abstract class UnitCellView extends SheetCellView{
         }
     protected inputBar():ZUI{
         let inst = this.unitInst;
+        let inputTypes = inst.inputTypes();
         let inputs = inst.inputSources;
         let inputList:ZUI[]=[];
-        for (let input of inputs){
+        for (let input in inputTypes){
             let inputBlock = this.inputBlock(input);
             //inputBlock.id=WorkbookClient.inputDivId(inst.instanceId,input.id);
             inputList.push(inputBlock);
         }
         return new DivUI(inputList);
     }
-    protected inputBlock(input:{id: string,dataRef?: DataSourceRef}):ZUI{
+    protected inputBlock(input:string):ZUI{
         if (!this.unitInst.displayOpen){
             let style = "InputBlockClosed"
             let div = new DivUI([])
             let wb = this.unitInst.workbook;
-            div.id = WorkbookClient.inputDivId(this.unitInst.instanceId,input.id)
-            if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
+            div.id = WorkbookClient.inputDivId(this.unitInst.instanceId,input)
+            if (wb.inputIsSelected(this.unitInst.instanceId,input))
                 style+=" InputBlockSelected"
             
             let clicker = new ClickWrapperUI([div])
                 .click((event:Event)=>{
                     event.stopPropagation();
-                    wb.selectInput(this.unitInst.instanceId,input.id)
+                    wb.selectInput(this.unitInst.instanceId,input)
                     this.sheetView.refreshView();
                     //DB.msg(`input ${input.id} clicked`)
                 })
             return clicker.style(style);
         }
         let div = new DivUI([
-            new TextUI(NameString.toCapSpaced(input.id)).style("InputBlockText")
+            new TextUI(NameString.toCapSpaced(input)).style("InputBlockText")
         ])
         let style = ""
-        switch (this.inputConnection(input.id)){
+        switch (this.inputConnection(input)){
             case "none":
                 style+="InputBlockNone"
                 break;
@@ -213,14 +214,14 @@ export abstract class UnitCellView extends SheetCellView{
                 break;
         }
         let wb = this.unitInst.workbook;
-        if (wb.inputIsSelected(this.unitInst.instanceId,input.id))
+        if (wb.inputIsSelected(this.unitInst.instanceId,input))
             style+=" InputBlockSelected"
         div.style(style)
-        div.id=WorkbookClient.inputDivId(this.unitInst.instanceId,input.id)
+        div.id=WorkbookClient.inputDivId(this.unitInst.instanceId,input)
         let clicker = new ClickWrapperUI([div])
             .click((event:Event)=>{
                 event.stopPropagation();
-                wb.selectInput(this.unitInst.instanceId,input.id)
+                wb.selectInput(this.unitInst.instanceId,input)
                 this.sheetView.refreshView();
                 //DB.msg(`input ${input.id} clicked`)
             })

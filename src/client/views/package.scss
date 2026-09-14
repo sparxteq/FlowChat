@@ -153,6 +153,12 @@ $font-size-l2: 32px;
     cursor:pointer;
 
 }
+.TableDownload {
+    @include layoutRight(0);
+    padding:2px;
+    background-color: color.adjust($color-secondary,$lightness:-30%);
+    border: solid 1px gray;
+}
 .TableRow-selected{
     width:8px;
     height:100%;

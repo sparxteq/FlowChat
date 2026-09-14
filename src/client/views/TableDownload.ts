@@ -20,7 +20,7 @@ export class TableDownload extends ZUI{
             a.download= downloadName+".csv";
             a.click();
             Modal.alert(`Check your browser's downloads for a file called "${downloadName}.csv"`)
-        }).style("col-6")
+        }).style("TableDownload")
         
         let jsonButton = new ButtonUI(`>> ${downloadName}.json`).click(()=>{
             DB.msg("export to ",downloadName+".json")
@@ -32,7 +32,7 @@ export class TableDownload extends ZUI{
             a.download= downloadName+".json";
             a.click();
             Modal.alert(`Check your browser's downloads for a file called "${downloadName}.json"`)
-        }).style("col-6")
+        }).style("TableDownload")
         let div = new DivUI([
             csvButton,
             //jsonButton
