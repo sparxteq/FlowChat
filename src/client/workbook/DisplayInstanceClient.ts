@@ -43,6 +43,7 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         if (instance)
             name = instance.name();
         name = NameString.toCapSpaced(name);
+        outputId = NameString.toCapSpaced(outputId)
         let displayName = name+" > "+outputId;
         return displayName;
     }
