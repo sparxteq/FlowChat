@@ -1,6 +1,7 @@
 import { TextUI } from "../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { curUser, HTTPCSVGetResult } from "../../common/http/httpTypes";
+import { NameString } from "../../common/NameString";
 import { TableMem } from "../../common/TableMem";
 import { http } from "../http/ClientHTTP";
 import { DisplayCellView } from "../views/workbook/DisplayCellView";
@@ -33,6 +34,17 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
     async computeDisplay():Promise<ZUI>{
         let name = this.constructor.name;
         return new TextUI(`display ${name} not override`).style("col-12")
+    }
+    name():string{
+        let sheet = this.flowSheet;
+        let inputId = this.inputSources[0].id;
+        let {instance,outputId}=this.inputSource(inputId);
+        let name = "??"
+        if (instance)
+            name = instance.name();
+        name = NameString.toCapSpaced(name);
+        let displayName = name+" > "+outputId;
+        return displayName;
     }
     async getVarCSV(inputId:string):Promise<TableMem | string>{
         let inputSource = this.inputSource(inputId)

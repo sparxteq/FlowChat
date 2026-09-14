@@ -237,7 +237,7 @@ export class WorkServer {
         return json;
     }
     static runStart(instanceInfo:StepRunJSON):HTTPRunStart{
-        debugger;
+        //debugger;
         let session = new RunSession(instanceInfo)
         let success = session.start();
         let rslt:HTTPRunStart = {

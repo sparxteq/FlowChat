@@ -19,6 +19,9 @@ export class DisplayCellView extends UnitCellView{
             return this.showClosed()
         }
     }
+    instanceName():string{
+        return(<DisplayInstanceClient>this.unitInst).name()
+    }
     private showOpen():ZUI{
         let doList:ZUI[]=[];
         let actionBarStyle = "DisplayCellActionBar";

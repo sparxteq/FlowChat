@@ -93,7 +93,7 @@ export class StepCellView extends UnitCellView{
                         inputSources:this.inputInstSources()
                     }
                     http.run(instanceInfo,(logResponse:HTTPLog)=>{
-                        DB.msg(`log for ${this.stepInstanceName()}`,logResponse)
+                        DB.msg(`log for ${this.instanceName()}`,logResponse)
                     }).then((rslt:HTTPResult)=>{
                         if (rslt.success){
                             this.unitInst.stepComputeTime=Date.now();

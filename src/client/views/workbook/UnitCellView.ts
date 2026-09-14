@@ -49,8 +49,8 @@ export abstract class UnitCellView extends SheetCellView{
             return true;
         return false;
     }
-    protected stepInstanceName():string{
-        return NameString.toCapSpaced(this.unitInst.typeId())
+    protected instanceName():string{
+        return NameString.toCapSpaced(this.unitInst.name())
     }
     private nameStyle():string{
         switch(this.unitInst.execStatus){
@@ -67,13 +67,13 @@ export abstract class UnitCellView extends SheetCellView{
         }
     }
     protected name():ZUI{
-        let name= this.stepInstanceName()
+        let name= this.instanceName()
         return new TextUI(`<b>${name}</b>`).style(()=>{
             return this.nameStyle();
         })
     }
     protected actionButton(click:()=>void):ZUI{
-        let btn = new ButtonUI(this.stepInstanceName()).click(()=>{
+        let btn = new ButtonUI(this.instanceName()).click(()=>{
             click();
         }).style(()=>{
             return this.nameStyle();

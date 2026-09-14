@@ -34,7 +34,9 @@ export abstract class UnitInstanceClient {
         }
     }
     abstract paramType():ZT;
-
+    name():string{
+        return this.typeId();
+    }
     checkType(nameToCheck:string):string{
         let t = TypeClient.getType(nameToCheck);
         if (!t){
