@@ -35,7 +35,7 @@ export class JSONView extends DisplayInstanceClient{
             let formatJSON = JSON.stringify(json,null,4);
             let text = "<pre>"+formatJSON+"</pre>"
             return new DivUI([
-                new TextUI(text).style("col-12"),
+                new TextUI(text).style("JSONView"),
                 new JSONDownload(formatJSON,name)
             ])
         } else {

@@ -36,7 +36,7 @@ export class StepCellView extends UnitCellView{
         let outputTypes = unit.outputTypes;
         let outputs:string[]=[];
         for (let ot of outputTypes){
-            let name = NameString.toCapSpaced(ot.outputId);
+            let name = ot.outputId;
             outputs.push(name)
         }
         let outputList:ZUI[]=[];
@@ -103,6 +103,7 @@ export class StepCellView extends UnitCellView{
                         this.buildView();
                         ZUI.notify();
                         this.unitInst.workbook.dirty();
+                        DB.msg(`done ${this.unitInst.typeId()}`)
                     })
                 }).style(actionBarStyle))
             let pe = this.paramEdit()

@@ -94,6 +94,12 @@ $font-size-l2: 32px;
 .HomeHeaderWrapper {
     @include layout(11.7);
 }
+.JSONView {
+    @include layout(12);
+    background-color: white;
+    resize: vertical;
+    overflow: auto;
+}
 .Login-newaccount {
     @include layout(6, none, 3);
     margin-top: 20px;

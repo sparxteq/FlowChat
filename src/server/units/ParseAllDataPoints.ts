@@ -73,6 +73,7 @@ export class ParseAllDataPoints extends Unit{
         while (row){
             rowCount++;
             let [exampleId,sourceId,sourceFile,outcome]=row;
+            DB.msg(`${exampleId}:${sourceId}::${sourceFile} ${rowCount}/${nRows}`)
             log.status(`${exampleId}:${sourceId}::${sourceFile} ${rowCount}/${nRows}`)
             log.start(sourceFile);
             try {

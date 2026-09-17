@@ -3,6 +3,7 @@ import { ParseAllDataPoints } from "./ParseAllDataPoints";
 import { RandomRowSelect } from "./RandomRowSelect";
 import { RandomTable } from "./RandomTable";
 import { SelectAssembly } from "./SelectAssembly";
+import { SelectBestDataPoints } from "./SelectBestDataPoints";
 import { StudySpecification } from "./StudySpecification";
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
@@ -21,4 +22,5 @@ export function registerStepsAndTypes(){
     Unit.register(new StudySpecification())
     Unit.register(new RandomRowSelect())
     Unit.register(new ParseAllDataPoints())
+    Unit.register(new SelectBestDataPoints())
 }
