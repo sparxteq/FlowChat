@@ -26,6 +26,30 @@ export class MassSpecData{
     outcomeCodes:{[outcome:string]:number}={}
     nCodes=0;
     maxRt=0;
+    maxMz=0;
+    maxMs2=0;
+    maxIm=0;
+    nFeatures=0;
+    getStats():MassSpecDataStats{
+        let rslt:MassSpecDataStats = {
+            quanta:{
+                rtQuantum:this.rtQuantum,
+                imQuantum:this.imQuantum,
+                mzQuantum:this.mzQuantum,
+                ms2Quantum:this.ms2Quantum,
+            },
+            nExamples:this.exampleIdList.length,
+            outcomes:Object.keys(this.outcomeCodes),
+            max:{
+                maxRt:this.maxRt,
+                maxMz:this.maxMz,
+                maxMs2:this.maxMs2,
+                maxIm:this.maxIm,       
+            },
+            nFeatures:Math.floor(this.nFeatures/this.exampleIdList.length)
+        }
+        return rslt;
+    }
     
     constructor(rtQuantum:number,imQuantum:number,mzQuantum:number,ms2Quantum=-1){
         this.rtQuantum=rtQuantum;
@@ -77,6 +101,10 @@ export class MassSpecData{
         }
         if (rt>this.maxRt)
             this.maxRt=rt;
+        if (im>this.maxIm)
+            this.maxIm=im;
+        if (mz>this.maxMz)
+            this.maxMz=mz;
         let srcData = this.data[srcId]
         if (!srcData){
             srcData = {};
@@ -108,6 +136,7 @@ export class MassSpecData{
 
         if (!exData[idx]){
             exData[idx]=abundance;
+            this.nFeatures++;
         } else {
             exData[idx]+=abundance;
         }
@@ -491,6 +520,23 @@ export type MsRecord = {
     mz:number,
     ab:number,
     ms2:number
+}
+export type MassSpecDataStats = {
+    quanta:{
+        rtQuantum:number,
+        imQuantum:number,
+        mzQuantum:number,
+        ms2Quantum:number,
+    }
+    nExamples:number,
+    outcomes:string[],
+    max:{
+        maxRt:number,
+        maxMz:number,
+        maxMs2:number,
+        maxIm:number,
+    }
+    nFeatures:number
 }
 class MSDBufferFile {
     private file:FilesFS;

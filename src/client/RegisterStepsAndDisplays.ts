@@ -1,4 +1,5 @@
 import { DB } from "../../../Zing3/share/DB";
+import { JSONView } from "./views/JSONView";
 import { TableView } from "./views/TableView";
 import { DisplayInstanceClient } from "./workbook/DisplayInstanceClient";
 import { StepInstanceClient } from "./workbook/StepInstanceClient";
@@ -14,4 +15,5 @@ export async function registerStepsAndDisplays():Promise<void>{
         StepInstanceClient.register(new StepInstanceClient(unitId,<any>undefined))
     }
     DisplayInstanceClient.register(new TableView())
+    DisplayInstanceClient.register(new JSONView())
 }

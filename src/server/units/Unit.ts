@@ -5,7 +5,7 @@ import { DB } from "../../../../Zing3/share/DB";
 import { ZT } from "../../common/ZT";
 import { Log } from "../../client/log/Log";
 import { WorkServer } from "../WorkServer";
-import { FilesFS } from "../files/FilesFS"
+import { WorkNotifyI } from "../workers/WorkNotifyI";
 
 
 export abstract class Unit {
@@ -19,7 +19,7 @@ export abstract class Unit {
     abstract defaultParam():any;
 
     abstract run(instanceInfo:StepRunJSON,log:Log):Promise<boolean>;
-    
+
     checkType(nameToCheck:string):string{
         let t = TypeS.getType(nameToCheck);
         if (!t){

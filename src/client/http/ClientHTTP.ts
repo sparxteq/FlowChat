@@ -1,5 +1,5 @@
 import { DB } from "../../../../Zing3/share/DB";
-import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPLog, HTTPLogResponse, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPJSONGetResult, HTTPLog, HTTPLogResponse, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPTypes, HTTPUnits, HTTPWbGetResult, HTTPWbList, HTTPWbResult, UserInfo, ZFilesDirectoryItem } from "../../common/http/httpTypes";
 import { ParamValueJSON, StepRunJSON, WorkbookJSON } from "../../common/WorkbookJSON";
 
 
@@ -126,6 +126,11 @@ export class ClientHTTP{
     }
     async varGetCSV(email:string,actName:string,projName:string,workbookName:string,instanceId:string,outputId:string):Promise<HTTPCSVGetResult>{
         let rslt = <HTTPCSVGetResult>await this.do("varGetCSV"
+            ,{email:email,actName:actName,projName:projName,wbName:workbookName,instanceId:instanceId,outputId:outputId})
+        return rslt;
+    }
+    async varGetJSON(email:string,actName:string,projName:string,workbookName:string,instanceId:string,outputId:string):Promise<HTTPJSONGetResult>{
+        let rslt = <HTTPJSONGetResult>await this.do("varGetJSON"
             ,{email:email,actName:actName,projName:projName,wbName:workbookName,instanceId:instanceId,outputId:outputId})
         return rslt;
     }

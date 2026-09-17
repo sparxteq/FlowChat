@@ -43,7 +43,10 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         if (instance)
             name = instance.name();
         name = NameString.toCapSpaced(name);
-        outputId = NameString.toCapSpaced(outputId)
+        if (outputId)
+            outputId = NameString.toCapSpaced(outputId)
+        else 
+            outputId="??"
         let displayName = name+" > "+outputId;
         return displayName;
     }
@@ -64,6 +67,22 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
             return table;
         } else {
             return <string>csvRslt.msg;
+        }
+    }
+    async getVarJSON(inputId:string):Promise<string>{
+        let inputSource = this.inputSource(inputId)
+        let wb = this.workbook;
+        let wbId = wb.workbook;
+        let email = wb.userEmail;
+        let projId = wb.project;
+        let actId = wb.activity;
+        let instId = inputSource.instance.instanceId;
+        let outputId = inputSource.outputId
+        let jsonRslt = await http.varGetJSON(email,actId,projId,wbId,instId,outputId);
+        if (jsonRslt.success){
+            return jsonRslt.data.json;
+        } else {
+            return "";
         }
     }
 }

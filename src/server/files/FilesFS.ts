@@ -26,7 +26,8 @@ export class FilesFS extends Files {
             if (!isFile)
                 DB.msg(`"${full}" is not a file`)
             return isFile;
-        } catch {
+        } catch (error){
+            console.error(error)
             return false;
         }
     }

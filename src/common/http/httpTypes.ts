@@ -107,6 +107,17 @@ export type HTTPCSVGetResult = HTTPResult & {
         csv:string
     }
 }
+export type HTTPJSONGetResult = HTTPResult & {
+    data:{
+        email:string,
+        actName:string,
+        projName:string,
+        wbName:string,
+        instanceId:string,
+        outputId:string,
+        json:string
+    }
+}
 
 export type ZFilesDirectory = ZFilesDirectoryItem[]
 export type ZFilesDirectoryItem = {

@@ -1,6 +1,6 @@
 
 import { Files } from "../common/files/Files";
-import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPLog, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
+import { HTTPActList, HTTPActResult, HTTPCSVGetResult, HTTPDirResult, HTTPJSONGetResult, HTTPLog, HTTPProjList, HTTPProjResult, HTTPResult, HTTPRunStart, HTTPWbGetResult, HTTPWbList, HTTPWbResult, ZFilesDirectoryItem } from "../common/http/httpTypes";
 import { UnitJSON, TypeJSON, WorkbookJSON, StepRunJSON } from "../common/WorkbookJSON";
 import { FilesFS, FilesFSSource } from "./files/FilesFS";
 import { RunSession } from "./RunSession";
@@ -432,6 +432,29 @@ export class WorkServer {
         let csv = await file.readToStr()
         rslt.success = csv!="";
         rslt.data.csv=csv;
+        return rslt;
+    }
+    static async varGetJSON(email:string,actName:string,projName:string
+        ,wbName:string,instanceId:string,outputId:string):Promise<HTTPJSONGetResult>{
+        let rslt:HTTPJSONGetResult = {
+            success:true,
+            data:{
+                email:email,
+                actName:actName,
+                projName:projName,
+                wbName:wbName,
+                instanceId:instanceId,
+                outputId:outputId,
+                json:""
+            }
+        }
+        let fileName = this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
+        let file = new FilesFS(fileName);
+        await file.openR();
+        let json = await file.readln();
+        rslt.success = json!="";
+        rslt.data.json=json;
+        await file.close();
         return rslt;
     }
 }
