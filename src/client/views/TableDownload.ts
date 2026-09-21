@@ -8,18 +8,22 @@ import { TableMem } from "../../common/TableMem";
 
 export class TableDownload extends ZUI{
     private table:TableMem;
-    constructor(table:TableMem,downloadName:string){
+    constructor(table:TableMem,name:string){
         super();
         this.table=table;
-        let csvButton = new ButtonUI(`>> ${downloadName}.csv`).click(()=>{
-            DB.msg("export to ",downloadName+".csv")
+        let downloadName = name;
+        if (downloadName.indexOf(".csv")<0){
+            downloadName=name+".csv";
+        }
+        let csvButton = new ButtonUI(`>> ${downloadName}`).click(()=>{
+            DB.msg("export to ",downloadName)
             let text = this.table.toCSVString();
             let file = new Blob([text],{type:"text/plain"});
             let a = document.createElement("a");
             a.href = URL.createObjectURL(file);
-            a.download= downloadName+".csv";
+            a.download= downloadName;
             a.click();
-            Modal.alert(`Check your browser's downloads for a file called "${downloadName}.csv"`)
+            Modal.alert(`Check your browser's downloads for a file called "<b>${downloadName}</b>"`)
         }).style("TableDownload")
         
         let jsonButton = new ButtonUI(`>> ${downloadName}.json`).click(()=>{

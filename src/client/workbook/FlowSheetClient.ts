@@ -91,9 +91,11 @@ export class FlowSheetClient {
     rcInstance(row:number,col:number):UnitInstanceClient|undefined{
         for (let uId in this.unitInstances){
             let ui = this.workbook.getUnitInstance(uId);
-            let {row:iRow,col:iCol}=ui.getCell();
-            if (iRow==row && iCol==col)
-                return ui;
+            if (ui){
+                let {row:iRow,col:iCol}=ui.getCell();
+                if (iRow==row && iCol==col)
+                    return ui;
+            }
         }
         return undefined;
     }

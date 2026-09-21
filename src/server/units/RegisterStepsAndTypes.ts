@@ -1,12 +1,14 @@
 import { MergeRows } from "./MergeRows";
 import { ParseAllDataPoints } from "./ParseAllDataPoints";
+import { ParseSelectedDataPoints } from "./ParseSelectedDataPoints";
 import { RandomRowSelect } from "./RandomRowSelect";
 import { RandomTable } from "./RandomTable";
 import { SelectAssembly } from "./SelectAssembly";
 import { SelectBestDataPoints } from "./SelectBestDataPoints";
-import { StudySpecification } from "./StudySpecification";
+import { GenerateParseList } from "./GenerateParseList";
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
+import { StudySpecification } from "./StudySpecification";
 
 export function registerStepsAndTypes(){
     
@@ -23,4 +25,6 @@ export function registerStepsAndTypes(){
     Unit.register(new RandomRowSelect())
     Unit.register(new ParseAllDataPoints())
     Unit.register(new SelectBestDataPoints())
+    Unit.register(new ParseSelectedDataPoints())
+    Unit.register(new GenerateParseList())
 }

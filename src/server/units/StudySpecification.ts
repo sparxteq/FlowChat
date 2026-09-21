@@ -1,42 +1,44 @@
 import { Log } from "../../client/log/Log";
 import { TypeName, StepRunJSON } from "../../common/WorkbookJSON";
 import { ZDict, ZField, ZString, ZT } from "../../common/ZT";
+import { FilesFS } from "../files/FilesFS";
 import { ReadTableCSV } from "../tables/ReadTableCSV";
 import { WriteTableCSV } from "../tables/WriteTableCSV";
 import { Unit } from "./Unit";
 
 
+
 export class StudySpecification extends Unit{
     description(): string {
-        return `Selects which columns from the assembly should be used for 
-            which purposes when building this study`;
+        return `Collects study parameters and verifies them with the assembly file`;
     }
     paramType(): ZT {
         return new ZDict()
-            .str("exampleColumn",{desc:`the column the identifies the example for
-                            each row`})
-            .str("outcomeColumn",{desc:`the column that contains the outcome
-                            for this row`})
-            .array("sourceColumns",new ZString(),{desc:`each of the columns that
-                            references a source file`})
-            .code("decisions",[
-                "FirstToEach",
-                "EachToNext",
-                "EachToEach",
-                "EachToOthers"
-            ],{desc:`How decisions are generated when there are more than 2 outcomes:
-                        FirstToEach: first outcome to each other outcome
-                        EachToNext: Each outcome to the one that follows. This is for series
-                        EachToEach: Each outcome to each other outcome. All combinations
-                        EachToOthers: Each outcome to all of the others combined`})
+                    .str("exampleColumn",{desc:`the column the identifies the example for
+                                    each row`})
+                    .str("outcomeColumn",{desc:`the column that contains the outcome
+                                    for this row`})
+                    .array("sourceColumns",new ZString(),{desc:`each of the columns that
+                                    references a source file`})
+                    .code("decisions",[
+                        "FirstToEach",
+                        "EachToNext",
+                        "EachToEach",
+                        "EachToOthers"
+                    ],{desc:`How decisions are generated when there are more than 2 outcomes:
+                                FirstToEach: first outcome to each other outcome
+                                EachToNext: Each outcome to the one that follows. This is for series
+                                EachToEach: Each outcome to each other outcome. All combinations
+                                EachToOthers: Each outcome to all of the others combined`})
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
-        return [ {inputId:"assembly",typeName:this.checkType("CSV")}];
+        return [ {inputId:"assembly",typeName:this.checkType("CSV")}
+        ];
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"Examples.csv",typeName:this.checkType("CSV")},
             {outputId:"Decisions.csv",typeName:this.checkType("CSV")},
+            {outputId:"studySpec.json",typeName:this.checkType("JSON")}
             //{outputId:"ColumnData.csv",typeName:this.checkType("CSV")}
         ];
     }
@@ -82,23 +84,11 @@ export class StudySpecification extends Unit{
         }
         if (!goodRun)
             return false;
-        let exTableN = this.outputFileName("Examples.csv",instanceInfo);
-        let exTable= new WriteTableCSV(exTableN);
-        exTable.setColTypes([
-            new ZField("exampleId",new ZString()),
-            new ZField("sourceId",new ZString()),
-            new ZField("sourceFile",new ZString()),
-            new ZField("outcome",new ZString())
-        ])
-        await exTable.openW();
-
-        /*let colTableN = this.outputFileName("ColumnData.csv",instanceInfo)
-        let colTable = new WriteTableCSV(colTableN)
-        colTable.setColTypes([
-            new ZField("exampleId",new ZString()),
-            new ZField("outcome",new ZString())
-        ])
-        await colTable.openW();*/
+        let specName = this.outputFileName("studySpec.json",instanceInfo)
+        let specFile = new FilesFS(specName);
+        await specFile.openW();
+        let specStr = JSON.stringify(param);
+        await specFile.write(specStr);
 
         let decTableN = this.outputFileName("Decisions.csv",instanceInfo)
         let decTable = new WriteTableCSV(decTableN)
@@ -106,8 +96,7 @@ export class StudySpecification extends Unit{
             new ZField("outcomeA",new ZString()),
             new ZField("outcomeB",new ZString())
         ])
-        await decTable.openW();
-
+        
         let colIdx=this.colIdx(assemTable.getColTypes())
         let outcomes:{[outcome:string]:boolean}={};
         let row = await assemTable.nextRow();
@@ -115,17 +104,14 @@ export class StudySpecification extends Unit{
             let exId = row[colIdx[exCol]];
             let outcome = row[colIdx[outCol]];
             outcomes[outcome]=true;
-            for (let src of srcCols){
-                let exRow = [exId,src,row[colIdx[src]],outcome]
-                await exTable.addRow(exRow);
-            }
             row = await assemTable.nextRow();
         }
+        await decTable.openW();
         await this.buildDecisionTable(decTable,Object.keys(outcomes),decisions)
-        await assemTable.close()
-        await exTable.close()
-        await decTable.close()
-        return goodRun;
+        await decTable.close();
+        await assemTable.close();
+        await specFile.close();
+        return true;
     }
     private async buildDecisionTable(decisionTable:WriteTableCSV,outcomes:string[],comparison:string):Promise<void>{
         outcomes.sort((a,b)=>{
@@ -162,6 +148,7 @@ export class StudySpecification extends Unit{
                 break;
         }
     }
+    
     private colIdx(types:ZField[]):{[colId:string]:number}{
         let idx:{[colIdx:string]:number}={}
         for (let typeI=0;typeI<types.length;typeI++){
@@ -171,9 +158,8 @@ export class StudySpecification extends Unit{
         }
         return idx;
     }
-    
 }
-type StudySpecificationParam = {
+export type StudySpecificationParam = {
     exampleColumn:string,
     outcomeColumn:string,
     sourceColumns:string[],

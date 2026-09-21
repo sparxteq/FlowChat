@@ -11,6 +11,7 @@ import { MassSpecData } from "../tables/MassSpecData";
 import { MZMLParser } from "../MZML/MZMLParser";
 import { WorkNotify } from "../workers/WorkNotify";
 import { DB } from "../../../../Zing3/share/DB";
+import { WriteTableCSV } from "../tables/WriteTableCSV";
 
 
 
@@ -35,7 +36,8 @@ export class ParseAllDataPoints extends Unit{
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
             {outputId:"sampleData.zms", typeName:this.checkType("ZMS")},
-            {outputId:"stats.json", typeName:this.checkType("JSON")}
+            {outputId:"stats.json", typeName:this.checkType("JSON")},
+            {outputId:"quanta.json", typeName:this.checkType("JSON")}
         ]
     }
     defaultParam():ParseAllDataPointsParam {
@@ -53,12 +55,17 @@ export class ParseAllDataPoints extends Unit{
         let mzBin = param.mzBinWidth;
         let rtBin = param.rtBinWidth;
         let imBin = param.imBinWidth;
-
+    
         let exTableName = this.inputFileName("examples",instanceInfo);
         let exTable = new ReadTableCSV(exTableName);
         await exTable.openR();
         let exMem = await this.readExamples(exTable);
 
+        let quantName = this.outputFileName("quanta.json",instanceInfo)
+        let quantFile = new FilesFS(quantName);
+        let quantStr = JSON.stringify(param);
+        await quantFile.openW();
+        await quantFile.write(quantStr)
         let zmsTableName = this.outputFileName("sampleData.zms",instanceInfo);
         let zmsTable = new WriteTableZMS(zmsTableName);
         zmsTable.setQuanta(rtBin,imBin,mzBin);
@@ -96,6 +103,7 @@ export class ParseAllDataPoints extends Unit{
         await exTable.close();
         await zmsTable.close();
         await stats.close();
+        await quantFile.close();
         return true;
     }
     private projectFolderName:string=""
@@ -125,7 +133,7 @@ export class ParseAllDataPoints extends Unit{
     }
     
 }
-type ParseAllDataPointsParam = {
+export type ParseAllDataPointsParam = {
     mzBinWidth:number,
     rtBinWidth:number,
     imBinWidth:number

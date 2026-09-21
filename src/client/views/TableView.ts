@@ -41,7 +41,7 @@ export class TableView extends DisplayInstanceClient{
     private table:TableMem = <any>undefined;
     async computeDisplay():Promise<ZUI>{
         let variable = await this.getVarCSV("table");
-        let name = this.constructor.name;
+        let name = this.name();
         if (variable instanceof TableMem){
             this.table=variable;
             return new DivUI([

@@ -7,7 +7,8 @@ import { ZUI } from "../../../../Zing3/zui/ZUI";
 
 export class JSONDownload extends ZUI{
     constructor(json:string,name:string){
-        super();let downloadName = name;
+        super();
+        let downloadName = name;
         if (downloadName.indexOf(".json")<0)
             downloadName=name+".json"
         let jsonButton = new ButtonUI(`>> ${downloadName}`).click(()=>{

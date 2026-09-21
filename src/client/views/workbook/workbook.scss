@@ -21,19 +21,19 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     background-color: white;
 }
 .DisplayCellClosed {
-    @include layout(12,none);
+    @include layout(11,none,1);
     border: solid 2px $cellBorder;
     padding: 3px;
     border-radius: 3px;
-    background-color: $color-secondary;
+    background-color: color.scale($color-secondary,$lightness:30%);
 }
 .DisplayCellOpen {
-    @include layout(12,none);
+    @include layout(11,none,0.5);
     border: solid 2px $cellBorder;
     padding: 3px;
     padding-top:5px;
     border-radius: 3px;
-    background-color: $color-secondary;
+    background-color: color.scale($color-secondary,$lightness:30%);
     margin-top:8px;
 }
 .DisplayCellParam {
