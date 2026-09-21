@@ -44,7 +44,7 @@ export class ParseSelectedDataPoints extends Unit{
     private wnote:WorkNotify=<any>undefined;
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {
         this.wnote = new WorkNotify(log)
-        debugger
+        //debugger
 
         let exTableName = this.inputFileName("examplesToParse",instanceInfo);
         let exTable = new ReadTableCSV(exTableName);

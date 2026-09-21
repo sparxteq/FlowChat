@@ -8,6 +8,15 @@ export class WorkNotify implements WorkNotifyI{
     constructor(log:Log){
         this.log=log;
     }
+    private startStack:string[]=[]
+    start(label: string): void {
+        this.log.start(label);
+        this.startStack.push(label)
+    }
+    end(): void {
+        let endLabel = this.startStack.pop()
+        this.log.end(endLabel!);
+    }
     logStatus(status: string): void {
         this.log.status(status);
     }

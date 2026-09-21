@@ -356,5 +356,5 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     overflow-y:auto;
 }
 .StepOpenContainer{
-    @include layout(12)
+    @include layout(12,none)
 }

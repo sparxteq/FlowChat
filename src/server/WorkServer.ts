@@ -451,7 +451,7 @@ export class WorkServer {
         let fileName = this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
         let file = new FilesFS(fileName);
         await file.openR();
-        let json = await file.readln();
+        let json = await file.readAll();
         rslt.success = json!="";
         rslt.data.json=json;
         await file.close();

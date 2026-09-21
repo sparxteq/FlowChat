@@ -9,6 +9,7 @@ import { GenerateParseList } from "./GenerateParseList";
 import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
 import { StudySpecification } from "./StudySpecification";
+import { TrainClassifier } from "./TrainClassifier";
 
 export function registerStepsAndTypes(){
     
@@ -27,4 +28,5 @@ export function registerStepsAndTypes(){
     Unit.register(new SelectBestDataPoints())
     Unit.register(new ParseSelectedDataPoints())
     Unit.register(new GenerateParseList())
+    Unit.register(new TrainClassifier())
 }
