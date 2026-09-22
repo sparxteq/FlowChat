@@ -99,6 +99,7 @@ $font-size-l2: 32px;
     background-color: white;
     resize: vertical;
     overflow: auto;
+    height:400px;
 }
 .Login-newaccount {
     @include layout(6, none, 3);

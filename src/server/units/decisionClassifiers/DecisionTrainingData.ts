@@ -2,6 +2,7 @@ import { DB } from "../../../../../Zing3/share/DB";
 import { ZCode } from "../../../common/ZT";
 import { ReadTableCSV } from "../../tables/ReadTableCSV";
 import { ReadTableZMS } from "../../tables/ReadTableZMS";
+import { WriteTableCSV } from "../../tables/WriteTableCSV";
 import { DataPointsRow } from "../SelectBestDataPoints";
 
 
@@ -38,6 +39,15 @@ export class DecisionTrainingData {
             row = await featuresTable.nextRow();
         }
         await featuresTable.close();
+    }
+    async writeUsedFeatures(fTable:WriteTableCSV
+        ,featureIndiciesUsed:{[featureIdx:number]:boolean}):Promise<void>{
+        for (let fIdxS in featureIndiciesUsed){
+            let fIdx = Number.parseInt(fIdxS);
+            let d = this.features[fIdx];
+            let row = [d.decision,d.srcId,d.rt,d.im,d.mz,d.ms2,d.dv]
+            fTable.addRow(row)
+        }
     }
     private qIm=-1;
     private qRT=-1;

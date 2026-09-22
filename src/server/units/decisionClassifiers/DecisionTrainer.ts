@@ -22,8 +22,8 @@ export class DecisionTrainer {
         this.algorithmId=algorithmId;
         this.trainingData=trainingData;
     }
-    train(decision:string):DecisionClassifier{
-        this.chooseFeaturesToUse(decision);
+    train(decision:string,featureIndiciesUsed:{[featureIdx:number]:boolean}):DecisionClassifier{
+        this.chooseFeaturesToUse(decision,featureIndiciesUsed);
         let classifier = classifierMake(this.algorithmId,decision);
         let examplesToUse:number[]=[];
         let nExamples = this.trainingData.examples.length;
@@ -121,7 +121,7 @@ export class DecisionTrainer {
             if (acc.max<confidence)
                 acc.max=confidence;
         }
-    private chooseFeaturesToUse(decision:string){
+    private chooseFeaturesToUse(decision:string,featureIndiciesUsed?:{[featureIdx:number]:boolean}){
         let features = this.trainingData.features;
         this.featuresToUse=[];
         for (let fIdx=0;fIdx<features.length;fIdx++){
@@ -132,6 +132,11 @@ export class DecisionTrainer {
             return b.decisionValue-a.decisionValue
         })
         this.featuresToUse.splice(this.nDataPoints)
+        if (featureIndiciesUsed){
+            for (let f of this.featuresToUse){
+                featureIndiciesUsed[f.featureIdx]=true;
+            }
+        }
     }
     protected decisionAB(decision:string):{aEx:number[],bEx:number[]}{
         let parts = decision.split(" | ");

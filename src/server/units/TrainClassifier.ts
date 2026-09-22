@@ -4,6 +4,7 @@ import { ZDict, ZT } from "../../common/ZT";
 import { FilesFS } from "../files/FilesFS";
 import { ReadTableCSV } from "../tables/ReadTableCSV";
 import { ReadTableZMS } from "../tables/ReadTableZMS";
+import { WriteTableCSV } from "../tables/WriteTableCSV";
 import { WorkNotify } from "../workers/WorkNotify";
 import { classifierInit } from "./decisionClassifiers/classifierInit";
 import { DecisionTrainer } from "./decisionClassifiers/DecisionTrainer";
@@ -71,12 +72,19 @@ export class TrainClassifier extends Unit {
                 ,param.percentToHoldOut,param.nValidations,param.algorithm
         )
         let wnote = new WorkNotify(log);
+        let featureIndiciesUsed:{[featureIdx:number]:boolean}={}
         for (let decision of decisions){
             decisionTrainer.trainAccuracy(decision,wnote)
             decisionTrainer.logAccuracy(decision,wnote)
-            decisionTrainer.train(decision);
+            decisionTrainer.train(decision,featureIndiciesUsed);
         }
-
+        let featName = this.outputFileName("features.csv",instanceInfo);
+        let featTable = new WriteTableCSV(featName)
+        let cols = ft.getColTypes();
+        featTable.setColTypes(cols);
+        await featTable.openW();
+        await td.writeUsedFeatures(featTable,featureIndiciesUsed)
+        
         let accuracyName = this.outputFileName("accuracy.json",instanceInfo)
         let accFile = new FilesFS(accuracyName);
         await accFile.openW();
@@ -90,6 +98,7 @@ export class TrainClassifier extends Unit {
         await clsFile.write(clsStr);
 
         await clsFile.close();
+        await featTable.close();
         await accFile.close();
         await this.decisionsTable.close();
         await ft.close();
