@@ -85,6 +85,7 @@ export class EmptyCellView extends SheetCellView{
         let sheetView = this.sheetView;
         let flowSheet = <FlowSheetClient>this.sheetView.flowSheet
         for (let listItem of list){
+            //DB.msg(`listItem.name "${listItem.name}"`)
             stepMenu.addItem(listItem.name,[],()=>{
                 let instanceId= flowSheet.addUnitInstance(this.row,this.col,listItem.typeId)
                 flowSheet.workbook.dirty();

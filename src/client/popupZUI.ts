@@ -1,3 +1,4 @@
+import { DB } from "../../../Zing3/share/DB";
 import { ZUI } from "../../../Zing3/zui/ZUI";
 
 
@@ -105,7 +106,7 @@ function positionLeft($popup:JQuery,targetRect:DOMRect){
     let popupHeight = $popup.outerHeight()
     let top = targetRect.top + window.scrollY 
         +targetRect.height/2 - popupHeight/2
-
+    //DB.msg(`positionLeft ${left} targetLeft${targetRect.left} window.scrollX${window.scrollX} popupWidth${popupWidth}`)
     $popup.css({
         top: `${top}px`,
         left: `${left}px`,

@@ -172,20 +172,29 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     }
 }
 .MenuContainer {
+    display: flex;
+    flex-direction: column;
     border: solid 1px black;
     background-color: white;
 }
 .MenuItem {
-    @include layout(12);
+    //@include layout(0);
+    display: flex;
+    flex-direction: row;
     border: solid 1px white;
     padding:1px;
     margin:1px;
     margin-right:2px;
     cursor:pointer;
+    //width: 50px;
     &:hover {
         border:solid 1px black;
         background-color: lightgray;
     }
+}
+.MenuItemText {
+    width:200px;
+    padding-right:5px;
 }
 .NoteButton {
     @include layoutRight(0);
