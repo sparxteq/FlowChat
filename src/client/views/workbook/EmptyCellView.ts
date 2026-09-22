@@ -61,6 +61,10 @@ export class EmptyCellView extends SheetCellView{
         let stepMenu = new Menu("steps","")
             this.addStepItems(stepMenu);
         menu.addItem("Create_Step",[],stepMenu,"select a step to create")
+
+        let collapseMenu = new Menu("Collapse Empty","")
+            this.addCollapseItems(collapseMenu)
+        menu.addItem("Collapse Empties",[],collapseMenu,"select which direction to collapse empties")
         this._menu=menu;
         return menu;
     }
@@ -87,5 +91,35 @@ export class EmptyCellView extends SheetCellView{
                 sheetView.refreshView();
             },"")
         }
+    }
+    private addCollapseItems(collapseMenu:Menu){
+        collapseMenu.addItem("Up",[],()=>{
+            let sheetView = this.sheetView;
+            let flow = sheetView.flowSheet!
+            let topInstId = flow.nextInstanceBelow(this.row,this.col);
+            let topInst = flow.workbook.getUnitInstance(topInstId)
+            if (!topInst)
+                return;
+            let {row,col} = topInst.getCell()
+            let newTop = this.row;
+            let newLeft = this.col;
+            flow.moveRegionInstances(col,row,col,flow.nRows(),newLeft,newTop)
+            sheetView.refreshView();
+            //DB.msg("collapse empty up")
+        },"Collapse all empties immediately below this one including this one")
+        collapseMenu.addItem("toLeft",[],()=>{
+            let sheetView = this.sheetView;
+            let flow = sheetView.flowSheet!
+            let leftInstId = flow.nextInstanceToRight(this.row,this.col);
+            let leftInst = flow.workbook.getUnitInstance(leftInstId)
+            if (!leftInst)
+                return;
+            let {row,col} = leftInst.getCell()
+            let newTop = this.row;
+            let newLeft = this.col;
+            flow.moveRegionInstances(col,row,flow.nCols(),row,newLeft,newTop)
+            sheetView.refreshView();
+            //DB.msg("collapse left")
+        },"Collapse all empties to the right including this one")
     }
 }

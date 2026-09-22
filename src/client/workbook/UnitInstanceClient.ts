@@ -91,15 +91,10 @@ export abstract class UnitInstanceClient {
             if (dataRef){
                 let {row,col}=this.getCell();
                 let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
-                if (dataRef.rowAbsolute){
-                    if (sourceRow>=rowBase)
-                        dataRef.row+=rowInc
-                } else {
-                    if (row<rowBase && sourceRow>=rowBase)
-                        dataRef.row+=rowInc
-                    else if (row>=rowBase && sourceRow<rowBase)
-                        dataRef.row-=rowInc;
-                }
+                if (row<rowBase && sourceRow>=rowBase)
+                    dataRef.row+=rowInc
+                else if (row>=rowBase && sourceRow<rowBase)
+                    dataRef.row-=rowInc;
             }
         }
     }
@@ -109,15 +104,11 @@ export abstract class UnitInstanceClient {
             if (dataRef){
                 let {row,col}=this.getCell();
                 let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
-                if (dataRef.colAbsolute){
-                    if (sourceCol>=colBase)
-                        dataRef.col+=colInc
-                } else {
-                    if (col<colBase && sourceCol>=colBase)
-                        dataRef.col+=colInc
-                    else if (col>=colBase && sourceCol<colBase)
-                        dataRef.col-=colInc;
-                }
+                if (col<colBase && sourceCol>=colBase)
+                    dataRef.col+=colInc
+                else if (col>=colBase && sourceCol<colBase)
+                    dataRef.col-=colInc;
+                
             }
         }
     }
@@ -154,10 +145,8 @@ export abstract class UnitInstanceClient {
                 if (inRef.id==inputId){
                     inRef.dataRef = {
                             outputId:outputId,
-                            rowAbsolute:false,
-                            row:outRow-inRow,
-                            colAbsolute:false,
-                            col:outCol-inCol
+                            row:outRow,
+                            col:outCol
                         }
                     return;
                 }
@@ -167,10 +156,8 @@ export abstract class UnitInstanceClient {
                 id:inputId,
                 dataRef:{
                     outputId:outputId,
-                    rowAbsolute:false,
-                    row:outRow-inRow,
-                    colAbsolute:false,
-                    col:outCol-inCol
+                    row:outRow,
+                    col:outCol
                 }
             })
         }
@@ -189,12 +176,6 @@ export abstract class UnitInstanceClient {
     private resolveRefRC(dataRef:DataSourceRef):{row:number,col:number}{
         let row=dataRef.row;
         let col=dataRef.col;
-        if (!dataRef.rowAbsolute){
-            row = this.row+row;
-        }
-        if (!dataRef.colAbsolute){
-            col = this.col+col
-        }
         return {row,col}
     }
     getDisplayOpen():boolean{

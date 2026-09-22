@@ -133,8 +133,7 @@ export class StepCellView extends UnitCellView{
             for (let inputS of this.unitInst.inputSources){
                 let dataRef = inputS.dataRef
                 if (dataRef){
-                    let {refRow,refCol}=flow.resolveRef(dataRef,this.unitInst);
-                    let srcInst = flow.rcInstance(refRow,refCol);
+                    let srcInst = flow.rcInstance(dataRef.row,dataRef.col);
                     if (srcInst){
                         rslt.push({id:inputS.id,sourceInstId:srcInst.instanceId,outputId:dataRef.outputId})
                     }

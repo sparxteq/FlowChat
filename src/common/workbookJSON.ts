@@ -15,9 +15,7 @@ export type UnitInstanceId = string;    // id for a stepinstance from the workbo
 export type DataInstanceId = string;
 export type DataSourceRef = {
     outputId:DataInstanceId
-    rowAbsolute:boolean,
     row:number,
-    colAbsolute:boolean,
     col:number
 }    
 

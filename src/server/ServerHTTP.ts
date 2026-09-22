@@ -56,6 +56,7 @@ export class ServerHTTP{
                 rslt = await WorkServer.workbookList(data.email,data.actName,data.projName)
                 break;
             case "workbookRem":
+                debugger;
                 rslt = await WorkServer.workbookRem(data.email,data.actName,data.projName,data.wbName)
                 break;
             case "workbookGet":

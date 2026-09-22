@@ -25,7 +25,8 @@ export class FlowSheetClient {
         for (let source of sources){
             if (source.id==inputId){
                 if (source.dataRef){
-                    let {refRow,refCol}=this.resolveRef(source.dataRef,unitInst)
+                    let refRow= source.dataRef.row;
+                    let refCol= source.dataRef.col;
                     let sourceInst = this.rcInstance(refRow,refCol);
                     if (sourceInst){
                         if (unitInst.inputTypeCheck(inputId,<StepInstanceClient>sourceInst))
@@ -55,8 +56,7 @@ export class FlowSheetClient {
                 for (let inputSource of inputInst.inputSources){
                     let dataRef = inputSource.dataRef;
                     if (dataRef){
-                        let {refRow,refCol} = this.resolveRef(dataRef,inputInst)
-                        if (row==refRow && col==refCol){
+                        if (row==dataRef.row && col==dataRef.col){
                             return "good"
                         }
                     }
@@ -64,16 +64,6 @@ export class FlowSheetClient {
             }
         }
         return "bad"
-    }
-    resolveRef(dataRef:DataSourceRef,unitInst:UnitInstanceClient):{refRow:number,refCol:number}{
-        let {row,col}=unitInst.getCell();
-        let refRow = dataRef.row;
-        if (!dataRef.rowAbsolute)
-            refRow+=row
-        let refCol = dataRef.col;
-        if (!dataRef.colAbsolute)
-            refCol+=col;
-        return {refRow,refCol}
     }
     unitInstances:{[instanceId:UnitInstanceId]:boolean}={}
     addUnitInstance(row:number,col:number,unitTypeId:UnitTypeId):UnitInstanceId{
@@ -205,6 +195,67 @@ export class FlowSheetClient {
         }
         this.dirty()
     }
+    nextInstanceBelow(rowIdx:number,colIdx:number):string{
+        let wb = this.workbook;
+        let nextRow = 10000;
+        let nextInst = ""
+        for (let instId in this.unitInstances){
+            let inst = wb.getUnitInstance(instId)
+            let {row,col} = inst.getCell();
+            if (col==colIdx && row>rowIdx && row<nextRow){
+                nextRow=row;
+                nextInst = instId;
+            }
+        }
+        return nextInst;
+    }
+    nextInstanceToRight(rowIdx:number,colIdx:number):string{
+        let wb = this.workbook;
+        let nextCol = 10000;
+        let nextInst = ""
+        for (let instId in this.unitInstances){
+            let inst = wb.getUnitInstance(instId)
+            let {row,col} = inst.getCell();
+            if (row==rowIdx && col>colIdx && col<nextCol){
+                nextCol=col;
+                nextInst = instId;
+            }
+        }
+        return nextInst;
+    }
+    moveRegionInstances(leftCol:number,topRow:number,rightCol:number,botRow:number
+        ,newLeft:number,newTop:number){
+        let wb = this.workbook;
+        let colDiff = newLeft-leftCol;
+        let rowDiff = newTop-topRow;
+        for (let instId in this.unitInstances){
+            let inst = wb.getUnitInstance(instId);
+            let {row,col} = inst.getCell();
+            if (col>=leftCol && col<=rightCol && row>=topRow && row<=botRow){
+                inst.setCell(row+rowDiff,col+colDiff);
+            }
+            this.moveRegionInputs(inst,leftCol,topRow,rightCol,botRow,newLeft,newTop)
+        }
+    }
+        private moveRegionInputs(inst:UnitInstanceClient,
+            leftCol:number,topRow:number,rightCol:number,botRow:number
+            ,newLeft:number,newTop:number){
+            let colDiff = newLeft-leftCol;
+            let rowDiff = newTop-topRow;
+            let inputs = inst.inputSources;
+            for (let input of inputs){
+                if (input.dataRef){
+                    let d=input.dataRef;
+                    if (d.col<leftCol || d.col>rightCol || d.row<topRow || d.row>botRow){
+                        // reference outside leave references alone
+                    } else {
+                        // reference to inside that is moving. Adjust references
+                        d.col+=colDiff;
+                        d.row+=rowDiff;
+                    }
+                }
+            }
+        }
     private dirty(){
         this.workbook.dirty();
     }
