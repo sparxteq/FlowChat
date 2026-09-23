@@ -229,8 +229,14 @@ export class WorkbookClient {
     redrawConnections(){
         //DB.msg("redrawConnections")
         overlayStroke(2,"rgba(255,0,0,1)")
-        if (this.selectedInput)
-            this.redrawInputConnection(this.selectedInput.instanceId,this.selectedInput.inputId)
+        if (this.selectedInput){
+            let unitInst = this.getUnitInstance(this.selectedInput.instanceId)
+            if (unitInst)
+                this.redrawInputConnection(unitInst,this.selectedInput.inputId)
+            else {
+                this.selectedInput=undefined;
+            }
+        }
         this.redrawSelectedInstances();
     }   
         private inRect(instanceId:string,inputId:string):DOMRect | undefined{
@@ -245,13 +251,12 @@ export class WorkbookClient {
             let rect = el?.getBoundingClientRect();
             return rect;
         }
-        private redrawInputConnection(instanceId:string,inputId:string){
+        private redrawInputConnection(unitInst:UnitInstanceClient,inputId:string){
 
-            let unitInst = this.getUnitInstance(instanceId);
             let flow = unitInst.flowSheet;
             let source = flow.inputSource(unitInst,inputId)
             if (source && source.instance){
-                let inputRect = this.inRect(instanceId,inputId)
+                let inputRect = this.inRect(unitInst.instanceId,inputId)
                 let outputRect = this.outRect(source.instance.instanceId,source.outputId)
                 if (inputRect && outputRect){
                     let inputCenter = inputRect.left + inputRect.width/2;
@@ -274,7 +279,14 @@ export class WorkbookClient {
                 if (inst){
                     let inputSources = inst.inputSources;
                     for (let inputS of inputSources){
-                        this.redrawInputConnection(instId,inputS.id)
+                        if (inputS.dataRef){
+                            let inst = this.getUnitInstance(inputS.dataRef.outputId)
+                            if (inst)
+                                this.redrawInputConnection(inst,inputS.id)
+                            else {
+                                inputS.dataRef=undefined;
+                            }
+                        }
                     }
                 }
             }
