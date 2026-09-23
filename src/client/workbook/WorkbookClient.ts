@@ -162,7 +162,7 @@ export class WorkbookClient {
             let typeId = json.unitInstances[id].unitTypeId;
             let ui = UnitInstanceClient.getInstance(typeId,this.flowSheet!);
             if (ui){
-                ui.fromJSON(json.unitInstances[id])
+                ui.fromJSON(json.unitInstances[id],this.flowSheet!)
                 this.unitInstances[id]=ui;
             }
         }

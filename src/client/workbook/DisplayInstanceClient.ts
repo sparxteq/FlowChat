@@ -48,6 +48,8 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         else 
             outputId="??"
         let displayName = name+" > "+outputId;
+        if (name=="??")
+            displayName+=" "+this.constructor.name
         return displayName;
     }
     async getVarCSV(inputId:string):Promise<TableMem | string>{

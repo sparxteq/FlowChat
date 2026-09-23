@@ -185,7 +185,7 @@ export abstract class UnitInstanceClient {
         this.displayOpen = displayOpen;
         this.workbook.dirty();
     }
-    fromJSON(json:UnitInstanceJSON){
+    fromJSON(json:UnitInstanceJSON,flowSheet:FlowSheetClient){
         this.displayOpen=json.displayOpen;
         this.resolveType();
         this.instanceId=json.instanceId;
@@ -198,6 +198,7 @@ export abstract class UnitInstanceClient {
         this.note = json.note;
         this.stepComputeTime = json.stepComputeTime;
         this.paramChangeTime = json.paramChangeTime;
+        this.flowSheet=flowSheet;
     }
     abstract defaultParam():any;
     protected abstract resolveType():void;

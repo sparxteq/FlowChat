@@ -68,14 +68,12 @@ export class StepInstanceClient extends UnitInstanceClient {
         inst.resolveType();
         return inst;
     }
-    fromJSON(json:StepInstanceJSON){
-        super.fromJSON(json);
-        if (json.flowSheet)
-            this.flowSheet=FlowSheetClient.fromJSON(json.flowSheet,this.workbook)
+    fromJSON(json:StepInstanceJSON,flowSheet:FlowSheetClient){
+        super.fromJSON(json,flowSheet);
+        this.flowSheet=flowSheet
     }
     toJSON():StepInstanceJSON{
         let rslt = <StepInstanceJSON>super.toJSON()
-        rslt.flowSheet = this.flowSheet.toJSON();
         return rslt;
     }
 
