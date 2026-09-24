@@ -24,10 +24,9 @@ export class FlowSheetClient {
         let sources = unitInst.inputSources
         for (let source of sources){
             if (source.id==inputId){
-                if (source.dataRef){
-                    let refRow= source.dataRef.row;
-                    let refCol= source.dataRef.col;
-                    let sourceInst = this.rcInstance(refRow,refCol);
+                if (source.srcRef){
+                    let srcInstId= source.srcRef.srcInstId;
+                    let sourceInst = this.workbook.getUnitInstance(srcInstId);
                     if (sourceInst){
                         if (unitInst.inputTypeCheck(inputId,<StepInstanceClient>sourceInst))
                             return "good"
@@ -43,20 +42,20 @@ export class FlowSheetClient {
         }
         return "bad"
     }
-    inputSource(unitInst:UnitInstanceClient,inputId:string):{instance:UnitInstanceClient,outputId:string}{
+    inputSource(unitInst:UnitInstanceClient,inputId:string):{instance?:UnitInstanceClient,outputId:string}{
         let source = unitInst.inputSource(inputId)
         return source;
     }
     outputConnection(unitInst:StepInstanceClient,outputId:string):"none" | "good" | "bad"{
-        let {row,col} = unitInst.getCell();
         let workbook = this.workbook;
+        let srcInstId = unitInst.instanceId;
         for (let inputUnitId in this.unitInstances){
             if (inputUnitId !=unitInst.instanceId){
                 let inputInst = workbook.getUnitInstance(inputUnitId)
                 for (let inputSource of inputInst.inputSources){
-                    let dataRef = inputSource.dataRef;
-                    if (dataRef){
-                        if (row==dataRef.row && col==dataRef.col){
+                    let srcRef = inputSource.srcRef;
+                    if (srcRef){
+                        if (srcInstId==srcRef.srcInstId){
                             return "good"
                         }
                     }
@@ -141,14 +140,8 @@ export class FlowSheetClient {
         return nc+2;
     }
     addRow(rowAdd:number,nRowsToAdd=1){
-        for (let unitInstId in this.unitInstances){
-            let unitInst = this.workbook.getUnitInstance(unitInstId)
-            let {row,col} = unitInst.getCell();
-            if (row>=rowAdd){
-                unitInst.setCell(row+nRowsToAdd,col)
-            }
-            unitInst.moveInputRows(rowAdd,nRowsToAdd)
-        }
+        this.moveRegionInstances(0,rowAdd,this.nCols(),this.nRows()
+            ,0,rowAdd+nRowsToAdd)
         this.dirty();
     }
     delRow(rowDel:number,nRowsToDel:number){
@@ -159,24 +152,17 @@ export class FlowSheetClient {
             if (row>=rowDel){
                 if (row<rowBeyond){
                     this.delUnitInstance(unitInstId)
-                } else {
-                    unitInst.setCell(row-nRowsToDel,col)
-                }
+                } 
             }
-            unitInst.moveInputRows(rowDel,-nRowsToDel)
         }
+        this.moveRegionInstances(0,rowDel+nRowsToDel,this.nCols(),this.nRows()
+            ,0,rowDel)
         this.dirty()
     }
     
     addCol(colAdd:number,nColsToAdd=1){
-        for (let unitInstId in this.unitInstances){
-            let unitInst = this.workbook.getUnitInstance(unitInstId)
-            let {row,col} = unitInst.getCell();
-            if (col>=colAdd){
-                unitInst.setCell(row,col+nColsToAdd)
-            }
-            unitInst.moveInputCols(colAdd,nColsToAdd)
-        }
+        this.moveRegionInstances(colAdd,0,this.nCols(),this.nRows()
+            ,colAdd+nColsToAdd,0)
         this.dirty();
     }
     delCol(colDel:number,nColsToDel:number){
@@ -187,12 +173,12 @@ export class FlowSheetClient {
             if (col>=colDel){
                 if (col<colBeyond){
                     this.delUnitInstance(unitInstId)
-                } else {
-                    unitInst.setCell(row,col-nColsToDel)
-                }
+                } 
             }
-            unitInst.moveInputCols(colDel,-nColsToDel)
         }
+        this.moveRegionInstances(colDel+nColsToDel,0,this.nCols(),this.nRows()
+            ,colDel,0)
+            
         this.dirty()
     }
     nextInstanceBelow(rowIdx:number,colIdx:number):string{
@@ -234,17 +220,17 @@ export class FlowSheetClient {
             if (col>=leftCol && col<=rightCol && row>=topRow && row<=botRow){
                 inst.setCell(row+rowDiff,col+colDiff);
             }
-            this.moveRegionInputs(inst,leftCol,topRow,rightCol,botRow,newLeft,newTop)
+            //this.moveRegionInputs(inst,leftCol,topRow,rightCol,botRow,newLeft,newTop)
         }
     }
-        private moveRegionInputs(inst:UnitInstanceClient,
+        /*private moveRegionInputs(inst:UnitInstanceClient,
             leftCol:number,topRow:number,rightCol:number,botRow:number
             ,newLeft:number,newTop:number){
             let colDiff = newLeft-leftCol;
             let rowDiff = newTop-topRow;
             let inputs = inst.inputSources;
             for (let input of inputs){
-                if (input.dataRef){
+                if (input.Ref){
                     let d=input.dataRef;
                     if (d.col<leftCol || d.col>rightCol || d.row<topRow || d.row>botRow){
                         // reference outside leave references alone
@@ -255,7 +241,7 @@ export class FlowSheetClient {
                     }
                 }
             }
-        }
+        }*/
     private dirty(){
         this.workbook.dirty();
     }

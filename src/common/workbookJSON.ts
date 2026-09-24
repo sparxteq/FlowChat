@@ -14,9 +14,8 @@ export type UnitId= string // id for a Unit from the UnitRegistry
 export type UnitInstanceId = string;    // id for a stepinstance from the workbook's stepInstances
 export type DataInstanceId = string;
 export type DataSourceRef = {
-    outputId:DataInstanceId
-    row:number,
-    col:number
+    outputId:DataInstanceId,
+    srcInstId:string
 }    
 
 export type UnitInstanceJSON = {

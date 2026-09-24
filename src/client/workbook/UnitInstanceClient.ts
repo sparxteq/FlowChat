@@ -44,19 +44,19 @@ export abstract class UnitInstanceClient {
         }
         return nameToCheck
     }
-    findInputDataRef(inputId:string):DataSourceRef|undefined{
+    findInputSrcRef(inputId:string):DataSourceRef|undefined{
         let inputs = this.inputSources;
         for (let input of inputs){
             if (input.id==inputId){
-                return input.dataRef;
+                return input.srcRef;
             }
         }
     }
     abstract inputTypes():{[inputId:string]:string}
     inputTypeCheck(inputId:string,sourceInst:StepInstanceClient):boolean{
-        let dataRef = this.findInputDataRef(inputId);
-        if (dataRef){
-            let outputId = dataRef.outputId;
+        let srcRef = this.findInputSrcRef(inputId);
+        if (srcRef){
+            let outputId = srcRef.outputId;
             let outputType = sourceInst.outputType(outputId)
             if (outputType){
                 let inputType = this.inputTypes()[inputId];
@@ -75,7 +75,7 @@ export abstract class UnitInstanceClient {
     protected row=-1;
     protected col=-1;
     note="";
-    inputSources:{id:string,dataRef?:DataSourceRef}[]=[]
+    inputSources:{id:string,srcRef?:DataSourceRef}[]=[]
 
     abstract cellView(sheetView:SheetView):UnitCellView;
     getCell():{row:number,col:number} {
@@ -85,7 +85,7 @@ export abstract class UnitInstanceClient {
         this.row=row;
         this.col=col;
     }
-    moveInputRows(rowBase:number,rowInc:number){
+    /*moveInputRows(rowBase:number,rowInc:number){
         for (let inRef of this.inputSources){
             let dataRef = inRef.dataRef;
             if (dataRef){
@@ -111,42 +111,32 @@ export abstract class UnitInstanceClient {
                 
             }
         }
-    }
-    inputSource(inputId:string):{instance:UnitInstanceClient,outputId:string}{
+    }*/
+    inputSource(inputId:string):{instance?:UnitInstanceClient,outputId:string}{
         let sheet = this.flowSheet;
         for (let inRef of this.inputSources){
             if (inRef.id==inputId){
-                let dataRef = inRef.dataRef;
-                if (dataRef){
-                    let {row,col} = this.resolveRefRC(dataRef);
-                    let inst = sheet.rcInstance(row,col)
-                    if (inst){
-                        return {
-                            instance:inst,
-                            outputId:dataRef.outputId
-                        }
-                    }
+                let srcRef = inRef.srcRef;
+                if (srcRef){
+                    let srcInst = this.workbook.getUnitInstance(srcRef.srcInstId)
+                    return {instance:srcInst,outputId:srcRef.outputId}
                 }
             }
         }
         return {
-            instance:<any>undefined,
             outputId:""
         }
     }
     setInputSource(inputId:string,outInstId:string,outputId:string){
         
-        let {row:inRow,col:inCol} = this.getCell();
         let outInst = this.workbook.getUnitInstance(outInstId);
         if (outInst){
-            let {row:outRow,col:outCol}=outInst.getCell();
             for (let i=0;i<this.inputSources.length;i++){
                 let inRef = this.inputSources[i];
                 if (inRef.id==inputId){
-                    inRef.dataRef = {
+                    inRef.srcRef = {
                             outputId:outputId,
-                            row:outRow,
-                            col:outCol
+                            srcInstId:outInstId
                         }
                     return;
                 }
@@ -154,10 +144,9 @@ export abstract class UnitInstanceClient {
             
             this.inputSources.push({
                 id:inputId,
-                dataRef:{
+                srcRef:{
                     outputId:outputId,
-                    row:outRow,
-                    col:outCol
+                    srcInstId:outInstId
                 }
             })
         }
@@ -167,16 +156,19 @@ export abstract class UnitInstanceClient {
         for (let i=0;i<this.inputSources.length;i++){
             let inRef = this.inputSources[i];
             if (inRef.id==inputId){
-                inRef.dataRef=undefined;
+                inRef.srcRef=undefined;
                 return;
             }
         }
         this.workbook.dirty()
     }
-    private resolveRefRC(dataRef:DataSourceRef):{row:number,col:number}{
-        let row=dataRef.row;
-        let col=dataRef.col;
-        return {row,col}
+    private resolveRefRC(srcRef:DataSourceRef):{row:number,col:number}{
+        let outInst = this.workbook.getUnitInstance(srcRef.srcInstId)
+        let rc={row:-1,col:-1}
+        if (outInst){
+            rc=outInst.getCell();
+        }
+        return rc
     }
     getDisplayOpen():boolean{
         return this.displayOpen;

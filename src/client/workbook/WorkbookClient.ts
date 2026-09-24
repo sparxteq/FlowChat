@@ -80,7 +80,7 @@ export class WorkbookClient {
             if (!latestSourceExecTime)
                 latestSourceExecTime=0;
             for (let inputS of inst.inputSources){
-                if (inputS.dataRef){
+                if (inputS.srcRef){
                     let inSource = inst.inputSource(inputS.id);
                     let outInst = inSource.instance;
                     let outExecTime = Date.now();
@@ -88,6 +88,8 @@ export class WorkbookClient {
                         outExecTime = outInst.stepComputeTime;
                     if (outExecTime>latestSourceExecTime)
                         latestSourceExecTime=outExecTime;
+                    if (!outInst)
+                        break;
                     this.updateInstExecStatus(outInst);
                     let outStatus = "unconnected"
                     if (outInst)
@@ -279,12 +281,12 @@ export class WorkbookClient {
                 if (inst){
                     let inputSources = inst.inputSources;
                     for (let inputS of inputSources){
-                        if (inputS.dataRef){
-                            let inst = this.getUnitInstance(inputS.dataRef.outputId)
+                        if (inputS.srcRef){
+                            let inst = this.getUnitInstance(inputS.srcRef.srcInstId)
                             if (inst)
                                 this.redrawInputConnection(inst,inputS.id)
                             else {
-                                inputS.dataRef=undefined;
+                                inputS.srcRef=undefined;
                             }
                         }
                     }

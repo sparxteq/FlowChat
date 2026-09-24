@@ -59,6 +59,9 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         let email = wb.userEmail;
         let projId = wb.project;
         let actId = wb.activity;
+        if (!inputSource.instance){
+            return "bad input reference"
+        }
         let instId = inputSource.instance.instanceId;
         let outputId = inputSource.outputId
         let csvRslt = await http.varGetCSV(email,actId,projId,wbId,instId,outputId);
@@ -77,7 +80,9 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         let wbId = wb.workbook;
         let email = wb.userEmail;
         let projId = wb.project;
-        let actId = wb.activity;
+        let actId = wb.activity;if (!inputSource.instance){
+            return "bad input reference"
+        }
         let instId = inputSource.instance.instanceId;
         let outputId = inputSource.outputId
         let jsonRslt = await http.varGetJSON(email,actId,projId,wbId,instId,outputId);

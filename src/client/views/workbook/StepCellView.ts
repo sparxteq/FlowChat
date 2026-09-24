@@ -131,11 +131,11 @@ export class StepCellView extends UnitCellView{
             let rslt:{id:string,sourceInstId:string,outputId:string}[]=[];
             let flow = this.unitInst.flowSheet;
             for (let inputS of this.unitInst.inputSources){
-                let dataRef = inputS.dataRef
-                if (dataRef){
-                    let srcInst = flow.rcInstance(dataRef.row,dataRef.col);
+                let srcRef = inputS.srcRef
+                if (srcRef){
+                    let srcInst = this.sheetView.flowSheet!.workbook.getUnitInstance(srcRef.srcInstId);
                     if (srcInst){
-                        rslt.push({id:inputS.id,sourceInstId:srcInst.instanceId,outputId:dataRef.outputId})
+                        rslt.push({id:inputS.id,sourceInstId:srcInst.instanceId,outputId:srcRef.outputId})
                     }
                 }
             }
