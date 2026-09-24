@@ -88,88 +88,56 @@ export abstract class UnitCellView extends SheetCellView{
         menu.addItem("remove",[],(parameters:any[])=>{
             this.removeUnit()
         },"remove this unit")
-        menu.addItem("insertView",[],this.insertViewMenu(),"insert a new view")
-        menu.addItem("insertStep",[],this.insertStepMenu(),"insert a new step")
+        menu.addItem("insertEmpty",[],this.insertEmptyMenu(),"insert a new view")
+        //menu.addItem("insertStep",[],this.insertStepMenu(),"insert a new step")
         this._menu=menu;
         return menu;
     }
-        private insertViewMenu():Menu{
-            let menu = new Menu("view menu","view menu");
-            menu.addItem("above",[],this.insertViewList("above")
-                ,`Insert a new view above the current cell`)
-            menu.addItem("below",[],this.insertViewList("below")
-                ,`Insert a new view above the current cell`)
-            menu.addItem("toLeft",[],this.insertViewList("toLeft")
-                ,`Insert a new view above the current cell`)
-            menu.addItem("toRight",[],this.insertViewList("toRight")
-                ,`Insert a new view above the current cell`)
+        private insertEmptyMenu():Menu{
+            let menu = new Menu("insert menu","insert menu");
+            menu.addItem("above",[],this.insert("above")
+                ,`Insert an empty above the current cell`)
+            menu.addItem("below",[],this.insert("below")
+                ,`Insert an empty above the current cell`)
+            menu.addItem("toLeft",[],this.insert("toLeft")
+                ,`Insert an empty above the current cell`)
+            menu.addItem("toRight",[],this.insert("toRight")
+                ,`Insert an empty above the current cell`)
             return menu
         }
-            private insertViewList(direction:"above"|"below"|"toLeft"|"toRight"):Menu{
-                let menu = new Menu("view list","view list")
-                let flowSheet = <FlowSheetClient>this.sheetView.flowSheet;
+            private insert(direction:"above"|"below"|"toLeft"|"toRight"):Menu{
+                let menu = new Menu("number list","number list");
+                let sv = this.sheetView!;
+                let flow = sv.flowSheet!;
                 let {row,col} = this.unitInst.getCell();
-                let list = UnitInstanceClient.viewList();
-                for (let listItem of list){
-                    menu.addItem(listItem.name,[],()=>{
-                        let {emptyRow,emptyCol} =this.openEmptyCell(direction,row,col)
-                        if (emptyRow>=0){
-                            let instanceId = flowSheet.addUnitInstance(emptyRow,emptyCol
-                                ,listItem.typeId)
-                            this.sheetView.refreshView();
+                for (let n=1;n<=6;n++){
+                    let nstr = n.toString();
+                    menu.addItem(nstr,[],()=>{
+                        switch(direction){
+                            case "above":
+                                flow.moveRegionInstances(col,row,col,flow.nRows()
+                                        ,col,row+n)
+                                break;
+                            case "below":
+                                flow.moveRegionInstances(col,row+1,col,flow.nRows()
+                                        ,col,row+n+1)
+                                break;
+                            case "toLeft":
+                                flow.moveRegionInstances(col,row,flow.nCols(),row
+                                        ,col+n,row)
+                                break;
+                            case "toRight":
+                                flow.moveRegionInstances(col+1,row,flow.nCols(),row
+                                        ,col+n+1,row)
+                                break;
+
                         }
-                    },`insert a ${listItem} ${NameString.toCapSpaced(direction)} the current cell`)
+                        sv.refreshView()
+                    },`insert ${nstr} empty cells ${direction} the current unit`)
                 }
                 return menu;
             }
-            private openEmptyCell(direction:"above"|"below"|"toLeft"|"toRight"
-                        ,row:number,col:number):{emptyRow:number,emptyCol:number}{
-                let flow = this.sheetView.flowSheet!;
-                switch(direction){
-                    case "above":
-                        flow.moveRegionInstances(col,row,col,flow.nRows(),col,row+1)
-                        return {emptyRow:row,emptyCol:col}
-                    case "below":
-                        flow.moveRegionInstances(col,row+1,col,flow.nRows(),col,row+2)
-                        return {emptyRow:row+1,emptyCol:col}
-                    case "toLeft":
-                        flow.moveRegionInstances(col,row,flow.nCols(),row,col+1,row)
-                        return {emptyRow:row,emptyCol:col}
-                    case "toRight":
-                        flow.moveRegionInstances(col+1,row,flow.nCols(),row,col+2,row)
-                        return {emptyRow:row,emptyCol:col+1}
-                    default: return {emptyRow:-1,emptyCol:-1}
-                }
-            }
-        private insertStepMenu():Menu{
-            let menu = new Menu("step menu","step menu");
-            menu.addItem("above",[],this.insertStepList("above")
-                ,`Insert a new step above the current cell`)
-            menu.addItem("below",[],this.insertStepList("below")
-                ,`Insert a new step above the current cell`)
-            menu.addItem("toLeft",[],this.insertStepList("toLeft")
-                ,`Insert a new step above the current cell`)
-            menu.addItem("toRight",[],this.insertStepList("toRight")
-                ,`Insert a new step above the current cell`)
-            return menu
-        }
-            private insertStepList(direction:"above"|"below"|"toLeft"|"toRight"):Menu{
-                let menu = new Menu("view list","view list")
-                let flowSheet = <FlowSheetClient>this.sheetView.flowSheet;
-                let {row,col} = this.unitInst.getCell();
-                let list = UnitInstanceClient.stepList();
-                for (let listItem of list){
-                    menu.addItem(listItem.name,[],()=>{
-                        let {emptyRow,emptyCol} =this.openEmptyCell(direction,row,col)
-                        if (emptyRow>=0){
-                            let instanceId = flowSheet.addUnitInstance(emptyRow,emptyCol
-                                ,listItem.typeId)
-                            this.sheetView.refreshView();
-                        }
-                    },`insert a ${listItem} ${NameString.toCapSpaced(direction)} the current cell`)
-                }
-                return menu;
-            }
+
     protected removeUnit(){
         let inst = this.unitInst;
         let instanceId = inst.instanceId;
