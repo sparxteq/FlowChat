@@ -25,10 +25,11 @@ export class FlowSheetClient {
         for (let source of sources){
             if (source.id==inputId){
                 if (source.srcRef){
+                    let srcOutputId = source.srcRef.outputId;
                     let srcInstId= source.srcRef.srcInstId;
                     let sourceInst = this.workbook.getUnitInstance(srcInstId);
                     if (sourceInst){
-                        if (unitInst.inputTypeCheck(inputId,<StepInstanceClient>sourceInst))
+                        if (unitInst.inputTypeCheck(inputId,<StepInstanceClient>sourceInst,srcOutputId))
                             return "good"
                         else
                             return "bad"

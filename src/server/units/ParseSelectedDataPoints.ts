@@ -28,13 +28,13 @@ export class ParseSelectedDataPoints extends Unit{
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
         return [
             {inputId:"examplesToParse",typeName:this.checkType("CSV")},
-            {inputId:"features",typeName:this.checkType("CSV")},
-            {inputId:"quanta",typeName:this.checkType("JSON")}
+            {inputId:"features",typeName:this.checkType("Features")},
+            {inputId:"quanta",typeName:this.checkType("Quanta")}
         ]
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"sampleData.zms",typeName:this.checkType("ZMS")},
+            {outputId:"sampleData.zms",typeName:this.checkType("SelectedDataPoints")},
             {outputId:"stats.json",typeName:this.checkType("JSON")}
         ]
     }

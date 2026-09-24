@@ -25,7 +25,7 @@ export class SelectAssembly extends Unit{
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"assembly.csv",typeName:this.checkType("CSV")}
+            {outputId:"assembly.csv",typeName:this.checkType("Assembly")}
         ]
     }
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {

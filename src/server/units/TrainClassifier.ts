@@ -28,16 +28,16 @@ export class TrainClassifier extends Unit {
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
         return [
-            {inputId:"sampleData", typeName:this.checkType("ZMS")},
-            {inputId:"features", typeName:this.checkType("CSV")},
-            {inputId:"decisions", typeName:this.checkType("CSV")}
+            {inputId:"sampleData", typeName:this.checkType("SelectedDataPoints")},
+            {inputId:"features", typeName:this.checkType("Features")},
+            {inputId:"decisions", typeName:this.checkType("Decisions")}
         ]
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"classifiers.json",typeName:this.checkType("JSON")},
-            {outputId:"features.csv",typeName:this.checkType("CSV")},
-            {outputId:"accuracy.json",typeName:this.checkType("JSON")}
+            {outputId:"classifiers.json",typeName:this.checkType("Classifiers")},
+            {outputId:"features.csv",typeName:this.checkType("Features")},
+            {outputId:"accuracy.json",typeName:this.checkType("Accuracy")}
         ];
     }
     defaultParam():TrainClassifierParam {

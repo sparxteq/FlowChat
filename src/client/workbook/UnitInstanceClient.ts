@@ -8,6 +8,7 @@ import { ZT } from "../../common/ZT";
 import { NameString } from "../../common/NameString";
 import { SheetView } from "../views/workbook/SheetView";
 import { TypeClient } from "./TypeClient";
+import { Modal } from "../../../../Zing3/zui/Modal";
 
 
 
@@ -53,10 +54,9 @@ export abstract class UnitInstanceClient {
         }
     }
     abstract inputTypes():{[inputId:string]:string}
-    inputTypeCheck(inputId:string,sourceInst:StepInstanceClient):boolean{
+    inputTypeCheck(inputId:string,sourceInst:StepInstanceClient,outputId:string):boolean{
         let srcRef = this.findInputSrcRef(inputId);
         if (srcRef){
-            let outputId = srcRef.outputId;
             let outputType = sourceInst.outputType(outputId)
             if (outputType){
                 let inputType = this.inputTypes()[inputId];
@@ -133,7 +133,13 @@ export abstract class UnitInstanceClient {
         if (outInst){
             for (let i=0;i<this.inputSources.length;i++){
                 let inRef = this.inputSources[i];
-                if (inRef.id==inputId){
+                if (inRef.id==inputId && inRef.srcRef){
+                    let outId = inRef.srcRef.outputId;
+                    let outInst = <StepInstanceClient>this.workbook.getUnitInstance(outInstId)
+                    if (!this.inputTypeCheck(inputId,outInst,outId)){
+                        this.reportTypeError(inputId,outInst,outputId);
+                        return;
+                    }
                     inRef.srcRef = {
                             outputId:outputId,
                             srcInstId:outInstId
@@ -152,6 +158,13 @@ export abstract class UnitInstanceClient {
         }
         this.workbook.dirty();
     } 
+        private reportTypeError(inputId:string,outInst:StepInstanceClient,outputId:string){
+
+            let inTypes = this.inputTypes()
+            let inType = inTypes[inputId];
+            let outType = outInst.outputType(outputId)
+            Modal.alert(`${this.name()}.${inputId}:${inType} <b>not compatible with</b> ${outInst.name()}.${outputId}:${outType}}`)
+        }
     remInputSource(inputId:string){
         for (let i=0;i<this.inputSources.length;i++){
             let inRef = this.inputSources[i];

@@ -27,6 +27,8 @@ export class TypeClient{
     }
     static typeMatch(inputType:string,outputType:string):boolean{
         let outType = this.getType(outputType);
+        if (!outType)
+            return false;
         if (inputType==outputType)
             return true;
         for (let st of outType.superTypes){

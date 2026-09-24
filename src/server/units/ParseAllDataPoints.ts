@@ -30,14 +30,14 @@ export class ParseAllDataPoints extends Unit{
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
         return [
-            {inputId:"examples",typeName:this.checkType("CSV")}
+            {inputId:"examples",typeName:this.checkType("Assembly")}
         ];
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"sampleData.zms", typeName:this.checkType("ZMS")},
+            {outputId:"sampleData.zms", typeName:this.checkType("AllDataPoints")},
             {outputId:"stats.json", typeName:this.checkType("JSON")},
-            {outputId:"quanta.json", typeName:this.checkType("JSON")}
+            {outputId:"quanta.json", typeName:this.checkType("Quanta")}
         ]
     }
     defaultParam():ParseAllDataPointsParam {

@@ -26,13 +26,13 @@ export class SelectBestDataPoints extends Unit{
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
         return [
-            {inputId:"sampleData",typeName:"ZMS"},
-            {inputId:"decisions",typeName:"CSV"}
+            {inputId:"sampleData",typeName:"AllDataPoints"},
+            {inputId:"decisions",typeName:"Decisions"}
         ]
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"features.csv", typeName:"CSV"},
+            {outputId:"features.csv", typeName:"Features"},
             //{outputId:"stats.csv", typeName:"CSV"}
         ];
     }

@@ -32,13 +32,13 @@ export class StudySpecification extends Unit{
                                 EachToOthers: Each outcome to all of the others combined`})
     }
     inputTypes(): { inputId: string; typeName: TypeName; }[] {
-        return [ {inputId:"assembly",typeName:this.checkType("CSV")}
+        return [ {inputId:"assembly",typeName:this.checkType("Assembly")}
         ];
     }
     outputTypes(): { outputId: string; typeName: TypeName; }[] {
         return [
-            {outputId:"Decisions.csv",typeName:this.checkType("CSV")},
-            {outputId:"studySpec.json",typeName:this.checkType("JSON")}
+            {outputId:"Decisions.csv",typeName:this.checkType("Decisions")},
+            {outputId:"studySpec.json",typeName:this.checkType("StudySpec")}
             //{outputId:"ColumnData.csv",typeName:this.checkType("CSV")}
         ];
     }
