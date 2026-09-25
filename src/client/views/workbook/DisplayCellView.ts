@@ -68,37 +68,50 @@ export class DisplayCellView extends UnitCellView{
         container.id=this.unitInst.instanceId;
         return container
     }
+    
     private computedDisplay:ZUI = <any>undefined;
     private display():ZUI{
+        //DB.start(`display ${this.unitInst.instanceId} ${this.unitInst.execStatus}`)
         switch (this.unitInst.execStatus){
             case "ready":
                 this.computeAndUpdateDisplay().then((display:ZUI)=>{
                     this.computedDisplay=display;
-                    return this.computedDisplay
+                    this.rebuild();
                 });
+                //DB.end()
                 return new TextUI("computing")
                 break;
             case "computed":
                 if (!this.computedDisplay){
                     this.computeAndUpdateDisplay().then((display:ZUI)=>{
                         this.computedDisplay=display;
+                        //this.unitInst.execStatus="computed"
                         this.rebuild();
+                        //DB.msg("computed refresh ",this.unitInst.execStatus)
+                        //this.sheetView.refreshView()
                     });
+                    //DB.end()
                     return new TextUI("computing")
                 } else {
+                    //DB.end()
                     return this.computedDisplay
                 }
             default:
+                //DB.end()
                 return new TextUI("not available")
         }
     }
     private async computeAndUpdateDisplay():Promise<ZUI>{
+        //DB.start("computeAndUpdateDisplay")
         let display = await (<DisplayInstanceClient>this.unitInst).computeDisplay();
         this.unitInst.stepComputeTime=Date.now();
         let inst = this.unitInst;
         let wb = inst.workbook;
         this.computedDisplay=display;
+        this.unitInst.execStatus="computed";
         wb.updateExecStatus();
+        //DB.end();
+        this.sheetView.flowSheet?.workbook.dirty();
         return this.display();
     }
     

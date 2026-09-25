@@ -53,6 +53,7 @@ export class WorkbookClient {
     }
         
     updateExecStatus(){
+        //DB.start("updateExecStatus")
         for (let instId in this.unitInstances){
             let inst = this.getUnitInstance(instId);
             inst.execStatus="unknown"
@@ -61,6 +62,7 @@ export class WorkbookClient {
             let inst = this.getUnitInstance(instId);
             this.updateInstExecStatus(inst);
         }
+        //DB.end();
     }
         private updateInstExecStatus(inst:UnitInstanceClient){
             if (!inst){
