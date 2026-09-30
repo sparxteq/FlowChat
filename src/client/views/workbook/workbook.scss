@@ -254,6 +254,26 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     font-size: 9px;
     letter-spacing:1.5px;
 }
+.SelectInstance {
+    float:left;
+    display:block;
+    position:relative;
+    background-color: black;
+    border: solid 1px black;
+    cursor: pointer;
+    width:15px;
+    height:15px;
+}
+.UnselectInstance {
+    float:left;
+    display:block;
+    position:relative;
+    background-color: white;
+    border: solid 1px black;
+    cursor: pointer;
+    width:15px;
+    height:15px;
+}
 .SheetView {
     @include layout(12,none);
     background-color: white;

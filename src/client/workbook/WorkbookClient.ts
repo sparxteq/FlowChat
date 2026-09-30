@@ -284,8 +284,8 @@ export class WorkbookClient {
                     let inputSources = inst.inputSources;
                     for (let inputS of inputSources){
                         if (inputS.srcRef){
-                            let inst = this.getUnitInstance(inputS.srcRef.srcInstId)
-                            if (inst)
+                            let srcInst = this.getUnitInstance(inputS.srcRef.srcInstId)
+                            if (srcInst)
                                 this.redrawInputConnection(inst,inputS.id)
                             else {
                                 inputS.srcRef=undefined;
@@ -312,7 +312,10 @@ export class WorkbookClient {
         if (shiftKey)
             this.multiSelectInstance(id);
         else {
-            this.selectedInstances=[id]
+            if (this.instanceIsSelected(id))
+                this.selectedInstances=[];
+            else
+                this.selectedInstances=[id]
         }
         this.redrawConnections()
     }

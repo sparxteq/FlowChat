@@ -70,8 +70,8 @@ export class StepCellView extends UnitCellView{
         let actionBarStyle="StepCellActionBar"
         let inst = this.unitInst;
         let wb = inst.workbook;
-        if (wb.instanceIsSelected(inst.instanceId))
-            actionBarStyle = "StepCellActionBarSelected"
+        //if (wb.instanceIsSelected(inst.instanceId))
+        //    actionBarStyle = "StepCellActionBarSelected"
         let doList:ZUI[]=[];
             doList.push(this.actionBar(()=>{
                     DB.msg(`do ${this.unitInst.typeId()}`)
@@ -151,8 +151,8 @@ export class StepCellView extends UnitCellView{
         let actionBarStyle="StepCellActionBar"
         let inst = this.unitInst;
         let wb = inst.workbook;
-        if (wb.instanceIsSelected(inst.instanceId))
-            actionBarStyle = "StepCellActionBarSelected"
+        //if (wb.instanceIsSelected(inst.instanceId))
+        //    actionBarStyle = "StepCellActionBarSelected"
         let div=new DivUI([
             this.actionBar().style(actionBarStyle),
             this.inputBar().style("StepInputBar"),

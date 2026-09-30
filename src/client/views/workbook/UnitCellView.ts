@@ -283,6 +283,7 @@ export abstract class UnitCellView extends SheetCellView{
             list = [
                     this.openCloseButton(),
                     this.actionButton(click),
+                    this.selectButton(),
                     this.menuButton(),
                     this.noteButton()
                 ]
@@ -290,6 +291,7 @@ export abstract class UnitCellView extends SheetCellView{
             list = [
                     this.openCloseButton(),
                     this.name(),
+                    this.selectButton(),
                     this.menuButton(),
                     this.noteButton()
                 ]
@@ -339,5 +341,27 @@ export abstract class UnitCellView extends SheetCellView{
             })
         ocBtn.style("OpenCloseButton")
         return ocBtn
+    }
+    
+    protected selectButton():ZUI{
+        let instId=this.unitInst.instanceId;
+        let wb = this.unitInst.workbook;
+        let selDiv = new DivUI([])
+                        .style(()=>{
+                            if (wb.instanceIsSelected(instId)){
+                                //DB.msg("style selected")
+                                return "SelectInstance"
+                            }else{
+                                //DB.msg("style unselected")
+                                return "UnselectInstance"
+                            }
+                        })
+        let clickWrap = new ClickWrapperUI([selDiv])
+                        .click((event:any)=>{
+                            //DB.msg("click")
+                            wb.selectInstance(instId,event.shiftKey)
+                            this.sheetView.refreshView()
+                        })
+        return clickWrap;
     }
 }

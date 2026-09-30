@@ -27,8 +27,8 @@ export class DisplayCellView extends UnitCellView{
         let actionBarStyle = "DisplayCellActionBar";
         let inst = this.unitInst;
         let wb = inst.workbook;
-        if (wb.instanceIsSelected(inst.instanceId))
-            actionBarStyle = "DisplayCellActionBarSelected"
+        //if (wb.instanceIsSelected(inst.instanceId))
+        //    actionBarStyle = "DisplayCellActionBarSelected"
         doList.push(this.actionBar().style(actionBarStyle))
         let pe = this.paramEdit();
         if (pe)
@@ -46,14 +46,14 @@ export class DisplayCellView extends UnitCellView{
                 //DB.msg("display cell clicked")
             })
         container.id=this.unitInst.instanceId;
-        return container
+        return div
     }
     private showClosed():ZUI{
         let actionBarStyle = "DisplayCellActionBar";
         let inst = this.unitInst;
         let wb = inst.workbook;
-        if (wb.instanceIsSelected(inst.instanceId))
-            actionBarStyle = "DisplayCellActionBarSelected"
+        //if (wb.instanceIsSelected(inst.instanceId))
+        //    actionBarStyle = "DisplayCellActionBarSelected"
         let div=new DivUI([
             this.actionBar().style(actionBarStyle),
             this.inputBar().style("DisplayInputBar")
@@ -66,7 +66,7 @@ export class DisplayCellView extends UnitCellView{
                 //DB.msg("display cell clicked")
             })
         container.id=this.unitInst.instanceId;
-        return container
+        return div
     }
     
     private computedDisplay:ZUI = <any>undefined;
