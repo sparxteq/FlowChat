@@ -71,6 +71,10 @@ export class DisplayCellView extends UnitCellView{
     
     private computedDisplay:ZUI = <any>undefined;
     private display():ZUI{
+        let inst = <DisplayInstanceClient>this.unitInst
+        if (!inst.displayOpen){
+            return new TextUI("not open")
+        }
         //DB.start(`display ${this.unitInst.instanceId} ${this.unitInst.execStatus}`)
         switch (this.unitInst.execStatus){
             case "ready":

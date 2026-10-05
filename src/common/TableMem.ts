@@ -49,7 +49,7 @@ export class TableMem extends TableAb{
         let items:string[]=line.split(",")
         for (let item of items){
             let tItem = item.trim();
-            if (typeof tItem == "number"){
+            if (!isNaN(Number(tItem))){
                 row.push(Number.parseFloat(tItem))
             } else if (typeof tItem == "string"){
                 row.push(tItem)

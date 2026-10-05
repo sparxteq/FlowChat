@@ -2,6 +2,7 @@ import { DB } from "../../../../Zing3/share/DB";
 import { HTTPResult } from "../../common/http/httpTypes";
 import { DataSourceRef, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
 import { overlayCurve, overlayLine, overlayRect, overlayStroke } from "../DrawOverlay";
+import { InteractiveViewTable } from "../views/InteractiveViewTable";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
 import { FlowSheetClient } from "./FlowSheetClient";
@@ -156,6 +157,16 @@ export class WorkbookClient {
         this.unitInstances={};
         this.unitInstanceCount=0
         this.flowSheet = new FlowSheetClient(this);
+    }
+    private interactiveTables:{[varName:string]:InteractiveViewTable}={};
+    getIntVariable(outputInstId:string,outputId:string):InteractiveViewTable{
+        let varName = outputInstId+"_"+outputId;
+        let it = this.interactiveTables[varName]
+        return it;
+    }
+    setIntVariable(outputInstId:string,outputId:string,iTable:InteractiveViewTable){
+        let varName = outputInstId+"_"+outputId;
+        this.interactiveTables[varName]=iTable;
     }
     private fromJSON(json:WorkbookJSON){
         this.unitInstances = {};

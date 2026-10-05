@@ -85,33 +85,7 @@ export abstract class UnitInstanceClient {
         this.row=row;
         this.col=col;
     }
-    /*moveInputRows(rowBase:number,rowInc:number){
-        for (let inRef of this.inputSources){
-            let dataRef = inRef.dataRef;
-            if (dataRef){
-                let {row,col}=this.getCell();
-                let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
-                if (row<rowBase && sourceRow>=rowBase)
-                    dataRef.row+=rowInc
-                else if (row>=rowBase && sourceRow<rowBase)
-                    dataRef.row-=rowInc;
-            }
-        }
-    }
-    moveInputCols(colBase:number,colInc:number){
-        for (let inRef of this.inputSources){
-            let dataRef = inRef.dataRef;
-            if (dataRef){
-                let {row,col}=this.getCell();
-                let {row:sourceRow,col:sourceCol}=this.resolveRefRC(dataRef)
-                if (col<colBase && sourceCol>=colBase)
-                    dataRef.col+=colInc
-                else if (col>=colBase && sourceCol<colBase)
-                    dataRef.col-=colInc;
-                
-            }
-        }
-    }*/
+    
     inputSource(inputId:string):{instance?:UnitInstanceClient,outputId:string}{
         let sheet = this.flowSheet;
         for (let inRef of this.inputSources){
@@ -133,17 +107,24 @@ export abstract class UnitInstanceClient {
         if (outInst){
             for (let i=0;i<this.inputSources.length;i++){
                 let inRef = this.inputSources[i];
-                if (inRef.id==inputId && inRef.srcRef){
-                    let outId = inRef.srcRef.outputId;
-                    let outInst = <StepInstanceClient>this.workbook.getUnitInstance(outInstId)
-                    if (!this.inputTypeCheck(inputId,outInst,outId)){
-                        this.reportTypeError(inputId,outInst,outputId);
-                        return;
-                    }
-                    inRef.srcRef = {
+                if (inRef.id==inputId){
+                    if (inRef.srcRef){
+                        let outId = inRef.srcRef.outputId;
+                        let outInst = <StepInstanceClient>this.workbook.getUnitInstance(outInstId)
+                        if (!this.inputTypeCheck(inputId,outInst,outId)){
+                            this.reportTypeError(inputId,outInst,outputId);
+                            return;
+                        }
+                        inRef.srcRef = {
+                                outputId:outputId,
+                                srcInstId:outInstId
+                            }
+                    } else {
+                        inRef.srcRef = {
                             outputId:outputId,
                             srcInstId:outInstId
                         }
+                    }
                     return;
                 }
             }

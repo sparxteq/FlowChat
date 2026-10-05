@@ -87,6 +87,7 @@ export class SheetView extends ZUI{
     flowSheet?:FlowSheetClient;
     private buildView():ZUI{
         //DB.start("buildView")
+        this.workbook.updateExecStatus();
         let table = new TableUI().equalColsExceptLast().style("SheetView")
         let flowSheet = <FlowSheetClient>this.workbook.flowSheet;
         this.flowSheet=flowSheet;

@@ -4,6 +4,7 @@ import { curUser, HTTPCSVGetResult } from "../../common/http/httpTypes";
 import { NameString } from "../../common/NameString";
 import { TableMem } from "../../common/TableMem";
 import { http } from "../http/ClientHTTP";
+import { InteractiveViewTable } from "../views/InteractiveViewTable";
 import { DisplayCellView } from "../views/workbook/DisplayCellView";
 import { SheetView } from "../views/workbook/SheetView";
 import { UnitCellView } from "../views/workbook/UnitCellView";
@@ -51,6 +52,22 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         if (name=="??")
             displayName+=" "+this.constructor.name
         return displayName;
+    }
+    async getVarInteractive(inputId:string):Promise<InteractiveViewTable | string>{
+        let inputSource = this.inputSource(inputId)
+        let outputInstId = inputSource.instance!.instanceId;
+        let outputId = inputSource.outputId;
+        let intTable = this.workbook.getIntVariable(outputInstId,outputId);
+        if (intTable){
+            return intTable;
+        }else {
+            let memTable = await this.getVarCSV(inputId);
+            if (typeof memTable == "string")
+                return memTable;
+            let iTable = new InteractiveViewTable(memTable);
+            this.workbook.setIntVariable(outputInstId,outputId,iTable);
+            return iTable;
+        }
     }
     async getVarCSV(inputId:string):Promise<TableMem | string>{
         let inputSource = this.inputSource(inputId)

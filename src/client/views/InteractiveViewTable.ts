@@ -2,12 +2,13 @@ import { DB } from "../../../../Zing3/share/DB";
 import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { TableAb } from "../../common/TableAb";
 import { TableMem } from "../../common/TableMem";
+import { ZField } from "../../common/ZT";
 
 
 
 
 export class InteractiveViewTable extends TableAb{
-    private baseTable:TableMem=<any>undefined;
+    baseTable:TableMem=<any>undefined;
     private ranges:FieldRanges={};
     private activeColumnNames:{[colName:string]:boolean}={}
     constructor(base?:TableMem){
@@ -15,6 +16,12 @@ export class InteractiveViewTable extends TableAb{
         if (base){
             this.setBase(base);
         }
+    }
+    getBColTypes():ZField[]{
+        if (this.baseTable)
+            return this.baseTable.getColTypes();
+        else
+            return []
     }
     isEmpty():boolean{
         if (!this.baseTable)   
@@ -35,6 +42,43 @@ export class InteractiveViewTable extends TableAb{
         this.initSorts();
         
         this.evalView();
+    }
+    addActiveColumn(columnName:string){
+        if (this.activeColumnNames[columnName])
+            return;
+        this.activeColumnNames[columnName]=true;
+        let colB = this.baseTable.columnIdx(columnName);
+        let newRange:FieldRange = {
+            colB:colB,
+            upper:-Number.MAX_VALUE,
+            zoomMax:-Number.MAX_VALUE,
+            zoomMin:Number.MAX_VALUE,
+            lower:Number.MAX_VALUE
+        }
+        if (colB<0){
+            newRange.upper=this.baseTable.nRows()-1
+            newRange.zoomMax=newRange.upper
+            newRange.zoomMin=0
+            newRange.lower=0;
+        } else {
+            let nr = this.baseTable.nRows();
+            for (let r=0;r<nr;r++){
+                let cell = this.baseTable.getCell(r,colB);
+                if (!Number.isNaN(cell)){
+                    if (typeof cell == "string")
+                        cell = Number.parseFloat(cell);
+                    if (newRange.upper<cell){
+                        newRange.upper = cell;
+                        newRange.zoomMax=cell;
+                    }
+                    if (newRange.lower>cell){
+                        newRange.lower=cell;
+                        newRange.zoomMin=cell;
+                    }
+                }
+            }
+        }
+        this.ranges[columnName]=newRange;
     }
     private rowViewtoB:number[]=[]
     private initRows(){
