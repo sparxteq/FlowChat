@@ -55,7 +55,7 @@ export class SelectBestDataPoints extends Unit{
 
         let featuresName = this.outputFileName("features.csv",instanceInfo)
         let features = new WriteTableCSV(featuresName);
-        await features.openW();
+        //await features.openW();
 
         /*let statsName = this.outputFileName("stats.csv",instanceInfo);
         let statsFile = new WriteTableCSV(statsName);
@@ -74,9 +74,13 @@ export class SelectBestDataPoints extends Unit{
             let rec = <DataPointsRow>rowRec;
             for (let decision in this.decisions){
                 let dt = decisionTables[decision];
-                let ab = this.decisions[decision];
+                let abSum = 0;
+                for (let ab of rec.abs){
+                    abSum+=ab
+                }
+                let ab = abSum/rec.abs.length;
                 let dv = this.decisionValue(rec,decision);
-                dt.addRow([decision,rec.srcId,rec.rt,rec.im,rec.mz,rec.ms2,dv])
+                dt.addRow([decision,rec.srcId,rec.rt,rec.im,rec.mz,rec.ms2,dv,ab])
                 log.status(`data ${(rc++).toLocaleString()}`)
             }
         })
@@ -361,6 +365,7 @@ export class SelectBestDataPoints extends Unit{
                     new ZField("mz",new ZNumber(),{decimals:3}),
                     new ZField("ms2",new ZNumber(),{decimals:3}),
                     new ZField("decisionValue",new ZNumber(),{decimals:3}),
+                    new ZField("abundance",new ZNumber(),{decimals:0})
                 ]
 
             case "exampleStats.csv":
