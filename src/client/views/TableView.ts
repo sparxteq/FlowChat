@@ -253,6 +253,8 @@ class TableViewContent extends ZUI{
         }
         for (let col=0;col<nc;col++){
             let v = table.getCell(rowV,col);
+            if (!v)
+                v=0;
             if (!Number.isNaN(v))
                 v = v.toLocaleString();
             let cellJQ = $(`<td  class="${this.cellClass}">${v}</td>`);

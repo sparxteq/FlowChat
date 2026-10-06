@@ -126,7 +126,9 @@ export class WorkbookClient {
                     if (latestSourceExecTime>inst.stepComputeTime)
                         if (inst instanceof DisplayInstanceClient && inst.displayCellView){
                             inst.execStatus="computed";
-                            inst.displayCellView.rebuild();
+                            inst.displayCellView.computeAndUpdateDisplay().then(()=>{
+                                inst.displayCellView.rebuild();
+                            })
                         } else
                             inst.execStatus="ready";
                     else

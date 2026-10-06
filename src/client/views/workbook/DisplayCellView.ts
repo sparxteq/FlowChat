@@ -105,7 +105,7 @@ export class DisplayCellView extends UnitCellView{
                 return new TextUI("not available")
         }
     }
-    private async computeAndUpdateDisplay():Promise<ZUI>{
+    async computeAndUpdateDisplay():Promise<ZUI>{
         //DB.start("computeAndUpdateDisplay")
         let display = await (<DisplayInstanceClient>this.unitInst).computeDisplay();
         this.unitInst.stepComputeTime=Date.now();
