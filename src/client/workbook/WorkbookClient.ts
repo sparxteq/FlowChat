@@ -5,6 +5,7 @@ import { overlayCurve, overlayLine, overlayRect, overlayStroke } from "../DrawOv
 import { InteractiveViewTable } from "../views/InteractiveViewTable";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
+import { DisplayInstanceClient } from "./DisplayInstanceClient";
 import { FlowSheetClient } from "./FlowSheetClient";
 import { UnitClient } from "./UnitClient";
 import { InputExecStatus, UnitInstanceClient } from "./UnitInstanceClient";
@@ -123,7 +124,11 @@ export class WorkbookClient {
                         break;
                     }
                     if (latestSourceExecTime>inst.stepComputeTime)
-                        inst.execStatus="ready";
+                        if (inst instanceof DisplayInstanceClient && inst.displayCellView){
+                            inst.execStatus="computed";
+                            inst.displayCellView.rebuild();
+                        } else
+                            inst.execStatus="ready";
                     else
                         inst.execStatus="computed"
                     break;

@@ -542,19 +542,22 @@ export class StandardChartDraw extends ZUI{
         for (let highlightRowB of highlightRowsB){
 
             let rowB = data.getRowB(highlightRowB)
-            if (xIdx<0)
-                xData = highlightRowB;
-            else
-                xData = <number>rowB[xIdx]
-            if (yIdx<0)
-                yData = highlightRowB;
-            else
-                yData = <number>rowB[yIdx];
-            let x = this.toDrawX(xData);
-            let y = this.toDrawY(yData)
-            let left = x-this.highlightWidth/2;
-            let top = y-this.highlightWidth/2;
-            g.strokeRect(left,top,this.highlightWidth,this.highlightWidth)
+            if (rowB){
+                if (xIdx<0)
+                    xData = highlightRowB;
+                else
+                    xData = <number>rowB[xIdx]
+                if (yIdx<0)
+                    yData = highlightRowB;
+                else
+                    yData = <number>rowB[yIdx];
+                let x = this.toDrawX(xData);
+                let y = this.toDrawY(yData)
+                let left = x-this.highlightWidth/2;
+                let top = y-this.highlightWidth/2;
+                g.strokeRect(left,top,this.highlightWidth,this.highlightWidth)
+            }
+            
         }
 
         
@@ -893,11 +896,13 @@ export class StandardChartDraw extends ZUI{
             let data = this.viewTable;
             let colB = data.colNtoB(this.itemField)
             let rowB = data.getRowB(highlightedB)
-            let selStr = rowB[colB];
-            if (selStr){
-                for (let notifyName in this.selectNotifications){
-                    let notify=this.selectNotifications[notifyName];
-                    notify(selStr);
+            if (rowB){
+                let selStr = rowB[colB];
+                if (selStr){
+                    for (let notifyName in this.selectNotifications){
+                        let notify=this.selectNotifications[notifyName];
+                        notify(selStr);
+                    }
                 }
             }
         }

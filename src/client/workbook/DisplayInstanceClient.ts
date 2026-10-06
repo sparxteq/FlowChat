@@ -25,8 +25,10 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
     unitType():string{
         return "view";
     }
+    displayCellView:DisplayCellView = <any>undefined;
     cellView(sheetView:SheetView): UnitCellView {
-        return new DisplayCellView(this,sheetView);
+        this.displayCellView = new DisplayCellView(this,sheetView);
+        return this.displayCellView;
     }
     
     resolveType(): void {
