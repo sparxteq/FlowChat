@@ -1,6 +1,6 @@
 import { classifierMake } from "./classifierMake";
 import { DecisionClassifier } from "./DecisionClassifier";
-import { DecisionTrainingData } from "./DecisionTrainingData";
+import { DecisionExamples, DecisionTrainingData } from "./DecisionTrainingData";
 import { WorkNotifyI } from "../../workers/WorkNotifyI";
 
 
@@ -37,7 +37,7 @@ export class DecisionTrainer {
         let acc = this.accuracy[decision];
         this.logExamples(acc.failedExamples,"failed",wnote)
         this.logExamples(acc.successExamples,"success",wnote)
-        let ave = acc.sum/acc.nValidations;
+        let ave = acc.avSum/acc.avCount;
         wnote.msg(`average confidence ${ave}`)
         let nSuccess = Object.keys(acc.successExamples).length;
         let nFail = Object.keys(acc.failedExamples).length;
@@ -48,7 +48,7 @@ export class DecisionTrainer {
             wnote.start(label);
             for (let exId in ex){
                 let exD = ex[exId]
-                let str = `${exId} number ${exD.count} ave confidence ${exD.confidenceSum/exD.count}`
+                let str = `${exId} number ${exD.count} ave confidence ${exD.confidence/exD.count}`
                 wnote.msg(str);
             }
             wnote.end();
@@ -62,7 +62,8 @@ export class DecisionTrainer {
             min:Number.MAX_SAFE_INTEGER,
             max:Number.MIN_SAFE_INTEGER,
             nValidations:this.nValidations,
-            sum:0
+            avCount:0,
+            avSum:0
         }
         for (let i=0;i<this.nValidations;i++){
             wnote.logStatus(`validation ${i+1}/${this.nValidations}`)
@@ -81,8 +82,30 @@ export class DecisionTrainer {
                     this.logFail(acc,holdoutIdx,confidence)
             }
         }
+        this.accuracyAverages(acc)
         this.accuracy[decision]=acc;
     }
+        private accuracyAverages(acc:DecisionAccuracy){
+            for (let exId in acc.failedExamples){
+                let fEx = acc.failedExamples[exId];
+                let outcome = this.findOutcome(this.trainingData.examples,exId)
+                fEx.outcome = outcome;
+                fEx.confidence=fEx.confidence/fEx.count;
+            }
+            for (let exId in acc.successExamples){
+                let sEx = acc.successExamples[exId];
+                let outcome = this.findOutcome(this.trainingData.examples,exId)
+                sEx.outcome = outcome;
+                sEx.confidence=sEx.confidence/sEx.count;
+            }
+        }
+            private findOutcome(examples:DecisionExamples[],exId:string):string{
+                for (let ex of examples){
+                    if (ex.id==exId)
+                        return ex.outcome;
+                }
+                return ""
+            }
         private extractFeatureVector(featuresToUse:{featureIdx:number, decisionValue:number}[]
             ,allFeatures:number[]):number[]{
 
@@ -98,11 +121,13 @@ export class DecisionTrainer {
         private logSuccess(acc:DecisionAccuracy,exampleIdx:number, confidence:number){
             let exampleId = this.trainingData.examples[exampleIdx].id
             if (!acc.successExamples[exampleId])
-                acc.successExamples[exampleId]={count:0,confidenceSum:0}
+                acc.successExamples[exampleId]={count:0,confidence:0
+                    ,outcome:""}
             acc.successExamples[exampleId].count++;
-            acc.successExamples[exampleId].confidenceSum+=confidence;
+            acc.successExamples[exampleId].confidence+=confidence;
 
-            acc.sum+=confidence;
+            acc.avSum+=confidence;
+            acc.avCount++;
             if (acc.min>confidence)
                 acc.min=confidence
             if (acc.max<confidence)
@@ -111,11 +136,12 @@ export class DecisionTrainer {
         private logFail(acc:DecisionAccuracy,exampleIdx:number, confidence:number){
             let exampleId = this.trainingData.examples[exampleIdx].id
             if (!acc.failedExamples[exampleId])
-                acc.failedExamples[exampleId]={count:0,confidenceSum:0}
+                acc.failedExamples[exampleId]={count:0,confidence:0,outcome:""}
             acc.failedExamples[exampleId].count++;
-            acc.failedExamples[exampleId].confidenceSum+=confidence;
+            acc.failedExamples[exampleId].confidence+=confidence;
 
-            acc.sum+=confidence;
+            acc.avSum+=confidence;
+            acc.avCount++
             if (acc.min>confidence)
                 acc.min=confidence
             if (acc.max<confidence)
@@ -221,11 +247,13 @@ export type DecisionAccuracy={
     min:number,
     max:number,
     nValidations:number,
-    sum:number // divide by nValidations for average accuracy.
+    avCount:number,
+    avSum:number // divide by count for average accuracy.
 }
 type DecisionAccuracyExampleCounts = {
     [exampleId:string]:{
+        outcome:string,
         count:number,
-        confidenceSum:number
+        confidence:number
     }
 }
