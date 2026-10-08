@@ -1,4 +1,5 @@
 import { DB } from "../../../Zing3/share/DB";
+import { AccuracyChart } from "./views/charts/AccuracyChart";
 import { DecisionValue } from "./views/charts/DecisionValue";
 import { MzAbundance } from "./views/charts/MzAbundance";
 import { MzDecisionValue } from "./views/charts/MzDecisionValue";
@@ -30,4 +31,5 @@ export async function registerStepsAndDisplays():Promise<void>{
     DisplayInstanceClient.register(new DecisionValue())
     DisplayInstanceClient.register(new MzAbundance())
     DisplayInstanceClient.register(new RtAbundance())
+    DisplayInstanceClient.register(new AccuracyChart())
 }
