@@ -4,7 +4,7 @@ import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { BreakUI } from "../../../../Zing3/zui/BreakUI";
 import { DropDownChoiceUI } from "../../../../Zing3/zui/DropDownChoiceUI";
 import { http } from "../http/ClientHTTP";
-import { HTTPActResult, HTTPProjResult, HTTPWbList } from "../../common/http/httpTypes";
+import { HTTPActResult, HTTPProjResult, HTTPResult, HTTPWbList } from "../../common/http/httpTypes";
 import { TextFieldUI } from "../../../../Zing3/zui/TextFieldUI";
 import { ButtonUI } from "../../../../Zing3/zui/ButtonUI";
 import { LoginView } from "./LoginView";
@@ -12,6 +12,7 @@ import { Modal } from "../../../../Zing3/zui/Modal";
 import { ActivityView } from "./ActivityView";
 import { LoadContext } from "./LoadContext";
 import { ProjectView } from "./ProjectView";
+import { DB } from "../../../../Zing3/share/DB";
 
 
 export class WorkbookView extends ZUI{
@@ -45,21 +46,43 @@ export class WorkbookView extends ZUI{
             let proj = new DivUI([
                 new TextUI("<b>Workbook</b>").style("col-1"),
                 choice,
-                new ButtonUI("create workbook").click(()=>{
-                    if (newWorkbook==""){
-                        Modal.alert("no workbook id entered")
-                        return;
-                    }
-
-                    http.workbookAdd(LoginView.email,ActivityView.curActivity,ProjectView.curProj,newWorkbook).then((rslt:HTTPProjResult)=>{
-                        if (rslt.success){
-                            WorkbookView.curWorkbook=rslt.data.wbName;
-                            this.context.reloadViews();
-                        } else {
-                            Modal.alert(`could not create workbook ${newWorkbook}`)
+                new DivUI([
+                    new ButtonUI("create workbook").click(()=>{
+                        if (newWorkbook==""){
+                            Modal.alert("no workbook id entered")
+                            return;
                         }
-                    })
-                }).style("col-2"),
+
+                        http.workbookAdd(LoginView.email,ActivityView.curActivity,ProjectView.curProj,newWorkbook).then((rslt:HTTPProjResult)=>{
+                            if (rslt.success){
+                                WorkbookView.curWorkbook=rslt.data.wbName;
+                                this.context.reloadViews();
+                            } else {
+                                Modal.alert(`could not create workbook ${newWorkbook}`)
+                            }
+                        })
+                    }).style("col-12"),
+                    new ButtonUI("copy workbook").click(()=>{
+                        if (newWorkbook==""){
+                            Modal.alert("no workbook id entered")
+                            return;
+                        }
+                        if (WorkbookView.curWorkbook=="-"){
+                            Modal.alert("no selected workbook to copy")
+                            return;
+                        }
+                        DB.msg(`copy workbook ${WorkbookView.curWorkbook} to ${newWorkbook}`)
+                        http.workbookCopy(LoginView.email,ActivityView.curActivity
+                                ,ProjectView.curProj,WorkbookView.curWorkbook,newWorkbook).then((rslt:HTTPResult)=>{
+                            if (rslt.success){
+                                WorkbookView.curWorkbook=newWorkbook;
+                                this.context.reloadViews();
+                            } else {
+                                Modal.alert(`could not copy workbook ${WorkbookView.curWorkbook} to ${newWorkbook}`)
+                            }
+                        })
+                    }).style("col-12")
+                ]).style("col-2"),
                 new TextFieldUI("text")
                                 .getF(()=>{ return newWorkbook})
                                 .setF((proj:string)=>{
@@ -80,6 +103,7 @@ export class WorkbookView extends ZUI{
                                     Modal.alert(rslt.msg!)
                                     return
                                 }
+                                WorkbookView.curWorkbook="-"
                                 this.context.reloadViews();
                             })
                         }

@@ -84,7 +84,8 @@ export type HTTPWbResult = HTTPResult & {
         email:string,
         actName:string,
         projName:string,
-        wbName:string
+        wbName:string,
+        newWbName?:string
     }
 }
 export type HTTPWbGetResult = HTTPResult & {

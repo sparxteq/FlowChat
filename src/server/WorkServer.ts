@@ -317,6 +317,30 @@ export class WorkServer {
         }
         return rslt;
     }
+    static async workbookCopy(email:string,actName:string,projName:string
+            ,oldWorkbookName:string,newWorkbookName:string):Promise<HTTPResult>{
+        let json = await this.workbookJSON(email,actName,projName,oldWorkbookName)
+        if (json){
+            let wb = <WorkbookJSON>json;
+            for (let unitId in wb.unitInstances){
+                let unit = wb.unitInstances[unitId];
+                unit.paramChangeTime=0;
+                unit.stepComputeTime=0;
+            }
+            return await this.workbookSave(email,actName,projName,newWorkbookName,json)
+        } else {
+            return {
+                success:false,
+                msg:"failed to load old wb ${oldWorkbookName",
+                data:{
+                    email:email,
+                    actName:actName,
+                    projName:projName,
+                    wbName:oldWorkbookName,
+                }
+            }
+        }
+    }
     static async workbookRem(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbResult>{
         let rslt:HTTPWbResult={
             success:true,
@@ -351,6 +375,18 @@ export class WorkServer {
         let wbF = this.wbFolderName(email,actName,projName,workbookName)
         return wbF+"/vars"
     }
+    private static async workbookJSON(email:string,actName:string,projName:string,workbookName:string):Promise<any>{
+        let wbFileN = this.workbookDataFile(email,actName,projName,workbookName)
+        let fs = new FilesFSSource();
+        let wbF = await fs.getFile(wbFileN,false)
+        if (wbF && await wbF.isFile()){
+            await wbF.openR();
+            let jsonStr = await wbF.readAll();
+            await wbF.close();
+            let json = JSON.parse(jsonStr);
+            return json;
+        }
+    }
     static async workbookGet(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbGetResult>{
         let rslt:HTTPWbGetResult={
             success:true,
@@ -363,32 +399,15 @@ export class WorkServer {
                 wbJSON:{}
             }
         }
-        let wbFileN = this.workbookDataFile(email,actName,projName,workbookName)
-        let fs = new FilesFSSource();
-        let wbF = await fs.getFile(wbFileN,false)
-        if (wbF && await wbF.isFile()){
+        let json = await this.workbookJSON(email,actName,projName,workbookName)
+        if (json){
             rslt.success=true;
-            await wbF.openR();
-            let jsonStr = await wbF.readAll();
-            await wbF.close();
-            let json = JSON.parse(jsonStr);
             rslt.data.wbJSON=json;
             return rslt;
         } else {
-            wbF = await fs.getFile(wbFileN,true);
-            if (!wbF){
-                rslt.success=false;
-                rslt.msg=`failed to create ${wbFileN}`
-            } else {
-                await wbF.openW(true)
-                let jsonStr = "{}"
-                await wbF.writeSync(jsonStr);
-                await wbF.close()
-                rslt.success=true;
-                rslt.msg="created empty data file"
-                rslt.data = {}
-            }
-        }
+            rslt.success=false;
+            rslt.msg=`failed to find ${workbookName}`
+        } 
         return rslt;
     }
     static async workbookSave(email:string,actName:string,projName:string

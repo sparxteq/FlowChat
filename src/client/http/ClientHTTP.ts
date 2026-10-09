@@ -108,6 +108,14 @@ export class ClientHTTP{
             ,{email:email,actName:actName,projName:projName,wbName:workbookName})
         return rslt;
     }
+    
+    async workbookCopy(email:string,actName:string,projName:string
+            ,oldWorkbook:string,newWorkbook:string):Promise<HTTPWbResult>{
+        let rslt = <HTTPWbResult>await this.do("workbookCopy"
+            ,{email:email,actName:actName,projName:projName
+                ,oldWbName:oldWorkbook,newWbName:newWorkbook})
+        return rslt;
+    }
     async workbookRem(email:string,actName:string,projName:string,workbookName:string):Promise<HTTPWbResult>{
         let rslt = <HTTPWbResult>await this.do("workbookRem"
             ,{email:email,actName:actName,projName:projName,wbName:workbookName})

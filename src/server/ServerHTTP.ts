@@ -52,11 +52,14 @@ export class ServerHTTP{
             case "workbookAdd":
                 rslt = await WorkServer.workbookAdd(data.email,data.actName,data.projName,data.wbName)
                 break;
+            case "workbookCopy":
+                rslt = await WorkServer.workbookCopy(data.email,data.actName
+                    ,data.projName,data.oldWbName,data.newWbName)
+                break;
             case "workbookList":
                 rslt = await WorkServer.workbookList(data.email,data.actName,data.projName)
                 break;
             case "workbookRem":
-                debugger;
                 rslt = await WorkServer.workbookRem(data.email,data.actName,data.projName,data.wbName)
                 break;
             case "workbookGet":
