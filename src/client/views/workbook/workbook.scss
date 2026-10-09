@@ -10,8 +10,8 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 
 .DisplayCellActionBar {
     @include layout(12,none);
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 .DisplayCellActionBarSelected {
     @include layout(12,none);
@@ -24,6 +24,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     @include layout(11,none,1);
     border: solid 2px $cellBorder;
     padding: 3px;
+    padding-bottom: 1px;
     border-radius: 3px;
     background-color: color.scale($color-secondary,$lightness:30%);
 }
@@ -158,7 +159,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 .MenuButton {
     @include layoutRight(0);
     width:15px;
-    height:15px;
+    height:12px;
     margin-left: 5px;
 }
 .MenuButtonEmpty {
@@ -199,7 +200,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 .NoteButton {
     @include layoutRight(0);
     width:15px;
-    height:15px;
+    height:12px;
     margin-left: 5px;
 }
 .NoteEdit {
@@ -280,7 +281,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     border-radius: 3px;
     border: solid 1px black;
     margin-top:10px;
-    border-spacing: 4px;
+    border-spacing: 2px;
     resize: vertical;
     overflow-x: auto;
     overflow-y:auto;

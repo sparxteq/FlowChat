@@ -52,7 +52,7 @@ export class StandardChartView extends DisplayInstanceClient{
         let rslt = `[${xName}-${yName}] ${name}`
         return rslt;
     }
-    private table:InteractiveViewTable = <any>undefined;
+    protected table:InteractiveViewTable = <any>undefined;
     async computeDisplay():Promise<ZUI>{
         let param = <StandardChartParam>this.paramValue
         let variable = await this.getVarInteractive("table")
@@ -72,7 +72,7 @@ export class StandardChartView extends DisplayInstanceClient{
         return new TextUI(`display ${name} error ${variable}`).style("col-12")
     }
 
-    private chartContent (iTable:InteractiveViewTable,param:StandardChartParam){
+    protected chartContent (iTable:InteractiveViewTable,param:StandardChartParam,chartName?:string):ZUI{
         let chartDraw = new StandardChartDraw(iTable,param,this)
         let ribbonRight = new RangeRibbonUI(iTable,param.yColumn,"v",param.chartHeightPixels)
         ribbonRight.style("XYChartRight")
@@ -589,9 +589,7 @@ export class StandardChartDraw extends ZUI{
                     case "spike":
                         //DB.start("spike")
                         for (let recI=0;recI<nr;recI++){
-                            //let rec=data.getRow(recI);
-                            //DB.msg(`data[${recI}]`,rec)
-                            //if (this.meetsCondition(style,rec)){
+                            if (this.validRow(data,recI)){
                                 let x=<number>data.getCell(recI,xIdx)
                                 if (xIdx<0)
                                     x = recI;
@@ -610,14 +608,13 @@ export class StandardChartDraw extends ZUI{
                                     g.lineTo(this.toDrawX(<number>x),zero);
                                     g.stroke();
                                 }
-                            //}
+                            }
                         }
                         //DB.end()
                         break;
                     case "dot":
                         for (let recI=0;recI<nr;recI++){
-                            //let rec = data.getRow(recI);
-                            //if (this.meetsCondition(style,rec)){
+                            if (this.validRow(data,recI)){
                                 let x=<number>data.getCell(recI,xIdx)
                                 if (xIdx<0)
                                     x = recI;
@@ -629,25 +626,26 @@ export class StandardChartDraw extends ZUI{
                                         width,
                                         width);
                                 }
-                            //}
+                            }
                         }
                         break;
                     case "line":
                         let first=true;
                         g.beginPath();
                         for (let i = 0;i<nr;i++){
-                            //let rec = data.getRow(i);
-                            let x=<number>data.getCell(i,xIdx)
-                                if (xIdx<0)
-                                    x = i;
-                            let y=<number>data.getCell(i,yIdx);
-                            if (!(x<zoomMinX || x>zoomMaxX
-                                    || y<zoomMinY || y>zoomMaxY)){
-                                if (first){
-                                    g.moveTo(this.toDrawX(<number>x),this.toDrawY(<number>y))
-                                    first=false;
-                                } else 
-                                    g.lineTo(this.toDrawX(<number>x),this.toDrawY(<number>y));
+                            if (this.validRow(data,i)){
+                                let x=<number>data.getCell(i,xIdx)
+                                    if (xIdx<0)
+                                        x = i;
+                                let y=<number>data.getCell(i,yIdx);
+                                if (!(x<zoomMinX || x>zoomMaxX
+                                        || y<zoomMinY || y>zoomMaxY)){
+                                    if (first){
+                                        g.moveTo(this.toDrawX(<number>x),this.toDrawY(<number>y))
+                                        first=false;
+                                    } else 
+                                        g.lineTo(this.toDrawX(<number>x),this.toDrawY(<number>y));
+                                }
                             }
                         }
                         g.stroke();
@@ -658,22 +656,9 @@ export class StandardChartDraw extends ZUI{
         }
         g.globalAlpha=1.0;
     }
-    /*private meetsCondition(style:{color:string,width:number,fieldName:string,drawStyle:string,alpha:number,cond?:string},rec:ZUIChartDataItem):boolean{
-        let cond = style.cond;
-        if (cond){
-            let v = rec[cond];
-            if (v){
-                if (typeof v == "string" && v.length>0)
-                    return true
-                else
-                    return false;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }*/
+    protected validRow(data:InteractiveViewTable,rowI:number):boolean{
+        return true;
+    }
     private connections:{[styleName:string]:{x1:number,y1:number,x2:number,y2:number}[]}={}
     clearConnections(styleName?:string){
         if (styleName){

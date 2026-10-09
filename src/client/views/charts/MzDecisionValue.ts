@@ -1,12 +1,13 @@
 import { ZT, ZDict } from "../../../common/ZT";
 import { FlowSheetClient } from "../../workbook/FlowSheetClient";
 import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
+import { FeaturesChartView } from "./FeaturesChartView";
 import { StandardChartDraw, StandardChartParam, StandardChartView } from "./StandardChartView";
 
 
 
 
-export class MzDecisionValue extends StandardChartView{
+export class MzDecisionValue extends FeaturesChartView{
     paramType():ZT{
         return new ZDict();
     }
