@@ -249,7 +249,7 @@ class DrawBar extends ZUI{
     }
     private barHeightPixels=25;
     protected graphics:CanvasRenderingContext2D=(<any>undefined);
-    private labelFont = "10px sans-serif"
+    private labelFont = "12px sans-serif"
     private barWidth=0;
     private exWidth=0;
     paint(){
