@@ -247,7 +247,7 @@ class DrawBar extends ZUI{
         this.paint();
         //DB.msg(`mouseEnter(${x},${y})`)
     }
-    private barHeightPixels=25;
+    private barHeightPixels=30;
     protected graphics:CanvasRenderingContext2D=(<any>undefined);
     private labelFont = "12px sans-serif"
     private barWidth=0;
@@ -364,11 +364,18 @@ class DrawBar extends ZUI{
         if (this.exIdx==-1)
             return;
         let id = this.oEx.examples[this.exIdx].exId;
+        let conf = this.oEx.examples[this.exIdx].confidence.toFixed(2);
         this.graphics.fillStyle="black";
         this.graphics.font=this.labelFont;
+        let offset = this.exWidth/4;
         let center = this.exIdxToLeft(this.exIdx)+this.exWidth/2;
+        if (center<this.barWidth/2)
+            center+=offset;
+        else
+            center-=offset;
         this.graphics.textAlign="center"
         this.graphics.fillText(id,center,this.barHeightPixels/2)
+        this.graphics.fillText(conf,center,this.barHeightPixels/2+13)
         this.graphics.textAlign="left"
     }
     private canvasId="";
