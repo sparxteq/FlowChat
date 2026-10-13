@@ -74,9 +74,11 @@ export class TrainClassifier extends Unit {
         let wnote = new WorkNotify(log);
         let featureIndiciesUsed:{[featureIdx:number]:boolean}={}
         for (let decision of decisions){
+            wnote.start(decision);
             decisionTrainer.trainAccuracy(decision,wnote)
             decisionTrainer.logAccuracy(decision,wnote)
             decisionTrainer.train(decision,featureIndiciesUsed);
+            wnote.end()
         }
         let featName = this.outputFileName("features.csv",instanceInfo);
         let featTable = new WriteTableCSV(featName)

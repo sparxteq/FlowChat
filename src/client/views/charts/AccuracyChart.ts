@@ -33,7 +33,7 @@ export class AccuracyChart extends DisplayInstanceClient{
     async computeDisplay():Promise<ZUI>{
         this.drawBars=[];
         let jsonStr = await this.getVarJSON("accuracy");
-        if (jsonStr==""){
+        if (!jsonStr){
             return new TextUI(`table error on table in ${this.name()}`)
         }
         this.decisionAccuracy = <{[decision:string]:DecisionAccuracy}>JSON.parse(jsonStr);

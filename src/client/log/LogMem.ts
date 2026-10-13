@@ -25,8 +25,11 @@ export class LogMem extends Log {
         let now = Date.now();
         if (now-this.lastBreath>2000){
             this.lastBreath=now;
-            await setImmediate()
+            await this.yieldToEventLoop();
         }
+    }
+    private yieldToEventLoop():Promise<void>{
+        return new Promise(resolve => setImmediate(resolve))
     }
     toJSON():HTTPLog{
         let rslt:HTTPLog = {
@@ -44,34 +47,7 @@ export class LogMem extends Log {
         rslt.stackTop=rslt.sectionStack.length-1;
         return rslt;
     }
-    /*async messageReload(msgs:string[],status:string,wb:WorkbookFiles,stepName:string){
-        this.stackTop=0;
-        this.sectionStack=[
-            {   type:"Sc",
-                name:"",
-                messages:[]
-            }
-        ]
-        this.subs={}
-        this.indent=0;
-        for (let logString of msgs){
-            if (logString.charAt(3)==";"){
-                let tag = logString.slice(0,4);
-                if (tag=="&gt;")
-                    this.start(logString.slice(4));
-                else if (tag=="&lt;"){
-                    this.end(logString.slice(4))
-                } else {
-                    this.msg(logString);
-                }
-            } else {
-                this.msg(logString)
-            }
-        }
-        this.status(status);
-        await wb.saveProcessStepLog(stepName,this);
-        this.refreshView();
-    }*/
+
     start(sectionName: string) {
         let newSection:HTTPLogEntry = {
             type:"Sc",
@@ -92,7 +68,8 @@ export class LogMem extends Log {
         //this.refreshView();
     }
     end(sectionName: string) {
-        let top = this.sectionStack[this.stackTop]
+        //let top = this.sectionStack[this.stackTop]
+        let top = this.sectionStack.pop()!;
         if (top.name!=sectionName)
             DB.msg(`LogMem.end(${sectionName}) does not match ${top.name}`)
         top.endTime=Date.now();

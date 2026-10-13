@@ -150,6 +150,39 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     font-size: 9px;
     letter-spacing:1.5px;
 }
+.LogMessage {
+    text-align: left;
+    display: block;
+    float:left;
+    font-size: 10px;
+    font-family: "Montserrat",sans-serif;
+    color:black;
+    overflow-wrap: break-word;
+    padding-left:20px;
+    width:90%;
+}
+.LogSection {
+    text-align: left;
+    display: block;
+    float:left;
+    font-size: 12px;
+    font-family: "Montserrat",sans-serif;
+    color:black;
+    overflow-wrap: break-word;
+    padding-left:20px;
+    width:90%;
+}
+.LogSectionHeader {
+    text-align: left;
+    display: block;
+    float:left;
+    font-size: 12px;
+    font-family: "Montserrat",sans-serif;
+    color:black;
+    overflow-wrap: break-word;
+    padding-left:0px;
+    width:90%
+}
 .MenuArrow{
     @include layoutRight(0);
     width:10px;
@@ -386,6 +419,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     margin-bottom: 3px;
     resize:vertical;
     overflow-y:auto;
+    height:30px;
 }
 .StepOpenContainer{
     @include layout(12,none)

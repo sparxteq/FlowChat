@@ -35,20 +35,20 @@ export class DecisionTrainer {
     }
     logAccuracy(decision:string,wnote:WorkNotifyI){
         let acc = this.accuracy[decision];
-        this.logExamples(acc.failedExamples,"failed",wnote)
-        this.logExamples(acc.successExamples,"success",wnote)
+        //this.logExamples(acc.failedExamples,"failed",wnote)
+        //this.logExamples(acc.successExamples,"success",wnote)
         let ave = acc.avSum/acc.avCount;
-        wnote.msg(`average confidence ${ave}`)
+        wnote.msg(`average confidence ${ave.toFixed(2)}`)
         let nSuccess = Object.keys(acc.successExamples).length;
         let nFail = Object.keys(acc.failedExamples).length;
         let avSuccess = nSuccess/(nSuccess+nFail)
-        wnote.msg(`average correct ${avSuccess}`)
+        wnote.msg(`average correct ${avSuccess.toFixed(2)}`)
     }
         private logExamples(ex:DecisionAccuracyExampleCounts,label:string,wnote:WorkNotifyI){
             wnote.start(label);
             for (let exId in ex){
                 let exD = ex[exId]
-                let str = `${exId} number ${exD.count} ave confidence ${exD.confidence/exD.count}`
+                let str = `${exId} number ${exD.count} ave confidence ${(exD.confidence/exD.count).toFixed(2)}`
                 wnote.msg(str);
             }
             wnote.end();

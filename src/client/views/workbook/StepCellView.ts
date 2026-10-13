@@ -11,8 +11,9 @@ import { Menu } from "../../menu/Menu";
 import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 import { WorkbookClient } from "../../workbook/WorkbookClient";
 import { http } from "../../http/ClientHTTP";
-import { curUser, HTTPLog, HTTPLogResponse, HTTPResult } from "../../../common/http/httpTypes";
+import { curUser, HTTPLog, HTTPLogEntry, HTTPLogResponse, HTTPResult } from "../../../common/http/httpTypes";
 import { StepRunJSON } from "../../../common/WorkbookJSON";
+import { LogView } from "./LogView";
 
 
 
@@ -72,6 +73,8 @@ export class StepCellView extends UnitCellView{
         let wb = inst.workbook;
         //if (wb.instanceIsSelected(inst.instanceId))
         //    actionBarStyle = "StepCellActionBarSelected"
+        
+        let logView = new LogView(this.unitInst.instanceId);
         let doList:ZUI[]=[];
             doList.push(this.actionBar(()=>{
                     DB.msg(`do ${this.unitInst.typeId()}`)
@@ -92,24 +95,35 @@ export class StepCellView extends UnitCellView{
                         paramValue:paramValue,
                         inputSources:this.inputInstSources()
                     }
-                    http.run(instanceInfo,(logResponse:HTTPLog)=>{
-                        DB.msg(`log for ${this.instanceName()}`,logResponse)
-                    }).then((rslt:HTTPResult)=>{
-                        if (rslt.success){
-                            this.unitInst.stepComputeTime=Date.now();
-                        } else {
-                            this.unitInst.stepComputeTime=0;
-                        }
-                        this.buildView();
-                        ZUI.notify();
-                        this.unitInst.workbook.dirty();
-                        DB.msg(`done ${this.unitInst.typeId()}`)
+                    this.unitInst.stepComputeTime=0;
+                    wb.save().then(()=>{
+                        logView.running()
+                        http.run(instanceInfo,(logResponse:HTTPLog)=>{
+                            DB.msg(`log for ${this.instanceName()}`,logResponse)
+                            
+                            let stepInst = <StepInstanceClient>this.unitInst;
+                            stepInst.log=logResponse;
+                            logView.setLog(stepInst.log)
+                            stepInst.workbook.dirty();
+                        }).then((rslt:HTTPResult)=>{
+                            if (rslt.success){
+                                this.unitInst.stepComputeTime=Date.now();
+                            } else {
+                                this.unitInst.stepComputeTime=0;
+                            }
+                            let stepInst = <StepInstanceClient>this.unitInst;
+                            stepInst.log=<HTTPLog>rslt;
+                            logView.setLog(stepInst.log)
+                            this.unitInst.workbook.dirty();
+                            DB.msg(`done ${this.unitInst.typeId()}`)
+                        })
                     })
                 }).style(actionBarStyle))
             let pe = this.paramEdit()
             if (pe)
                 doList.push(pe.style("StepCellParam"))
-            doList.push(this.log().style("StepLog"))
+            logView.setLog(this.log())
+            doList.push(logView.style("StepLog"))
         let div=new DivUI([
             new DivUI(doList).style("StepCellOpen"),
             this.inputBar().style("StepInputBar"),
@@ -142,11 +156,20 @@ export class StepCellView extends UnitCellView{
             return rslt;
         }
     
-    private log():ZUI{
-        return new DivUI([
-            new TextUI("log")
-        ])
+    private log():HTTPLog{
+        let log = (<StepInstanceClient>this.unitInst).log;
+        if (log)
+            return log
+        else
+            return {
+                success:false,
+                data:{
+                    stack:[],
+                    runStatus:"failed"
+                }
+            }
     }
+    
     private showClosed():ZUI{
         let actionBarStyle="StepCellActionBar"
         let inst = this.unitInst;

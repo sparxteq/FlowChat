@@ -1,3 +1,4 @@
+import { HTTPLog } from "../../common/http/httpTypes";
 import { StepInstanceJSON } from "../../common/WorkbookJSON";
 import { ZT } from "../../common/ZT";
 import { SheetView } from "../views/workbook/SheetView";
@@ -12,6 +13,7 @@ export class StepInstanceClient extends UnitInstanceClient {
     
     
     private _typeId:string;
+    log?:HTTPLog;
     typeId():string{
         return this._typeId;
     }
@@ -71,9 +73,11 @@ export class StepInstanceClient extends UnitInstanceClient {
     fromJSON(json:StepInstanceJSON,flowSheet:FlowSheetClient){
         super.fromJSON(json,flowSheet);
         this.flowSheet=flowSheet
+        this.log=json.log;
     }
     toJSON():StepInstanceJSON{
         let rslt = <StepInstanceJSON>super.toJSON()
+        rslt.log=this.log;
         return rslt;
     }
 

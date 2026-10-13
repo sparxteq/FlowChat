@@ -30,7 +30,7 @@ export class JSONView extends DisplayInstanceClient{
     async computeDisplay():Promise<ZUI>{
         let rslt = await this.getVarJSON("json");
         let name = this.name();
-        if (rslt!=""){
+        if (rslt){
             let json = JSON.parse(rslt);
             let formatJSON = JSON.stringify(json,null,4);
             let text = "<pre>"+formatJSON+"</pre>"

@@ -23,26 +23,6 @@ body{
 .KDBCStyle {
     height:110;
 }
-.LogBox {
-    @include layout(8);
-    height: 30px;
-    overflow:auto;
-    resize:vertical;
-    background-color: white;
-}
-.LogSection {
-    @include layout(12);
-    background-color: white;
-    border-left: 1px solid rgb(210, 209, 209);
-}
-.LogSectionEnd {
-    @include layout(12,none);
-    background-color: white;
-}
-.LogMessage {
-    @include layout(12);
-    background-color: white;
-}
 .RangeRibbonH {
     @include layout(6);
     height:10px;

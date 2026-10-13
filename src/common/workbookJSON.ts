@@ -1,3 +1,4 @@
+import { HTTPLog } from "./http/httpTypes";
 import { ZT, ZTJSON } from "./ZT";
 
 
@@ -32,6 +33,7 @@ export type UnitInstanceJSON = {
 }
 export type UnitTypeId=string;
 export type StepInstanceJSON = UnitInstanceJSON & {
+    log?:HTTPLog,
     flowSheet?:FlowSheetJSON,
 }
 export type StepRunJSON = {

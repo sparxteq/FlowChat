@@ -93,14 +93,14 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
             return <string>csvRslt.msg;
         }
     }
-    async getVarJSON(inputId:string):Promise<string>{
+    async getVarJSON(inputId:string):Promise<string | undefined>{
         let inputSource = this.inputSource(inputId)
         let wb = this.workbook;
         let wbId = wb.workbook;
         let email = wb.userEmail;
         let projId = wb.project;
         let actId = wb.activity;if (!inputSource.instance){
-            return "bad input reference"
+            return undefined
         }
         let instId = inputSource.instance.instanceId;
         let outputId = inputSource.outputId
