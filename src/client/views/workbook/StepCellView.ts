@@ -189,6 +189,6 @@ export class StepCellView extends UnitCellView{
                 this.sheetView.refreshView();
             })
         container.id=this.unitInst.instanceId;
-        return container
+        return div
     }
 }

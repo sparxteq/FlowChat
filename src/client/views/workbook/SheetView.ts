@@ -120,4 +120,7 @@ export class SheetView extends ZUI{
         }
         //DB.end();
     }
+    copySelected(targetRow:number,targetCol:number){
+        this.flowSheet!.workbook.copySelected(targetRow,targetCol,this)
+    }
 }

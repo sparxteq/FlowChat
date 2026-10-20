@@ -224,25 +224,7 @@ export class FlowSheetClient {
             //this.moveRegionInputs(inst,leftCol,topRow,rightCol,botRow,newLeft,newTop)
         }
     }
-        /*private moveRegionInputs(inst:UnitInstanceClient,
-            leftCol:number,topRow:number,rightCol:number,botRow:number
-            ,newLeft:number,newTop:number){
-            let colDiff = newLeft-leftCol;
-            let rowDiff = newTop-topRow;
-            let inputs = inst.inputSources;
-            for (let input of inputs){
-                if (input.Ref){
-                    let d=input.dataRef;
-                    if (d.col<leftCol || d.col>rightCol || d.row<topRow || d.row>botRow){
-                        // reference outside leave references alone
-                    } else {
-                        // reference to inside that is moving. Adjust references
-                        d.col+=colDiff;
-                        d.row+=rowDiff;
-                    }
-                }
-            }
-        }*/
+
     private dirty(){
         this.workbook.dirty();
     }

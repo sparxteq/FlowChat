@@ -1,8 +1,10 @@
 import { DB } from "../../../../Zing3/share/DB";
+import { Modal } from "../../../../Zing3/zui/Modal";
 import { HTTPResult } from "../../common/http/httpTypes";
 import { DataSourceRef, DataInstanceJSON, UnitId, UnitInstanceId, StepInstanceJSON, WorkbookJSON, UnitTypeId, UnitInstanceJSON } from "../../common/WorkbookJSON";
 import { overlayCurve, overlayLine, overlayRect, overlayStroke } from "../DrawOverlay";
 import { InteractiveViewTable } from "../views/InteractiveViewTable";
+import { SheetView } from "../views/workbook/SheetView";
 import { WorkClient } from "../WorkClient";
 import { DataInstanceClient } from "./DataInstanceClient";
 import { DisplayInstanceClient } from "./DisplayInstanceClient";
@@ -360,6 +362,78 @@ export class WorkbookClient {
                     this.selectedInstances.push(instId)
             }
         }
+    copySelected(targetRow:number,targetCol:number,sheetView:SheetView){
+        let targetFlowSheet = sheetView.flowSheet!
+        let rect = new RCRect();
+        if (this.selectedInstances.length==0){
+            Modal.alert("There are no selected units to copy")
+            return;
+        }
+        for (let selectId of this.selectedInstances){
+            let inst = this.getUnitInstance(selectId);
+            if (inst.flowSheet.instanceId!=targetFlowSheet.instanceId){
+                Modal.alert(`Cannot copy from one flow sheet to another`)
+                return;
+            }
+            rect.addInst(inst);
+        }
+        if (this.notEmptyRect(rect,targetRow,targetCol,targetFlowSheet)){
+            Modal.alert(`not enough empty space to place all selected here`)
+            return;
+        }
+        let copyMap = this.buildCopies(rect,targetRow,targetCol,targetFlowSheet)
+        this.remapCopyInputs(copyMap);
+        targetFlowSheet.workbook.dirty();
+        sheetView.refreshView();
+    }
+        private notEmptyRect(sourceRect:RCRect,targetRow:number,targetCol:number,flow:FlowSheetClient):boolean{
+            let lastTargetCol = sourceRect.firstCol-sourceRect.lastCol+targetCol;
+            let lastTargetRow = sourceRect.firstRow-sourceRect.lastRow+targetRow;
+            for (let testRow=targetRow;testRow<=lastTargetRow;testRow++){
+                for (let testCol=targetCol;testCol<=lastTargetCol;testCol++){
+                    let inst = flow.rcInstance(testRow,testCol);
+                    if (inst)
+                        return true;
+                }
+            }
+            return false;
+        }
+        private buildCopies(sourceRect:RCRect,targetRow:number,targetCol:number,flow:FlowSheetClient):CopyInstMap{
+            let rslt:CopyInstMap={};
+            let rowOffset = targetRow-sourceRect.firstRow;
+            let colOffset = targetCol-sourceRect.firstCol;
+            for (let sourceId of this.selectedInstances){
+                let sourceInst = this.getUnitInstance(sourceId);
+                let {row,col}=sourceInst.getCell();
+                let targetId = flow.addUnitInstance(row+rowOffset,col+colOffset
+                    ,sourceInst.typeId())
+                let targetInst = this.getUnitInstance(targetId);
+                rslt[sourceId]=targetId;
+                for (let inputSource of sourceInst.inputSources){
+                    if (inputSource.srcRef){
+                        targetInst.setInputSource(inputSource.id,inputSource.srcRef.srcInstId,
+                            inputSource.srcRef.outputId)
+                    }
+                }
+                targetInst.paramValue={...sourceInst.paramValue}
+            }
+            return rslt;
+        }
+        private remapCopyInputs(copyMap:CopyInstMap){
+            for (let sourceId in copyMap){
+                let targetId = copyMap[sourceId];
+                let targetInst = this.getUnitInstance(targetId);
+                for (let inSource of targetInst.inputSources){
+                    if (inSource.srcRef){
+                        let oldOutInstId = inSource.srcRef.srcInstId;
+                        let remapInstId = copyMap[oldOutInstId]
+                        if (remapInstId){
+                            targetInst.setInputSource(inSource.id,remapInstId,inSource.srcRef.outputId)
+                        }
+                    }
+                }
+            }
+        }
     private sameFlowSheet(instIdA:UnitInstanceId,instIdB:UnitInstanceId):boolean{
         let instA = this.getUnitInstance(instIdA);
         let fsA = instA.flowSheet;
@@ -411,8 +485,8 @@ export class WorkbookClient {
         this.dirty();
     }
 }
-
-class RCRect{
+type CopyInstMap = {[sourceInstId:string]:string}
+export class RCRect{
     firstCol=-1;
     lastCol=-1;
     firstRow=-1;

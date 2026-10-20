@@ -65,6 +65,13 @@ export class EmptyCellView extends SheetCellView{
         let collapseMenu = new Menu("Collapse Empty","")
             this.addCollapseItems(collapseMenu)
         menu.addItem("Collapse Empties",[],collapseMenu,"select which direction to collapse empties")
+        let copySelectedMenu = new Menu("Copy selected","")
+        menu.addItem("Copy selected to here",[],()=>{
+            let flowSheet = <FlowSheetClient>this.sheetView.flowSheet!;
+            this.sheetView.copySelected(this.row,this.col);
+            flowSheet.workbook.dirty();
+            this.sheetView.refreshView();
+        },"")
         this._menu=menu;
         return menu;
     }
