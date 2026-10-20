@@ -9,6 +9,7 @@ import { WriteTableCSV } from "../tables/WriteTableCSV";
 import { MsFeature } from "../tables/MassSpecData";
 import { FilesFS } from "../files/FilesFS";
 import { TableMemBest } from "../../common/TableMemBest";
+import { DB } from "../../../../Zing3/share/DB";
 
 
 export class SelectBestDataPoints extends Unit{
@@ -81,7 +82,7 @@ export class SelectBestDataPoints extends Unit{
                 let ab = abSum/rec.abs.length;
                 let dv = this.decisionValue(rec,decision);
                 dt.addRow([decision,rec.srcId,rec.rt,rec.im,rec.mz,rec.ms2,dv,ab])
-                log.status(`data ${(rc++).toLocaleString()}`)
+                this.progress(`data ${decision} - ${(rc++).toLocaleString()}`)
             }
         })
         let cols = this.getOutputColTypes("features.csv")
@@ -106,7 +107,14 @@ export class SelectBestDataPoints extends Unit{
         
         return true;
     }
-    
+    private lastProgressCount=0;
+    private progress(str:string){
+        this.lastProgressCount++
+        if (this.lastProgressCount>100000){
+            this.lastProgressCount=0;
+            DB.msg(str);
+        } 
+    }
     private extractQuantaFromCols(table:ReadTableZMS):MSSieveData{
         let rslt:MSSieveData={
             srcId:"",

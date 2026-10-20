@@ -70,10 +70,13 @@ export class AccuracyChart extends DisplayInstanceClient{
         ])
     }
     private accuracyBar(acc:DecisionAccuracy):ZUI{
+        let correct = acc.correctCount/acc.avCount;
+        let correctStr = (correct*100).toFixed(2);
         return new DivUI([
-            new TextUI("<b>Accuracy</b>").style("col-2"),
-            new TextUI("min: "+(acc.min*100).toFixed()+"%").style("col-3"),
-            new TextUI("ave: "+((acc.avSum/acc.avCount)*100).toFixed()+"%").style("col-3"),
+            new TextUI(`<b>Correct: ${correctStr}%</b>`).style("col-3"),
+            new TextUI("<b>Confidence</b>").style("col-2"),
+            new TextUI("min: "+(acc.min*100).toFixed()+"%").style("col-2"),
+            new TextUI("ave: "+((acc.avSum/acc.avCount)*100).toFixed()+"%").style("col-2"),
             new TextUI("max: "+(acc.max*100).toFixed()+"%").style("col-3"),
         ])
     }

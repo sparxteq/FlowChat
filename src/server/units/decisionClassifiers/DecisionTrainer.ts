@@ -57,11 +57,13 @@ export class DecisionTrainer {
         this.chooseFeaturesToUse(decision);
         let classifier = classifierMake(this.algorithmId,decision);
         let acc:DecisionAccuracy={
+            successCounts:{},
             failedExamples:{},
             successExamples:{},
             min:Number.MAX_SAFE_INTEGER,
             max:Number.MIN_SAFE_INTEGER,
             nValidations:this.nValidations,
+            correctCount:0,
             avCount:0,
             avSum:0
         }
@@ -86,17 +88,31 @@ export class DecisionTrainer {
         this.accuracy[decision]=acc;
     }
         private accuracyAverages(acc:DecisionAccuracy){
+            //debugger;
             for (let exId in acc.failedExamples){
                 let fEx = acc.failedExamples[exId];
                 let outcome = this.findOutcome(this.trainingData.examples,exId)
                 fEx.outcome = outcome;
                 fEx.confidence=fEx.confidence/fEx.count;
+                if (!acc.successCounts[exId])
+                    acc.successCounts[exId]={count:0,success:0,accuracy:0}
+                acc.successCounts[exId].count+=fEx.count;
             }
             for (let exId in acc.successExamples){
                 let sEx = acc.successExamples[exId];
                 let outcome = this.findOutcome(this.trainingData.examples,exId)
                 sEx.outcome = outcome;
                 sEx.confidence=sEx.confidence/sEx.count;
+                if (!acc.successCounts[exId])
+                    acc.successCounts[exId]={count:0,success:0,accuracy:0}
+                acc.successCounts[exId].count+=sEx.count;
+                acc.successCounts[exId].success+=sEx.count;
+                acc.correctCount+=sEx.count;
+            }
+            for (let exId in acc.successCounts){
+                let sc = acc.successCounts[exId]
+                if (sc.count>0)
+                    sc.accuracy=sc.success/sc.count;
             }
         }
             private findOutcome(examples:DecisionExamples[],exId:string):string{
@@ -242,11 +258,13 @@ export class DecisionTrainer {
 
 
 export type DecisionAccuracy={
+    successCounts:{[exampleId:string]:{count:number,success:number,accuracy:number}},
     failedExamples:DecisionAccuracyExampleCounts,
     successExamples:DecisionAccuracyExampleCounts,
     min:number,
     max:number,
     nValidations:number,
+    correctCount:number;
     avCount:number,
     avSum:number // divide by count for average accuracy.
 }
