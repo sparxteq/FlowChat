@@ -52,7 +52,7 @@ export class WorkbookClient {
         let inst = this.unitInstances[instanceId];
         if (inst){
             delete this.unitInstances[instanceId]
-            this.dirty();
+            //this.dirty();
         }
     }
         
@@ -250,6 +250,9 @@ export class WorkbookClient {
 
     private selectedInstances:UnitInstanceId[]=[]
     private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
+    selectedIds():string[]{
+        return [...this.selectedInstances]
+    }
     redrawConnections(){
         //DB.msg("redrawConnections")
         overlayStroke(2,"rgba(255,0,0,1)")

@@ -142,7 +142,12 @@ export abstract class UnitCellView extends SheetCellView{
         let inst = this.unitInst;
         let instanceId = inst.instanceId;
         let flowSheet = <FlowSheetClient>this.sheetView.flowSheet;
-        flowSheet.delUnitInstance(instanceId);
+        let workbook = flowSheet.workbook;
+        if (workbook.instanceIsSelected(instanceId)){
+            flowSheet.removeAllSelected();
+        } else 
+            flowSheet.delUnitInstance(instanceId);
+        flowSheet.workbook.dirty();
         this.sheetView.refreshView();
 
     }
