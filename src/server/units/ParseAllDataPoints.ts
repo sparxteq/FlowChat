@@ -56,22 +56,22 @@ export class ParseAllDataPoints extends Unit{
         let rtBin = param.rtBinWidth;
         let imBin = param.imBinWidth;
     
-        let exTableName = this.inputFileName("examples",instanceInfo);
+        let exTableName = await this.inputFileName("examples",instanceInfo);
         let exTable = new ReadTableCSV(exTableName);
         await exTable.openR();
         let exMem = await this.readExamples(exTable);
 
-        let quantName = this.outputFileName("quanta.json",instanceInfo)
+        let quantName = await this.outputFileName("quanta.json",instanceInfo)
         let quantFile = new FilesFS(quantName);
         let quantStr = JSON.stringify(param);
         await quantFile.openW();
         await quantFile.write(quantStr)
-        let zmsTableName = this.outputFileName("sampleData.zms",instanceInfo);
+        let zmsTableName = await this.outputFileName("sampleData.zms",instanceInfo);
         let zmsTable = new WriteTableZMS(zmsTableName);
         zmsTable.setQuanta(rtBin,imBin,mzBin);
         await zmsTable.openW();
         let ii = instanceInfo;
-        this.projectFolderName=WorkServer.projFolderName(
+        this.projectFolderName=await WorkServer.projFolderName(
             ii.userEmail,ii.actId,ii.projId)
 
         let nRows = exMem.nRows();
@@ -93,7 +93,7 @@ export class ParseAllDataPoints extends Unit{
             row = await exMem.nextRow();
         }
 
-        let statsName = this.outputFileName("stats.json",instanceInfo);
+        let statsName = await this.outputFileName("stats.json",instanceInfo);
         let stats = new FilesFS(statsName);
         await stats.openW();
         let statsData = zmsTable.data!.getStats();

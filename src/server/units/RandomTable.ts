@@ -32,7 +32,7 @@ export class RandomTable extends Unit{
         return [ {outputId:"table.csv",typeName:this.checkType("CSV")}]
     }
     async run(instanceInfo: StepRunJSON): Promise<boolean> {
-        let outFileName = this.outputFileName("table.csv",instanceInfo);
+        let outFileName = await this.outputFileName("table.csv",instanceInfo);
         let table = new WriteTableCSV(outFileName)
         let param = <RandomTableParam>instanceInfo.paramValue;
         let colTypes:ZField[]=[];

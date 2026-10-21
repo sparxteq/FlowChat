@@ -46,15 +46,15 @@ export class ParseSelectedDataPoints extends Unit{
         this.wnote = new WorkNotify(log)
         //debugger
 
-        let exTableName = this.inputFileName("examplesToParse",instanceInfo);
+        let exTableName = await this.inputFileName("examplesToParse",instanceInfo);
         let exTable = new ReadTableCSV(exTableName);
         await exTable.openR();
         let exMem = await this.readToMem(exTable);
 
-        let featuresName = this.inputFileName("features",instanceInfo);
+        let featuresName = await this.inputFileName("features",instanceInfo);
         let featuresTable = new ReadTableCSV(featuresName);
         await featuresTable.openR();
-        let inQuantaName = this.inputFileName("quanta",instanceInfo)
+        let inQuantaName = await this.inputFileName("quanta",instanceInfo)
         let inQuantaFile = new FilesFS(inQuantaName);
         await inQuantaFile.openR();
         let inQuantStr = await inQuantaFile.readAll()
@@ -68,13 +68,13 @@ export class ParseSelectedDataPoints extends Unit{
         }
         let sieve = await this.buildSieveFromFeatures(featuresTable,quanta);
 
-        let zmsTableName = this.outputFileName("sampleData.zms",instanceInfo);
+        let zmsTableName = await this.outputFileName("sampleData.zms",instanceInfo);
         let zmsTable = new WriteTableZMS(zmsTableName);
         zmsTable.setQuanta(quanta.rt,quanta.im,quanta.mz);
         zmsTable.setSieve(sieve);
         await zmsTable.openW();
         let ii = instanceInfo;
-        this.projectFolderName=WorkServer.projFolderName(
+        this.projectFolderName=await WorkServer.projFolderName(
             ii.userEmail,ii.actId,ii.projId)
 
         let nRows = exMem.nRows();
@@ -96,7 +96,7 @@ export class ParseSelectedDataPoints extends Unit{
             row = await exMem.nextRow();
         }
         
-        let statsName = this.outputFileName("stats.json",instanceInfo);
+        let statsName = await this.outputFileName("stats.json",instanceInfo);
         let stats = new FilesFS(statsName);
         await stats.openW();
         let statsData = zmsTable.data!.getStats();

@@ -54,16 +54,16 @@ export class TrainClassifier extends Unit {
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {
         //debugger;
         classifierInit();
-        let decName = this.inputFileName("decisions",instanceInfo)
-        this.decisionsTable = new ReadTableCSV(decName);
+        let decName = await this.inputFileName("decisions",instanceInfo)
+        this.decisionsTable = new ReadTableCSV(await decName);
         let decisions = await this.readDecisions()
 
         let td = new DecisionTrainingData();
-        let ftName = this.inputFileName("features",instanceInfo);
-        let ft = new ReadTableCSV(ftName);
+        let ftName = await this.inputFileName("features",instanceInfo);
+        let ft = new ReadTableCSV(await ftName);
         await td.readFeatures(ft);
 
-        let exName = this.inputFileName("sampleData",instanceInfo);
+        let exName = await await this.inputFileName("sampleData",instanceInfo);
         let ex = new ReadTableZMS(exName);
         await td.readExamples(decisions,ex);
 
@@ -80,19 +80,19 @@ export class TrainClassifier extends Unit {
             decisionTrainer.train(decision,featureIndiciesUsed);
             wnote.end()
         }
-        let featName = this.outputFileName("features.csv",instanceInfo);
+        let featName = await this.outputFileName("features.csv",instanceInfo);
         let featTable = new WriteTableCSV(featName)
         let cols = ft.getColTypes();
         featTable.setColTypes(cols);
         await featTable.openW();
         await td.writeUsedFeatures(featTable,featureIndiciesUsed)
         
-        let accuracyName = this.outputFileName("accuracy.json",instanceInfo)
+        let accuracyName = await this.outputFileName("accuracy.json",instanceInfo)
         let accFile = new FilesFS(accuracyName);
         await accFile.openW();
         let accStr = JSON.stringify(decisionTrainer.accuracy,null,4);
         await accFile.write(accStr);
-        let clsName = this.outputFileName("classifiers.json",instanceInfo)
+        let clsName = await this.outputFileName("classifiers.json",instanceInfo)
         let clsFile = new FilesFS(clsName);
         await clsFile.openW();
         let clsJSON = decisionTrainer.classifiersToJSON();

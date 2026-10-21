@@ -40,16 +40,16 @@ export class RandomRowSelect extends Unit{
         if (percent>100)
             percent=100;
         let fraction = percent/100;
-        let inTableName=this.inputFileName("table",instanceInfo)
+        let inTableName=await await this.inputFileName("table",instanceInfo)
         let inTable = new ReadTableCSV(inTableName)
         await inTable.openR();
         let inColTypes = inTable.getColTypes();
 
-        let selectedName = this.outputFileName("selected.csv",instanceInfo);
+        let selectedName = await this.outputFileName("selected.csv",instanceInfo);
         let selected = new WriteTableCSV(selectedName);
         selected.setColTypes(inColTypes);
         await selected.openW();
-        let unselectedName = this.outputFileName("unselected.csv",instanceInfo);
+        let unselectedName = await this.outputFileName("unselected.csv",instanceInfo);
         let unselected = new WriteTableCSV(unselectedName);
         unselected.setColTypes(inColTypes);
         await unselected.openW();

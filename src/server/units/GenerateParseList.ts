@@ -31,10 +31,10 @@ export class GenerateParseList extends Unit{
         return {};
     }
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {
-        let assemName = this.inputFileName("assembly",instanceInfo);
+        let assemName = await this.inputFileName("assembly",instanceInfo);
         let assemTable = new ReadTableCSV(assemName)
         await assemTable.openR();
-        let specName = this.inputFileName("spec",instanceInfo)
+        let specName = await this.inputFileName("spec",instanceInfo)
         let specFile = new FilesFS(specName);
         await specFile.openR()
         let specStr = await specFile.readAll();
@@ -43,7 +43,7 @@ export class GenerateParseList extends Unit{
         let outCol = param.outcomeColumn;
         let srcCols = param.sourceColumns;
 
-        let exTableN = this.outputFileName("Examples.csv",instanceInfo);
+        let exTableN = await this.outputFileName("Examples.csv",instanceInfo);
         let exTable= new WriteTableCSV(exTableN);
         exTable.setColTypes([
             new ZField("exampleId",new ZString()),

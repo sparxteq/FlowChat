@@ -39,13 +39,21 @@ export class ActivityView extends ZUI{
             let act = new DivUI([
                 new TextUI("<b>Activity</b>").style("col-1"),
                 choice,
-                new ButtonUI("create activity").click(()=>{
+                new TextFieldUI("text")
+                    .getF(()=>{ return newActivity})
+                    .setF((act:string)=>{
+                        newActivity=act
+                    })
+                    .placeHolder("new activity id")
+                    .style("col-2"),
+                new TextFieldUI("text")
+                    .getF(()=>{ return newActFolder})
+                    .setF((act:string)=>{newActFolder=act})
+                    .placeHolder("activity data folder")
+                    .style("col-3"),
+                new ButtonUI("Create").click(()=>{
                     if (newActivity==""){
                         Modal.alert("no activity id entered")
-                        return;
-                    }
-                    if (newActFolder==""){
-                        Modal.alert("no folder for activity data entered")
                         return;
                     }
 
@@ -57,19 +65,7 @@ export class ActivityView extends ZUI{
                             Modal.alert(`could not create activity ${newActivity} at folder ${newActFolder}`)
                         }
                     })
-                }).style("col-2"),
-                new TextFieldUI("text")
-                                .getF(()=>{ return newActivity})
-                                .setF((act:string)=>{
-                                    newActivity=act
-                                })
-                                .placeHolder("new activity id")
-                                .style("col-2"),
-                new TextFieldUI("text")
-                                .getF(()=>{ return newActFolder})
-                                .setF((act:string)=>{newActFolder=act})
-                                .placeHolder("activity data folder")
-                                .style("col-3"),
+                }),
                 new ButtonUI("Del").click(()=>{
                     if (ActivityView.curActivity=="-"){
                         Modal.alert("no currently selected activity to delete")
@@ -85,6 +81,19 @@ export class ActivityView extends ZUI{
                                 this.context.reloadViews();
                             })
                         }
+                    })
+                }),
+                new ButtonUI("Change folder").click(()=>{
+                    if (ActivityView.curActivity=="-"){
+                        Modal.alert("no currently selected activity to change folder")
+                        return;
+                    }
+                    http.activityAdd(LoginView.email,ActivityView.curActivity,newActFolder).then((rslt:HTTPActResult)=>{
+                        if (!rslt.success){
+                            Modal.alert(rslt.msg!)
+                            return;
+                        }
+                        this.context.reloadViews();
                     })
                 })
             ]).style("ManagementLine")

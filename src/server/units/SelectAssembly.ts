@@ -43,7 +43,7 @@ export class SelectAssembly extends Unit{
         
         let inTypes = inTable.getColTypes();
 
-        let assemblyTableN = this.outputFileName("assembly.csv",instanceInfo);
+        let assemblyTableN = await this.outputFileName("assembly.csv",instanceInfo);
         let assemblyTable = new WriteTableCSV(assemblyTableN);
         assemblyTable.setColTypes(inTypes);
         await assemblyTable.openW();

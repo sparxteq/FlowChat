@@ -57,7 +57,7 @@ export class StudySpecification extends Unit{
         let outCol = param.outcomeColumn;
         let srcCols = param.sourceColumns;
         let decisions = param.decisions;
-        let assemName = this.inputFileName("assembly",instanceInfo);
+        let assemName = await await this.inputFileName("assembly",instanceInfo);
         let assemTable = new ReadTableCSV(assemName)
         await assemTable.openR();
         let exIdx = assemTable.columnIdx(exCol)
@@ -84,13 +84,13 @@ export class StudySpecification extends Unit{
         }
         if (!goodRun)
             return false;
-        let specName = this.outputFileName("studySpec.json",instanceInfo)
+        let specName = await this.outputFileName("studySpec.json",instanceInfo)
         let specFile = new FilesFS(specName);
         await specFile.openW();
         let specStr = JSON.stringify(param);
         await specFile.write(specStr);
 
-        let decTableN = this.outputFileName("Decisions.csv",instanceInfo)
+        let decTableN = await this.outputFileName("Decisions.csv",instanceInfo)
         let decTable = new WriteTableCSV(decTableN)
         decTable.setColTypes([
             new ZField("outcomeA",new ZString()),

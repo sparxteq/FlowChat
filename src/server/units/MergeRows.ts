@@ -28,13 +28,13 @@ export class MergeRows extends Unit{
         ]
     }
     async run(instanceInfo: StepRunJSON): Promise<boolean> {
-        let tableAName = this.inputFileName("TableA",instanceInfo)
+        let tableAName = await this.inputFileName("TableA",instanceInfo)
         let tableA = new ReadTableCSV(tableAName);
         await tableA.openR()
-        let tableBName = this.inputFileName("TableB",instanceInfo);
+        let tableBName = await this.inputFileName("TableB",instanceInfo);
         let tableB = new ReadTableCSV(tableBName);
         await tableB.openR();
-        let  mergedName = this.outputFileName("merged.csv",instanceInfo);
+        let  mergedName = await this.outputFileName("merged.csv",instanceInfo);
         let merged = new WriteTableCSV(mergedName)
         let mergedCols=this.mergeCols(tableA,tableB)
         merged.setColTypes(mergedCols);

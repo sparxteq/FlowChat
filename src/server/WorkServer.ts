@@ -45,12 +45,35 @@ export class WorkServer {
         }
         return rslt;
     }
-    private static activityFolder(email:string,actName:string):string{
+    private static activityFolderNameCache:{[email:string]:{[actName:string]:string}}={}
+    private static async activityFolder(email:string,actName:string):Promise<string>{
+        let emailRec = this.activityFolderNameCache[email];
+        if (emailRec){
+            let folderName = emailRec[actName]
+            if (folderName)
+                return folderName;
+        }
+        let folderFilePath = this.activityFolderNamePath(email,actName);
+        let fs = new FilesFSSource();
+        let actFN = await fs.getFile(folderFilePath);
+        await actFN.openR();
+        let folderName = (await actFN.readAll()).trim();
+        await actFN.close();
+        if (!emailRec){
+            emailRec={}
+            this.activityFolderNameCache[email]=emailRec;
+        }
+        emailRec[actName]=folderName;
+        if (folderName=="")
+            folderName=this.activityDescFolder(email,actName);
+        return folderName;
+    }
+    private static activityDescFolder(email:string,actName:string):string{
         let userFolder = this.userFolder(email);
         return userFolder+"/"+actName;
     }
     private static activityFolderNamePath(email:string,actName:string):string{
-        let activityFolderName = this.activityFolder(email,actName)
+        let activityFolderName = this.activityDescFolder(email,actName)
         return activityFolderName + "/.activityFolderName.txt";
     }
     static async activityAdd(email:string,actName:string,actFolderName:string):Promise<HTTPActResult>{
@@ -62,7 +85,7 @@ export class WorkServer {
                 actName:actName,
             }
         }
-        let actFolderN = this.activityFolder(email,actName)
+        let actFolderN = await this.activityFolder(email,actName)
         let fs = new FilesFSSource();
         let actF = await fs.getFolder(actFolderN,true)
         if (!actF){
@@ -78,8 +101,10 @@ export class WorkServer {
         await actFN.openW(false);
         actFN.writelnSync(actFolderName)
         await actFN.close();
+        this.activityFolderNameCache={}
         return rslt;
     }
+
     static async activityRem(email:string,actName:string):Promise<HTTPActResult>{
         let rslt:HTTPActResult = {
             success:true,
@@ -89,7 +114,7 @@ export class WorkServer {
                 actName:actName
             }
         }
-        let actFolderN = this.activityFolder(email,actName)
+        let actFolderN = await this.activityFolder(email,actName)
         let fs = new FilesFSSource();
         let actF = await fs.getFolder(actFolderN,false)
         if (!actF){
@@ -106,12 +131,12 @@ export class WorkServer {
             rslt.msg=s;
         return rslt;
     }
-    static projFolderName(email:string,actName:string,projName:string):string{
-        let aF = this.activityFolder(email,actName);
+    static async projFolderName(email:string,actName:string,projName:string):Promise<string>{
+        let aF = await this.activityFolder(email,actName);
         return aF+"/"+projName;
     }
     static async projectList(email:string,actName:string):Promise<HTTPProjList>{
-        let actFolder = new FilesFS(this.activityFolder(email,actName))
+        let actFolder = new FilesFS(await this.activityFolder(email,actName))
         let rslt:HTTPProjList= {
             success:false,
             msg:"",
@@ -138,7 +163,7 @@ export class WorkServer {
                 projName:projName
             }
         }
-        let projFolderN = this.projFolderName(email,actName,projName)
+        let projFolderN = await this.projFolderName(email,actName,projName)
         let fs = new FilesFSSource();
         let projF = await fs.getFolder(projFolderN,false)
         if (projF && await projF.isFolder()){
@@ -166,7 +191,7 @@ export class WorkServer {
         }
         let projFolderN = this.projFolderName(email,actName,projName)
         let fs = new FilesFSSource();
-        let projF = await fs.getFolder(projFolderN,false)
+        let projF = await fs.getFolder(await projFolderN,false)
         if (projF && await projF.isFolder()){
             let r = await projF.delete(true)
             if (r){
@@ -248,8 +273,8 @@ export class WorkServer {
         }
         return rslt;
     }
-    static outputVarFile(email:string,actName:string,projName:string,wbName:string,instanceId:string,outputId:string):string{
-        let vars = this.workbookVarsFolder(email,actName,projName,wbName);
+    static async outputVarFile(email:string,actName:string,projName:string,wbName:string,instanceId:string,outputId:string):Promise<string>{
+        let vars = await this.workbookVarsFolder(email,actName,projName,wbName);
         let varFileName = instanceId+"_"+outputId;
         let rslt = vars+"/"+varFileName;
         return rslt;
@@ -262,12 +287,12 @@ export class WorkServer {
         let up = TypeS.uploadJSON();
         return up
     }
-    private static wbFolderName(email:string,actName:string,projName:string,wbName:string):string{
-        let pF = this.projFolderName(email,actName,projName);
+    private static async wbFolderName(email:string,actName:string,projName:string,wbName:string):Promise<string>{
+        let pF = await this.projFolderName(email,actName,projName);
         return pF+"/"+wbName;
     }
     static async workbookList(email:string,actName:string,projName:string):Promise<HTTPWbList>{
-        let projFolder = new FilesFS(this.projFolderName(email,actName,projName))
+        let projFolder = new FilesFS(await this.projFolderName(email,actName,projName))
         let rslt:HTTPWbList= {
             success:false,
             msg:"",
@@ -301,7 +326,7 @@ export class WorkServer {
                 wbName:workbookName
             }
         }
-        let wbFolderN = this.wbFolderName(email,actName,projName,workbookName)
+        let wbFolderN = await this.wbFolderName(email,actName,projName,workbookName)
         let fs = new FilesFSSource();
         let wbF = await fs.getFolder(wbFolderN,false)
         if (wbF && await wbF.isFolder()){
@@ -352,7 +377,7 @@ export class WorkServer {
                 wbName:workbookName
             }
         }
-        let wbFolderN = this.wbFolderName(email,actName,projName,workbookName)
+        let wbFolderN = await this.wbFolderName(email,actName,projName,workbookName)
         let fs = new FilesFSSource();
         let wbF = await fs.getFolder(wbFolderN,false)
         if (wbF && await wbF.isFolder()){
@@ -367,16 +392,16 @@ export class WorkServer {
         }
         return rslt;
     }
-    private static workbookDataFile(email:string,actName:string,projName:string,workbookName:string):string{
-        let wbF = this.wbFolderName(email,actName,projName,workbookName)
+    private static async workbookDataFile(email:string,actName:string,projName:string,workbookName:string):Promise<string>{
+        let wbF = await this.wbFolderName(email,actName,projName,workbookName)
         return wbF+"/.wbData.json"
     }
-    private static workbookVarsFolder(email:string,actName:string,projName:string,workbookName:string):string{
-        let wbF = this.wbFolderName(email,actName,projName,workbookName)
+    private static async workbookVarsFolder(email:string,actName:string,projName:string,workbookName:string):Promise<string>{
+        let wbF = await this.wbFolderName(email,actName,projName,workbookName)
         return wbF+"/vars"
     }
     private static async workbookJSON(email:string,actName:string,projName:string,workbookName:string):Promise<any>{
-        let wbFileN = this.workbookDataFile(email,actName,projName,workbookName)
+        let wbFileN = await this.workbookDataFile(email,actName,projName,workbookName)
         let fs = new FilesFSSource();
         let wbF = await fs.getFile(wbFileN,false)
         if (wbF && await wbF.isFile()){
@@ -417,7 +442,7 @@ export class WorkServer {
             success:true,
             msg:""
         }
-        let wbFileN = this.workbookDataFile(email,actName,projName,wbName);
+        let wbFileN = await this.workbookDataFile(email,actName,projName,wbName);
         let fs = new FilesFSSource();
         let wbF = await fs.getFile(wbFileN,true);
         if (wbF && await wbF.isFile()){
@@ -446,7 +471,7 @@ export class WorkServer {
                 csv:""
             }
         }
-        let fileName = this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
+        let fileName = await this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
         let file = new ReadTableCSV(fileName);
         let csv = await file.readToStr()
         rslt.success = csv!="";
@@ -467,7 +492,7 @@ export class WorkServer {
                 json:""
             }
         }
-        let fileName = this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
+        let fileName = await this.outputVarFile(email,actName,projName,wbName,instanceId,outputId)
         let file = new FilesFS(fileName);
         await file.openR();
         let json = await file.readAll();

@@ -33,7 +33,7 @@ export abstract class Unit {
         let rslt = sourcesFolder+"/"+fileName;
         return rslt;
     }
-    outputFileName(outputId:string,instanceInfo:StepRunJSON):string{
+    async outputFileName(outputId:string,instanceInfo:StepRunJSON):Promise<string>{
         let oTypes = this.outputTypes();
         let found = false;
         for (let ot of oTypes){
@@ -43,11 +43,11 @@ export abstract class Unit {
         if (!found)
             throw "**** no such outputId "+outputId+" on "+instanceInfo.unitId;
         let i = instanceInfo;
-        let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,i.instanceId
+        let fn = await WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,i.instanceId
             ,outputId)
         return fn;
     }
-    inputFileName(inputId:string,instanceInfo:StepRunJSON):string{
+    async inputFileName(inputId:string,instanceInfo:StepRunJSON):Promise<string>{
         let i = instanceInfo;
         let inSource:{id:string,sourceInstId:string,outputId:string}=<any>undefined;
         for (let inputS of instanceInfo.inputSources){
@@ -57,7 +57,7 @@ export abstract class Unit {
         if (!inSource)
             throw "**** no such inputId "+inputId+" on "+instanceInfo.unitId;
 
-        let fn = WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,inSource.sourceInstId,inSource.outputId)
+        let fn =await WorkServer.outputVarFile(i.userEmail,i.actId,i.projId,i.wbId,inSource.sourceInstId,inSource.outputId)
         return fn;
     }
     static uploadJSON():{[unitId:string]:UnitJSON}{

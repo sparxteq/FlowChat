@@ -46,19 +46,19 @@ export class SelectBestDataPoints extends Unit{
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {
         //debugger;
         this.param = <SelectBestDataPointsParam>instanceInfo.paramValue;
-        let examplesTableName = this.inputFileName("sampleData",instanceInfo);
+        let examplesTableName = await this.inputFileName("sampleData",instanceInfo);
         let examplesTable = new ReadTableZMS(examplesTableName)
         await examplesTable.openR();
         let quanta:MSSieveData = this.extractQuantaFromCols(examplesTable);
-        let decisionsTableName = this.inputFileName("decisions",instanceInfo)
+        let decisionsTableName = await await this.inputFileName("decisions",instanceInfo)
         let decisionsTable = new ReadTableCSV(decisionsTableName);
         await decisionsTable.openR();
 
-        let featuresName = this.outputFileName("features.csv",instanceInfo)
+        let featuresName = await this.outputFileName("features.csv",instanceInfo)
         let features = new WriteTableCSV(featuresName);
         //await features.openW();
 
-        /*let statsName = this.outputFileName("stats.csv",instanceInfo);
+        /*let statsName = await this.outputFileName("stats.csv",instanceInfo);
         let statsFile = new WriteTableCSV(statsName);
         await statsFile.openW();*/
 
