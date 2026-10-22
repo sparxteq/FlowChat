@@ -315,7 +315,9 @@ export abstract class UnitCellView extends SheetCellView{
         return new ZTValueEdit(pType,pValue,(pData:any)=>{
                 this.unitInst.paramValue = pData;
                 this.unitInst.paramChangeTime=Date.now();
+                wb.updateExecStatus();
                 wb.dirty();
+                ZUI.notify();
             },projectId,activityId,email)
         
     }

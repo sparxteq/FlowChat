@@ -133,26 +133,46 @@ export class StepCellView extends UnitCellView{
             await this.executeActionScript(script);
         }
         private buildActionScript(script:string[]){
-            switch(this.unitInst.execStatus){
+            let inst = <StepInstanceClient>this.unitInst;
+            switch(inst.execStatus){
                 case "unknown":
                 case "checking":
                 case "unconnected":
                     return;
                 case "ready":
-                    if (script.indexOf(this.unitInst.instanceId)<0)
+                    if (script.indexOf(this.unitInst.instanceId)<0){
                         script.push(this.unitInst.instanceId);
+                        inst.displayOpen=true;
+                        inst.log={
+                            success:true,
+                            data:{
+                                stack:[],
+                                runStatus:"pending"
+                            }
+                        }
+                    }
                     break;
                 case "canCompute":
                     let sources = this.unitInst.inputSources;
                     for (let inputSource of sources){
                         let instId=inputSource.srcRef!.srcInstId
                         let inst = this.sheetView.flowSheet!.workbook.getUnitInstance(instId);
+                        
                         let view = inst.cellView(this.sheetView);
                         if (view instanceof StepCellView)
                             view.buildActionScript(script);
                     }
-                    if (script.indexOf(this.unitInst.instanceId)<0)
+                    if (script.indexOf(this.unitInst.instanceId)<0){
                         script.push(this.unitInst.instanceId)
+                        inst.displayOpen=true;
+                        inst.log={
+                            success:true,
+                            data:{
+                                stack:[],
+                                runStatus:"pending"
+                            }
+                        }
+                    }
                     break;
             }
         }
@@ -233,7 +253,7 @@ export class StepCellView extends UnitCellView{
                 success:true,
                 data:{
                     stack:[],
-                    runStatus:"running"
+                    runStatus:"pending"
                 }
             }
     }

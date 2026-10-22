@@ -49,6 +49,9 @@ export class LogView extends ZUI{
                 if (stack[stack.length-1] && stack[stack.length-1].status)
                     html=`<b>${stack[stack.length-1].status}</b><br>`
                 break;
+            case "pending":
+                html="<b>pending</b>"
+                break;
         }
         for (let si of stack){
             html+=this.stackElToHTML(si)

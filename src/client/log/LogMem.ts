@@ -15,7 +15,7 @@ export class LogMem extends Log {
     ]
     protected subs:{[name:string]:LogMem}={}
     private echoToDB:boolean;
-    private runStatus:"running"|"complete"|"failed" = "running"
+    private runStatus:"running"|"complete"|"failed"|"pending" = "running"
     constructor(echoToDB=false){
         super()
         this.echoToDB=echoToDB

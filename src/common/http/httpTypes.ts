@@ -18,7 +18,7 @@ export type HTTPResult = {
     data?:any
 }
 export type HTTPLog = HTTPResult & {
-    data:{stack:HTTPLogEntry[],runStatus:"complete"|"running"|"failed"}
+    data:{stack:HTTPLogEntry[],runStatus:"complete"|"running"|"failed"|"pending"}
 }
 export type HTTPLogEntry = {
     type:"M" | "Sc", // Message, Section
