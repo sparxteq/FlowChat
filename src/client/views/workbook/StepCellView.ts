@@ -12,14 +12,22 @@ import { ClickWrapperUI } from "../../../../../Zing3/zui/ClickWrapperUI";
 import { WorkbookClient } from "../../workbook/WorkbookClient";
 import { http } from "../../http/ClientHTTP";
 import { curUser, HTTPLog, HTTPLogEntry, HTTPLogResponse, HTTPResult } from "../../../common/http/httpTypes";
-import { StepRunJSON } from "../../../common/WorkbookJSON";
+import { DataSourceRef, StepRunJSON } from "../../../common/WorkbookJSON";
 import { LogView } from "./LogView";
+import { Modal } from "../../../../../Zing3/zui/Modal";
+import { SheetView } from "./SheetView";
 
 
 
 export class StepCellView extends UnitCellView{
-
+    private logView
+    constructor(unitInst:UnitInstanceClient,sheetView:SheetView){
+        super(unitInst,sheetView)
+        this.logView = new LogView(this.unitInst.instanceId)
+    }
     buildView(): ZUI {
+        if (!this.logView)
+            this.logView = new LogView(this.unitInst.instanceId)
         let inst = <StepInstanceClient>this.unitInst
         if (inst.displayOpen){
             return this.showOpen();
@@ -69,61 +77,39 @@ export class StepCellView extends UnitCellView{
     }
     private showOpen():ZUI{
         let actionBarStyle="StepCellActionBar"
-        let inst = this.unitInst;
-        let wb = inst.workbook;
         //if (wb.instanceIsSelected(inst.instanceId))
         //    actionBarStyle = "StepCellActionBarSelected"
         
-        let logView = new LogView(this.unitInst.instanceId);
+        
         let doList:ZUI[]=[];
             doList.push(this.actionBar(()=>{
-                    DB.msg(`do ${this.unitInst.typeId()}`)
-                    let instanceId = this.unitInst.instanceId;
-                    let unitId = this.unitInst.typeId();
-                    let wbId = wb.workbook;
-                    let projId = wb.project;
-                    let actId = wb.activity;
-                    let paramValue = this.unitInst.paramValue;
-                    let email = http.curUser!.email
-                    let instanceInfo:StepRunJSON = {
-                        instanceId:instanceId,
-                        unitId:unitId,
-                        wbId:wbId,
-                        projId:projId,
-                        actId:actId,
-                        userEmail:email,
-                        paramValue:paramValue,
-                        inputSources:this.inputInstSources()
-                    }
-                    this.unitInst.stepComputeTime=0;
-                    wb.save().then(()=>{
-                        logView.running()
-                        http.run(instanceInfo,(logResponse:HTTPLog)=>{
-                            DB.msg(`log for ${this.instanceName()}`,logResponse)
-                            
-                            let stepInst = <StepInstanceClient>this.unitInst;
-                            stepInst.log=logResponse;
-                            logView.setLog(stepInst.log)
-                            stepInst.workbook.dirty();
-                        }).then((rslt:HTTPResult)=>{
-                            if (rslt.success){
-                                this.unitInst.stepComputeTime=Date.now();
-                            } else {
-                                this.unitInst.stepComputeTime=0;
+                    switch(this.unitInst.execStatus){
+                        case "unknown":
+                        case "checking":
+                            Modal.alert(`code error "execStatus=${this.unitInst.execStatus}"`)
+                            return;
+                        case "unconnected":
+                            Modal.alert(`this step is missing input connections`)
+                            return;
+                        case "ready":
+                        case "computed":{
+                                this.doAction().then(()=>{
+                                    this.sheetView.flowSheet!.workbook.updateExecStatus();
+                                })
+                                return;
                             }
-                            let stepInst = <StepInstanceClient>this.unitInst;
-                            stepInst.log=<HTTPLog>rslt;
-                            logView.setLog(stepInst.log)
-                            this.unitInst.workbook.dirty();
-                            DB.msg(`done ${this.unitInst.typeId()}`)
-                        })
-                    })
+                        case "canCompute":
+                            this.doActionScript().then(()=>{
+                                this.sheetView.flowSheet!.workbook.updateExecStatus();
+                            })
+                            return;
+                    }
                 }).style(actionBarStyle))
             let pe = this.paramEdit()
             if (pe)
                 doList.push(pe.style("StepCellParam"))
-            logView.setLog(this.log())
-            doList.push(logView.style("StepLog"))
+            this.logView.setLog(this.log())
+            doList.push(this.logView.style("StepLog"))
         let div=new DivUI([
             new DivUI(doList).style("StepCellOpen"),
             this.inputBar().style("StepInputBar"),
@@ -141,6 +127,88 @@ export class StepCellView extends UnitCellView{
         //return container
         return div;
     }
+        private async doActionScript():Promise<void>{
+            let script:string[]=[]
+            this.buildActionScript(script);
+            await this.executeActionScript(script);
+        }
+        private buildActionScript(script:string[]){
+            switch(this.unitInst.execStatus){
+                case "unknown":
+                case "checking":
+                case "unconnected":
+                    return;
+                case "ready":
+                    if (script.indexOf(this.unitInst.instanceId)<0)
+                        script.push(this.unitInst.instanceId);
+                    break;
+                case "canCompute":
+                    let sources = this.unitInst.inputSources;
+                    for (let inputSource of sources){
+                        let instId=inputSource.srcRef!.srcInstId
+                        let inst = this.sheetView.flowSheet!.workbook.getUnitInstance(instId);
+                        let view = inst.cellView(this.sheetView);
+                        if (view instanceof StepCellView)
+                            view.buildActionScript(script);
+                    }
+                    if (script.indexOf(this.unitInst.instanceId)<0)
+                        script.push(this.unitInst.instanceId)
+                    break;
+            }
+        }
+        private async executeActionScript(script:string[]):Promise<void>{
+            for (let instanceId of script){
+                let inst = this.sheetView.flowSheet!.workbook.getUnitInstance(instanceId)
+                let view = inst.cellView(this.sheetView);
+                if (view instanceof StepCellView){
+                    await view.doAction()
+                }
+            }
+        }
+        private async doAction():Promise<void>{
+            let inst = this.unitInst;
+            let wb = inst.workbook;
+            DB.msg(`do ${this.unitInst.typeId()}`)
+            let instanceId = this.unitInst.instanceId;
+            let unitId = this.unitInst.typeId();
+            let wbId = wb.workbook;
+            let projId = wb.project;
+            let actId = wb.activity;
+            let paramValue = this.unitInst.paramValue;
+            let email = http.curUser!.email
+            let instanceInfo:StepRunJSON = {
+                instanceId:instanceId,
+                unitId:unitId,
+                wbId:wbId,
+                projId:projId,
+                actId:actId,
+                userEmail:email,
+                paramValue:paramValue,
+                inputSources:this.inputInstSources()
+            }
+            this.unitInst.stepComputeTime=0;
+            await wb.save()
+            this.logView.running()
+            let rslt:HTTPResult =await http.run(instanceInfo,(logResponse:HTTPLog)=>{
+                    DB.msg(`log for ${this.instanceName()}`,logResponse)
+                    
+                    let stepInst = <StepInstanceClient>this.unitInst;
+                    stepInst.log=logResponse;
+                    this.logView.setLog(stepInst.log)
+                    stepInst.workbook.dirty();
+                })
+            if (rslt.success){
+                this.unitInst.stepComputeTime=Date.now();
+            } else {
+                this.unitInst.stepComputeTime=0;
+            }
+            let stepInst = <StepInstanceClient>this.unitInst;
+            stepInst.log=<HTTPLog>rslt;
+            this.logView.setLog(stepInst.log)
+            this.unitInst.workbook.dirty();
+            ZUI.notify()
+            DB.msg(`done ${this.unitInst.typeId()}`)
+        }
         inputInstSources():{id:string,sourceInstId:string,outputId:string}[]{
             let rslt:{id:string,sourceInstId:string,outputId:string}[]=[];
             let flow = this.unitInst.flowSheet;
@@ -162,10 +230,10 @@ export class StepCellView extends UnitCellView{
             return log
         else
             return {
-                success:false,
+                success:true,
                 data:{
                     stack:[],
-                    runStatus:"failed"
+                    runStatus:"running"
                 }
             }
     }

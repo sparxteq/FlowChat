@@ -27,9 +27,9 @@ export abstract class Unit {
         }
         return nameToCheck
     }
-    projectFileName(fileName:string,instanceInfo:StepRunJSON):string{
+    async projectFileName(fileName:string,instanceInfo:StepRunJSON):Promise<string>{
         let ii=instanceInfo;
-        let sourcesFolder = WorkServer.projFolderName(ii.userEmail,ii.actId,ii.projId);
+        let sourcesFolder = await WorkServer.projFolderName(ii.userEmail,ii.actId,ii.projId);
         let rslt = sourcesFolder+"/"+fileName;
         return rslt;
     }

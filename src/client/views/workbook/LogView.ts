@@ -42,7 +42,7 @@ export class LogView extends ZUI{
                 html="<b>success</b><br>"
                 break;
             case "failed":
-                html="<b>FAILED</b><br>"
+                html=`<b>FAILED</b><br> ${log.msg}`
                 break;
             case "running":
                 html="<br>";

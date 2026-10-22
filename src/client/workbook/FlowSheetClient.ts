@@ -1,4 +1,5 @@
 import { Modal } from "../../../../Zing3/zui/Modal";
+import { ZUI } from "../../../../Zing3/zui/ZUI";
 import { DataSourceRef, FlowSheetJSON, UnitInstanceId, UnitTypeId } from "../../common/WorkbookJSON";
 import { StepInstanceClient } from "./StepInstanceClient";
 import { UnitInstanceClient } from "./UnitInstanceClient";
@@ -102,15 +103,18 @@ export class FlowSheetClient {
         let selectedIds = this.workbook.selectedIds();
         let count = selectedIds.length;
         if (count>1){
-            Modal.confirm(`Are you sure you want to delete ${count} units?`,(yes:boolean)=>
-            {
-                if (!yes)
+            //Modal.confirm(`Are you sure you want to delete ${count} units?`,(yes:boolean)=>
+            //{
+                if (false)//!yes)
                     return;
 
                 for (let selectId of selectedIds){
-                    this.removeSelected(selectId)
+                    //this.removeSelected(selectId)
+                    this.delUnitInstance(selectId)
                 }
-            })
+                this.dirty();
+                ZUI.notify()
+            //})
         } else {
             for (let selectId of selectedIds){
                 this.delUnitInstance(selectId)
@@ -118,13 +122,7 @@ export class FlowSheetClient {
         }
         this.dirty();
     }
-        private removeSelected(instanceId:string){
-            let inst = this.unitInstances[instanceId];
-            if (inst){
-                delete this.unitInstances[instanceId]
-                this.workbook.delUnitInstance(instanceId);
-            }
-        }
+        
     nRows():number{
         let nr=0;
         for (let uId in this.unitInstances){

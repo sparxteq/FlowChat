@@ -36,7 +36,7 @@ export class SelectAssembly extends Unit{
             log.msg("no source file selected")
             return false;
         }
-        let projFolderN = WorkServer.projFolderName(ii.userEmail,ii.actId,ii.projId)
+        let projFolderN = await WorkServer.projFolderName(ii.userEmail,ii.actId,ii.projId)
         assemblySourceN = projFolderN+"/"+assemblySourceN;
         let inTable = new ReadTableCSV(assemblySourceN);
         await inTable.openR();

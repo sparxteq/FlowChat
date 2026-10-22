@@ -379,6 +379,8 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
 }
 .Step_ready {
     @include layout(6);
+    background-color: $color-primary;
+    color: white;
     border: solid 3px black;
     padding-left:5px;
 }
