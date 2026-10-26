@@ -2,6 +2,7 @@ import { DivUI } from "../../../../../Zing3/zui/DivUI";
 import { TextAreaUI } from "../../../../../Zing3/zui/TextAreaUI";
 import { TextUI } from "../../../../../Zing3/zui/TextUI";
 import { ZUI } from "../../../../../Zing3/zui/ZUI";
+import { HelpUI } from "../../../../../Zing3/zui/HelpUI";
 import { ImageButtonUI } from "../../../../../Zing3/zui/ImageButtonUI"
 import { UnitInstanceClient } from "../../workbook/UnitInstanceClient";
 import { SheetCellView } from "./SheetCellView";
@@ -79,6 +80,12 @@ export abstract class UnitCellView extends SheetCellView{
             return this.nameStyle();
         })
         return btn;
+    }
+    protected help():ZUI{
+        let rslt = new HelpUI("",()=>{
+            return this.unitInst.description
+        })
+        return rslt;
     }
     private _menu:Menu | undefined;
     menu():Menu{
@@ -288,17 +295,19 @@ export abstract class UnitCellView extends SheetCellView{
             list = [
                     this.openCloseButton(),
                     this.actionButton(click),
-                    this.selectButton(),
+                    this.help(),
                     this.menuButton(),
-                    this.noteButton()
+                    this.noteButton(),
+                    this.selectButton(),
                 ]
         } else {
             list = [
                     this.openCloseButton(),
                     this.name(),
-                    this.selectButton(),
+                    this.help(),
                     this.menuButton(),
-                    this.noteButton()
+                    this.noteButton(),
+                    this.selectButton(),
                 ]
         }
         return new DivUI(list);

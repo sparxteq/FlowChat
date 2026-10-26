@@ -10,6 +10,7 @@ import { TypeS } from "./types/TypeS";
 import { Unit } from "./Unit";
 import { StudySpecification } from "./StudySpecification";
 import { TrainClassifier } from "./TrainClassifier";
+import { ComputeClusters } from "./clustering/ComputeClusters";
 
 export function registerStepsAndTypes(){
     
@@ -29,7 +30,9 @@ export function registerStepsAndTypes(){
             features into a uniform representation`)
     let allFeatures = new TypeS("AllDataPoints",["ZMS"],"Data that includes all data points")
     let selectedFeatures = new TypeS("SelectedDataPoints",["ZMS"],"Data for only selected data points")
-    
+    let biCluster = new TypeS("BiClusterTree",["JSON"],`Captures the structure and information
+        for the bicluster model`)
+
     Unit.register(new RandomTable())
     Unit.register(new MergeRows())
     Unit.register(new SelectAssembly())
@@ -40,4 +43,5 @@ export function registerStepsAndTypes(){
     Unit.register(new ParseSelectedDataPoints())
     Unit.register(new GenerateParseList())
     Unit.register(new TrainClassifier())
+    Unit.register(new ComputeClusters())
 }

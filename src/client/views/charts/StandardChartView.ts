@@ -17,6 +17,9 @@ import { RangeRibbonUI } from "./RangeRibbonUI";
 
 
 export class StandardChartView extends DisplayInstanceClient{
+    displayDesc():string{
+        return `Two dimensional chart`
+    }
     paramType(): ZT {
         return new ZDict()
             .str("xColumn")

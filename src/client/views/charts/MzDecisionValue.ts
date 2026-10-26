@@ -8,6 +8,9 @@ import { StandardChartDraw, StandardChartParam, StandardChartView } from "./Stan
 
 
 export class MzDecisionValue extends FeaturesChartView{
+    displayDesc():string{
+        return `M/z against decision value`
+    }
     paramType():ZT{
         return new ZDict();
     }

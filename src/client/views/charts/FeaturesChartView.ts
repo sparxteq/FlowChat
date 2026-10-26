@@ -14,7 +14,9 @@ import { StandardChartDraw, StandardChartParam, StandardChartView } from "./Stan
 
 
 export class FeaturesChartView extends StandardChartView{
-    
+    displayDesc():string{
+        return `Features sorted by decision value`
+    }
     inputTypes(): { [inputId: string]: string; } {
         return {
             table:this.checkType("Features")

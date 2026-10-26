@@ -14,6 +14,9 @@ import { JSONDownload } from "../JSONDownload";
 
 
 export class AccuracyChart extends DisplayInstanceClient{
+    displayDesc():string{
+        return `Classifier accuracy`
+    }
     paramType(): ZT {
         return new ZDict();
     }

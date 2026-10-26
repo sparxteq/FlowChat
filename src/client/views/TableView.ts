@@ -16,7 +16,7 @@ import { TableDownload } from "./TableDownload"
 
 export class TableView extends DisplayInstanceClient{
 
-    description(): string {
+    displayDesc(): string {
         return `Displays a standard row / column view of a table`
     }
     paramType(): ZT {

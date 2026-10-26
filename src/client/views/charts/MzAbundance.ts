@@ -8,6 +8,9 @@ import { StandardChartDraw, StandardChartParam, StandardChartView } from "./Stan
 
 
 export class MzAbundance extends FeaturesChartView{
+    displayDesc():string{
+        return `M/z against abundance`
+    }
     paramType():ZT{
         return new ZDict();
     }

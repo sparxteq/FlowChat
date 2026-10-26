@@ -8,6 +8,9 @@ import { StandardChartParam, StandardChartView } from "./StandardChartView";
 
 
 export class MzRtChartView extends FeaturesChartView{
+    displayDesc():string{
+        return `m/z against Retention time`
+    }
     paramType():ZT{
         return new ZDict();
     }

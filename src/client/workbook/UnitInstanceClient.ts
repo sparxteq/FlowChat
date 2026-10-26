@@ -24,6 +24,7 @@ export abstract class UnitInstanceClient {
     flowSheet:FlowSheetClient;
     execStatus:ExecuteStatus;
     stepComputeTime=0;
+    description:string="";
     constructor(flowSheet?:FlowSheetClient){
         this.execStatus = "unknown"
         if (flowSheet){
@@ -184,6 +185,7 @@ export abstract class UnitInstanceClient {
         this.note = json.note;
         this.stepComputeTime = json.stepComputeTime;
         this.paramChangeTime = json.paramChangeTime;
+        this.description = json.description;
         this.flowSheet=flowSheet;
     }
     abstract defaultParam():any;
@@ -200,7 +202,8 @@ export abstract class UnitInstanceClient {
             inputSources:this.inputSources,
             note:this.note,
             stepComputeTime:this.stepComputeTime,
-            paramChangeTime:this.paramChangeTime
+            paramChangeTime:this.paramChangeTime,
+            description:this.description
         }
         return rslt;
     }

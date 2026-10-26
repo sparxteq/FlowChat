@@ -21,7 +21,9 @@ export abstract class DisplayInstanceClient extends UnitInstanceClient{
         for (let inputId in inputTypes){
             this.inputSources.push({id:inputId})
         }
+        this.description = this.displayDesc();
     }
+    abstract displayDesc():string
     unitType():string{
         return "view";
     }

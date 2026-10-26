@@ -10,9 +10,10 @@ import { JSONDownload } from "./JSONDownload";
 
 
 export class JSONView extends DisplayInstanceClient{
-    description():string{
+    displayDesc():string{
         return `Displays a JSON value as formatted text`
     }
+
     paramType(): ZT {
         return new ZDict();
     }

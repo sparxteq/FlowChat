@@ -289,7 +289,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     letter-spacing:1.5px;
 }
 .SelectInstance {
-    float:left;
+    float:right;
     display:block;
     position:relative;
     background-color: black;
@@ -299,7 +299,7 @@ $paramBorder: color.scale($color-secondary,$lightness:-10%);
     height:15px;
 }
 .UnselectInstance {
-    float:left;
+    float:right;
     display:block;
     position:relative;
     background-color: white;

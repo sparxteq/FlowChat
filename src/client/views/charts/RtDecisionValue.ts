@@ -8,6 +8,9 @@ import { StandardChartDraw, StandardChartParam, StandardChartView } from "./Stan
 
 
 export class RtDecisionValue extends FeaturesChartView{
+    displayDesc():string{
+        return `Retention time against decision value`
+    }
     paramType():ZT{
         return new ZDict();
     }

@@ -8,6 +8,9 @@ import { StandardChartDraw, StandardChartParam, StandardChartView } from "./Stan
 
 
 export class RtAbundance extends FeaturesChartView{
+    displayDesc():string{
+        return `Retention time against abundance`
+    }
     paramType():ZT{
         return new ZDict();
     }
