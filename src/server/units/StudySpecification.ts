@@ -163,5 +163,5 @@ export type StudySpecificationParam = {
     exampleColumn:string,
     outcomeColumn:string,
     sourceColumns:string[],
-    decisions:string
+    decisions:"FirstToEach" | "EachToNext" | "EachToEach" | "EachToOthers"
 }
