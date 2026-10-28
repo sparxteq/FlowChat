@@ -11,6 +11,7 @@ import { Unit } from "../Unit";
 import { BiClusterModel } from "./BiClusterModel";
 import { MassSpecData, MsFeature } from "../../tables/MassSpecData"
 import { BiClusterModelsSpec } from "./BiClusterModelsSpec";
+import { DB } from "../../../../../Zing3/share/DB";
 
 
 export class ComputeClusters extends Unit{
@@ -46,6 +47,7 @@ export class ComputeClusters extends Unit{
     }
     private wnote:WorkNotify=<any>undefined;
     async run(instanceInfo: StepRunJSON, log: Log): Promise<boolean> {
+        //debugger;
         this.wnote = new WorkNotify(log);
         let param = <ComputeClustersParam>instanceInfo.paramValue;
         if (param.maxFeatures>200)
@@ -177,10 +179,10 @@ export class ComputeClusters extends Unit{
         let cols = samplesTable.getColTypes();
         let mzCol = cols[samplesTable.columnIdx("mz")]
         let rtCol = cols[samplesTable.columnIdx("rt")]
-        let mzQuanta = rtCol.info.quantum;
+        let mzQuanta = mzCol.info.quantum;
         if (!mzQuanta)
             mzQuanta=1;
-        let rtQuanta = mzCol.info.quantum;
+        let rtQuanta = rtCol.info.quantum;
         if (!rtQuanta)
             rtQuanta=1;
         let rslt:SamplesInfo = {
@@ -194,7 +196,34 @@ export class ComputeClusters extends Unit{
             let outcome = samplesTable.getOutcome(exId);
             rslt.exampleOutcomes[exId]=outcome!;
         }
-        let feature = await samplesTable.nextFeature();
+        let fIdx=-1;
+        samplesTable.processRows(async (rowRec:{[columnName:string]:any}):Promise<void>=>{
+            DB.msg("rowRec ",rowRec)
+            fIdx++;
+            let feature:MsFeature ={
+                srcId:rowRec.srcId,
+                im:-1,
+                rt:rowRec.rt,
+                mz:rowRec.mz,
+                abs:rowRec.abs,
+                exIds:exampleIds
+            }
+            rslt.features.push(feature);
+            for (let exIdx=0;exIdx<feature.exIds.length;exIdx++){
+                let exId = feature.exIds[exIdx];
+                let ab = feature.abs[exIdx];
+                if (!ab)
+                    ab=0;
+                let featureTable = rslt.data[fIdx]
+                if (!featureTable){
+                    featureTable={};
+                    rslt.data[fIdx]=featureTable;
+                }
+                let exampleIdx = exampleIds.indexOf(exId);
+                featureTable[exampleIdx]=ab;
+            }
+        })
+        /*let feature = await samplesTable.nextFeature();
         let fIdx=-1;
         while (feature){
             fIdx++;
@@ -211,7 +240,7 @@ export class ComputeClusters extends Unit{
                 featureTable[exampleIdx]=ab;
             }
             feature = await samplesTable.nextFeature()
-        }
+        }*/
         return rslt;
     }
     private async loadAssemblyInfo(param:ComputeClustersParam
@@ -227,7 +256,7 @@ export class ComputeClusters extends Unit{
         while (row){
             let exId = row[exColIdx]
             let outcome = row[outcomeColIdx]
-            assemblyInfo[exId]={ _outcome:outcome}
+            assemblyInfo[exId]={ }
             for (let iCol of param.sampleInfoColumns){
                 let iColIdx = assemblyTable.columnIdx(iCol);
                 let colInfo = row[iColIdx];
@@ -248,8 +277,6 @@ export class ComputeClusters extends Unit{
                     errorCols.push(`${iCol} not a valid colum in assembly file`)
                 } else if (iCol==studySpec.exampleColumn){
                     errorCols.push(`${iCol} is already the example id`)
-                } else if (iCol== studySpec.outcomeColumn){
-                    errorCols.push(`${iCol} is already the oucome`)
                 } else if (studySpec.sourceColumns.indexOf(iCol)>=0){
                     errorCols.push(`${iCol} contains source files`)
                 }
@@ -273,7 +300,7 @@ export class ComputeClusters extends Unit{
         let dvIdx = featuresTable.columnIdx("decisionValue")
         let row = await featuresTable.nextRow();
         while (row){
-            if (row[imIdx]!=-1 && row[ms2Idx]!=-1){
+            if (row[imIdx]==-1 && row[ms2Idx]==-1){
                 let df:DecisionFeature = {
                     srcId:row[srcIdx],
                     rt:row[rtIdx],

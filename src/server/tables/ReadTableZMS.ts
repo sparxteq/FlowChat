@@ -192,11 +192,7 @@ export class ReadTableZMS extends ReadTable{
     async nextRow(): Promise<any[] | null> {
         throw "nextRow not available on ReadTableZMS use processRows"
     }
-    async nextFeature():Promise<MsFeature | undefined>{
-        if(this.data && this.file){
-            return await this.data.nextFeature(this.file);
-        }
-    }
+
     
     async buildData():Promise<void>{
         if(this.data && this.file){

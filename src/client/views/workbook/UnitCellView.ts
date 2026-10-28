@@ -83,7 +83,7 @@ export abstract class UnitCellView extends SheetCellView{
     }
     protected help():ZUI{
         let rslt = new HelpUI("",()=>{
-            return this.unitInst.description
+            return this.unitInst.description+" ("+this.unitInst.instanceId+")"
         })
         return rslt;
     }

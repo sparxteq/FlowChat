@@ -52,6 +52,10 @@ export class WorkbookClient {
         let inst = this.unitInstances[instanceId];
         if (inst){
             delete this.unitInstances[instanceId]
+            let i = this.selectedInstances.indexOf(instanceId)
+            if (i>=0){
+                this.selectedInstances.splice(i,1)
+            }
             //this.dirty();
         }
     }
@@ -191,6 +195,7 @@ export class WorkbookClient {
             }
         }
         this.unitInstanceCount=json.unitInstanceCount;
+        this.selectedInstances=[];
         
     }
     private saveState:"idle" | "waiting" | "saving"="idle"
@@ -250,6 +255,9 @@ export class WorkbookClient {
 
     private selectedInstances:UnitInstanceId[]=[]
     private selectedInput?:{instanceId:UnitInstanceId,inputId:string};
+    clearSelections(){
+        this.selectedInstances=[];
+    }
     selectedIds():string[]{
         return [...this.selectedInstances]
     }

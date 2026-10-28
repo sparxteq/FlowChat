@@ -89,7 +89,7 @@ export class StepCellView extends UnitCellView{
                             Modal.alert(`code error "execStatus=${this.unitInst.execStatus}"`)
                             return;
                         case "unconnected":
-                            Modal.alert(`this step is missing input connections`)
+                            Modal.alert(`step ${this.unitInst.name()} is missing input connections`)
                             return;
                         case "ready":
                         case "computed":{

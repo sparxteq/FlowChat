@@ -100,10 +100,16 @@ export class ZTValueEdit extends ZTValueView{
             .incrementStep(step)
             .getF(()=>{
                 if (!decimals && decimals !=0)
-                    if(sub)
+                    if(sub){
+                        if (!container[sub])
+                            container[sub]=0
                         return container[sub].toString();
-                if (sub)
+                    }
+                if (sub){
+                    if (!container[sub])
+                        container[sub]=0
                     return container[sub].toFixed(decimals)
+                }
             })
             .setF((str:string)=>{
                 let n = Number.parseFloat(str);
@@ -119,8 +125,11 @@ export class ZTValueEdit extends ZTValueView{
     private editZString(type:ZString,container:{[id:string]:any},sub?:string,info?:ZJSONInfo):ZUI{
         let edit = new TextFieldUI("text")
             .getF(()=>{
-                if (sub)
+                if (sub){
+                    if (!container[sub])
+                        container[sub]=""
                     return container[sub].toString();
+                }
             })
             .setF((str:string)=>{
                 if (sub){

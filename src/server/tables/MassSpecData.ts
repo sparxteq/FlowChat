@@ -378,49 +378,7 @@ export class MassSpecData{
         abs:[],
         exIds:[]
     }
-    async nextFeature(file:FilesFS):Promise<MsFeature | undefined>{
-        let lf = this.lastFeature; 
-        if (lf.im==-1){
-            let rec = await this.next(file);
-            if (rec){
-                lf.im=rec.im;
-                lf.rt=rec.rt;
-                lf.mz=rec.mz;
-                lf.abs=[rec.ab];
-                lf.exIds=[rec.exId]
-                lf.srcId=rec.srcId;
-            } else
-                return
-        }
-        let rec = await this.next(file);
-        if (!rec) return;
-        while (rec && rec.mz==lf.mz && rec.rt==lf.rt && rec.im==lf.im){
-            lf.abs.push(rec.ab);
-            lf.exIds.push(rec.exId)
-            rec = await this.next(file);
-        }
-        let save = lf;
-        if (rec){
-            this.lastFeature = {
-                srcId:rec.srcId,
-                im:rec.im,
-                rt:rec.rt,
-                mz:rec.mz,
-                abs:[rec.ab],
-                exIds:[rec.exId]
-            }
-        } else {
-            this.lastFeature = {
-                srcId:"",
-                im:-1,
-                rt:-1,
-                mz:-1,
-                abs:[],
-                exIds:[]
-            }
-        }
-        return save;
-    }
+
     merge(src:MassSpecData){
         let exIds = src.exampleIdList;
         let data = src.data;

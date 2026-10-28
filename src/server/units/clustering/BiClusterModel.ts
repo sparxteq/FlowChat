@@ -89,8 +89,10 @@ export class BiClusterModel {
                 sumDiff2 += (v * v);
             }
             let sd = Math.sqrt(sumDiff2);
-            for (let x = 0; x < this.normalMatrix.length; x++) {
-                this.normalMatrix[x][y] /= sd;
+            if (sd>0){
+                for (let x = 0; x < this.normalMatrix.length; x++) {
+                    this.normalMatrix[x][y] /= sd;
+                }
             }
         }
     }

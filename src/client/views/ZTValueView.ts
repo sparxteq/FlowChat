@@ -63,18 +63,26 @@ export class ZTValueView extends ZUI{
             decimals=0;
         let digits = 10+decimals;
         let col = Math.floor(digits/8)+1;
+        if (!data)
+            data=0;
         return new TextUI(data.toLocaleString()).style(`col-${col}`)
     }
     private viewZString(type:ZString,data:string):ZUI{
         let col = Math.floor(data.length/16)+1;
+        if (!data)
+            data=""
         return new TextUI(data).style(`col-${col} FlowView-fieldValue`)
     }
     private viewZFileName(type:ZFileName,data:any):ZUI{
         let col = Math.floor(data.length/16)+1;
+        if (!data)
+            data=""
         return new TextUI(data).style(`col-${col} FlowView-fieldValue`)
     }
     private viewZBoolean(type:ZBoolean,data:any):ZUI{
         let col = 1;
+        if (!data)
+            data=false;
         let b = <boolean>data;
         let s="";
         if (b)
@@ -83,6 +91,8 @@ export class ZTValueView extends ZUI{
     }
     private viewZArray(type:ZArray,data:any[]):ZUI{
         let arrayZUIs:ZUI[]=[];
+        if (!data)
+            data=[];
         let elType = type.getElementType()
         for (let idx in data){
             let v = data[idx];

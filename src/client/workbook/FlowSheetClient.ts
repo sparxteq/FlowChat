@@ -71,10 +71,7 @@ export class FlowSheetClient {
     addUnitInstance(row:number,col:number,unitTypeId:UnitTypeId):UnitInstanceId{
         let newId = this.workbook.newUnitInstanceId(unitTypeId);
         let inst=this.workbook.getUnitInstance(newId);
-        let oldInst = this.rcInstance(row,col)
-        if (oldInst){
-            this.delUnitInstance(oldInst.instanceId)
-        }
+
         inst.setCell(row,col);
         this.unitInstances[newId]=true;
         this.dirty();
@@ -120,6 +117,8 @@ export class FlowSheetClient {
                 this.delUnitInstance(selectId)
             }
         }
+        let wb = this.workbook;
+        wb.clearSelections();
         this.dirty();
     }
         
